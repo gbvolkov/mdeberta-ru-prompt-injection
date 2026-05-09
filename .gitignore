@@ -1,4 +1,4 @@
-# Python-generated files
+﻿# Python-generated files
 __pycache__/
 *.py[oc]
 build/
@@ -12,3 +12,5 @@ wheels/
 #data
 hf-dataset-cache
 mdeberta-ru-prompt-injection-option-b
+hf-upload/
+
