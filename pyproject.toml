@@ -1,0 +1,18 @@
+[project]
+name = "mdeberta-ru-prompt-injection"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "accelerate",
+    "datasets",
+    "huggingface-hub",
+    "numpy",
+    "protobuf",
+    "scikit-learn",
+    "sentencepiece",
+    "torch",
+    "transformers",
+    "zstandard",
+]
