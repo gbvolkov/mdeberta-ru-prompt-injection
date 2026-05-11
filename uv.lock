@@ -640,6 +640,7 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "sentencepiece" },
     { name = "torch" },
+    { name = "tqdm" },
     { name = "transformers" },
     { name = "zstandard" },
 ]
@@ -655,6 +656,7 @@ requires-dist = [
     { name = "scikit-learn" },
     { name = "sentencepiece" },
     { name = "torch" },
+    { name = "tqdm" },
     { name = "transformers" },
     { name = "zstandard" },
 ]

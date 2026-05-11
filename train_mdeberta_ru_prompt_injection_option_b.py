@@ -36,7 +36,7 @@ Restart behavior:
 
 Example CPU run:
     python train_mdeberta_ru_prompt_injection_option_b.py \
-        --output-dir ./mdeberta-ru-prompt-injection-option-b \
+        --output-dir ./mdeberta-ru-prompt-injection-35-65 \
         --max-attacks 12000 \
         --max-benign-oasst 8000 \
         --max-benign-alpaca 4000 \
@@ -151,6 +151,7 @@ class RunConfig:
     stage_cache_dir: Optional[str]
     no_stage_cache: bool
     rebuild_stage_cache: bool
+    prepared_dataset_dir: Optional[str]
     resume_from_checkpoint: Optional[str]
     no_trainer_auto_resume: bool
 
@@ -162,7 +163,7 @@ def parse_args() -> RunConfig:
 
     parser.add_argument("--student-model", default=DEFAULT_STUDENT_MODEL)
     parser.add_argument("--teacher-model", default=DEFAULT_TEACHER_MODEL)
-    parser.add_argument("--output-dir", default="./mdeberta-ru-prompt-injection-option-b")
+    parser.add_argument("--output-dir", default="./mdeberta-ru-prompt-injection-35-65")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-len", type=int, default=256)
 
@@ -298,6 +299,11 @@ def parse_args() -> RunConfig:
         help="Recompute preprocessing stages even when matching caches already exist.",
     )
     parser.add_argument(
+        "--prepared-dataset-dir",
+        default=None,
+        help="Use a prebuilt DatasetDict from build_training_dataset.py instead of assembling sources here.",
+    )
+    parser.add_argument(
         "--resume-from-checkpoint",
         default=None,
         help="Trainer checkpoint path to resume from. Defaults to the latest checkpoint in output-dir when present.",
@@ -402,6 +408,7 @@ def stage_cache_payload(stage: str, cfg: RunConfig) -> Dict[str, Any]:
         "add_manual_attacks": cfg.add_manual_attacks,
         "alpaca_repo_id": ALPACA_REPO_ID,
         "alpaca_data_filename": ALPACA_DATA_FILENAME,
+        "prepared_dataset_dir": cfg.prepared_dataset_dir,
     }
 
     payload: Dict[str, Any] = {
@@ -591,7 +598,7 @@ def to_alpaca_binary(ex: Dict[str, Any]) -> Dict[str, Any]:
     """Normalize one ru_turbo_alpaca record into the script's binary schema."""
     instruction = normalize_text(ex.get("instruction", ""))
     inp = normalize_text(ex.get("input", ""))
-    text = f"{instruction}\n\nÐ’Ñ…Ð¾Ð´: {inp}" if inp else instruction
+    text = f"{instruction}\n\nВход: {inp}" if inp else instruction
     return {
         "text": text,
         "label": 0,
@@ -970,7 +977,31 @@ def prepare_label_for_stratified_split(ds: Dataset) -> Dataset:
     return ds
 
 
+def load_prepared_dataset(path: str) -> DatasetDict:
+    ds = load_from_disk(path)
+    if not isinstance(ds, DatasetDict):
+        raise TypeError(f"Expected DatasetDict at {path}, got {type(ds).__name__}")
+    if set(ds.keys()) != {"train", "validation"}:
+        raise ValueError(f"Prepared dataset must contain train and validation splits. Got: {list(ds.keys())}")
+
+    required_columns = {"text", "label", "source_name"}
+    for split_name in ["train", "validation"]:
+        missing = required_columns.difference(ds[split_name].column_names)
+        if missing:
+            raise ValueError(f"Prepared dataset split {split_name!r} is missing columns: {sorted(missing)}")
+        if not isinstance(ds[split_name].features.get("label"), ClassLabel):
+            ds[split_name] = ds[split_name].cast_column("label", LABEL_FEATURE)
+
+    print(f"Loaded prepared dataset from: {Path(path).resolve()}")
+    print(f"  train     : {len(ds['train']):,}")
+    print(f"  validation: {len(ds['validation']):,}")
+    return ds
+
+
 def build_dataset(cfg: RunConfig) -> DatasetDict:
+    if cfg.prepared_dataset_dir:
+        return load_prepared_dataset(cfg.prepared_dataset_dir)
+
     print("Loading malicious Russian prompt-injection examples...")
     attacks = load_attack_dataset(cfg)
 
@@ -1390,6 +1421,7 @@ def run_training_preflight(cfg: RunConfig, out_dir: Path, train_tok: Dataset, to
         id2label={0: "benign", 1: "prompt_injection"},
         label2id={"benign": 0, "prompt_injection": 1},
         dtype=torch.float32,
+        use_safetensors=True,
     )
     assert_model_parameters_float32(model, "Preflight student model")
     freeze_for_cpu(model, cfg.last_n_layers)
@@ -1544,7 +1576,7 @@ import sys
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-MODEL_DIR = sys.argv[1] if len(sys.argv) > 1 else "./mdeberta-ru-prompt-injection-option-b"
+MODEL_DIR = sys.argv[1] if len(sys.argv) > 1 else "./mdeberta-ru-prompt-injection-35-65"
 THRESHOLD = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
 texts = [
@@ -1647,6 +1679,7 @@ def main() -> None:
         id2label={0: "benign", 1: "prompt_injection"},
         label2id={"benign": 0, "prompt_injection": 1},
         dtype=torch.float32,
+        use_safetensors=True,
     )
     assert_model_parameters_float32(model, "Student model")
 

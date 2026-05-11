@@ -12,5 +12,8 @@ wheels/
 #data
 hf-dataset-cache
 mdeberta-ru-prompt-injection-option-b
+mdeberta-ru-prompt-injection-option-b-remove
+mdeberta-ru-prompt-injection-35-65
 hf-upload/
-
+training-dataset/
+training-dataset-validation/

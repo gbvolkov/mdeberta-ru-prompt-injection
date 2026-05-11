@@ -14,11 +14,11 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$RepoId,
 
-    [string]$SourceDir = (Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-option-b"),
+    [string]$SourceDir,
 
-    [string]$StagingDir = (Join-Path $PSScriptRoot "hf-upload"),
+    [string]$StagingDir,
 
-    [string]$ReadmePath = (Join-Path $PSScriptRoot "README.md"),
+    [string]$ReadmePath,
 
     [switch]$SkipUpload,
 
@@ -35,6 +35,16 @@ $ErrorActionPreference = "Stop"
 $OutputEncoding = [System.Text.UTF8Encoding]::new()
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
+
+if ([string]::IsNullOrWhiteSpace($SourceDir)) {
+    $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-35-65"
+}
+if ([string]::IsNullOrWhiteSpace($StagingDir)) {
+    $StagingDir = Join-Path $PSScriptRoot "hf-upload"
+}
+if ([string]::IsNullOrWhiteSpace($ReadmePath)) {
+    $ReadmePath = Join-Path $PSScriptRoot "README.md"
+}
 
 if ($RepoId -match "YOUR(_HF)?_USERNAME") {
     throw "Replace the placeholder namespace in -RepoId with your real Hugging Face username or organization. Example: volko/mdeberta-ru-prompt-injection"
@@ -144,6 +154,11 @@ if ($IncludeTrainingScript) {
     }
 }
 
+$sampleScript = Join-Path $PSScriptRoot "sample.py"
+if (Test-Path -LiteralPath $sampleScript) {
+    Copy-Item -LiteralPath $sampleScript -Destination (Join-Path $StagePath "sample.py") -Force
+}
+
 Require-StagedFile "README.md" "README.md was not staged."
 Require-StagedFile "config.json" "config.json was not found in source model directory."
 
@@ -177,7 +192,7 @@ Write-Host "Total staged size: $totalGb GB"
 
 Write-Host "`nExcluded by construction: checkpoint-*/, stage-cache/, preflight-check*/, optimizer.pt, scheduler.pt, rng_state.pth."
 
-$uploadCommand = "hf upload $RepoId `"$StagePath`" . --commit-message `"Upload Russian prompt-injection detector`""
+$uploadCommand = "hf upload $RepoId `"$StagePath`" . --commit-message `"Upload mDeBERTa Russian prompt-injection detector`""
 if ($SkipUpload) {
     Write-Host "`nSkipUpload set. Review staged files, then run:"
     Write-Host "  $uploadCommand"
@@ -192,7 +207,7 @@ Write-Host "`nChecking Hugging Face authentication..."
 Invoke-Hf auth whoami
 
 Write-Host "`nUploading to Hugging Face..."
-Invoke-Hf upload $RepoId $StagePath "." --commit-message "Upload Russian prompt-injection detector"
+Invoke-Hf upload $RepoId $StagePath "." --commit-message "Upload mDeBERTa Russian prompt-injection detector"
 
 Write-Host "`nDone. Model repo: https://huggingface.co/$RepoId"
 
