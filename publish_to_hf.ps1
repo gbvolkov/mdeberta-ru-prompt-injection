@@ -47,7 +47,7 @@ if ([string]::IsNullOrWhiteSpace($ReadmePath)) {
 }
 
 if ($RepoId -match "YOUR(_HF)?_USERNAME") {
-    throw "Replace the placeholder namespace in -RepoId with your real Hugging Face username or organization. Example: volko/mdeberta-ru-prompt-injection"
+    throw "Replace the placeholder namespace in -RepoId with your real Hugging Face username or organization. Example: gbv/mdeberta-ru-prompt-injection"
 }
 if ($RepoId -notmatch "^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$") {
     throw "RepoId must look like 'namespace/model-name'. Got: $RepoId"
