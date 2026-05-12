@@ -59,7 +59,7 @@ model-index:
 
 This is a binary text-classification model for detecting Russian and mixed Russian-English prompt-injection / jailbreak attempts.
 
-It was fine-tuned from [`microsoft/mdeberta-v3-base`](https://huggingface.co/microsoft/mdeberta-v3-base) with hard labels as the primary signal and a small conservative distillation signal from [`protectai/deberta-v3-base-prompt-injection`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection).
+It was fine-tuned from [`microsoft/mdeberta-v3-base`](https://huggingface.co/microsoft/mdeberta-v3-base) with hard labels as the primary signal and a small conservative distillation signal from [`protectai/deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2).
 
 ## Labels
 
@@ -114,9 +114,12 @@ Baseline teacher performance on the same validation setup was much weaker for th
 | Model                                        | Precision | Recall |     F1 | ROC AUC | PR AUC |
 | -------------------------------------------- | --------: | -----: | -----: | ------: | -----: |
 | `protectai/deberta-v3-base-prompt-injection` |    0.7135 | 0.1910 | 0.3013 |  0.5777 | 0.5184 |
+| `protectai/deberta-v3-base-prompt-injection-v2` | 0.5778 | 0.3453 | 0.4322 |      - |      - |
 | This model                                   |    0.9225 | 0.9071 | 0.9147 |  0.9830 | 0.9737 |
 
 The final saved model uses the best checkpoint from step `2100`, selected by validation F1. The last training checkpoint was step `3030`, but it was not the best operating point at threshold `0.5`.
+
+Important overblocking note: the `mdeberta-ru-prompt-injection-35-65` run performs well on the random validation split, but it overflags benign Russian document fragments. The corrective recipe is to build a new benign-heavy prepared dataset with targeted document, biography, address, catalog, OCR, and RAG-style benign buckets, then retrain from scratch. Do not continue training the old checkpoint as the main fix.
 
 ## Thresholds
 
@@ -185,6 +188,8 @@ uv run python sample.py --model-id .\mdeberta-ru-prompt-injection-35-65 --thresh
 uv run python sample.py --model-id .\mdeberta-ru-prompt-injection-35-65 --validation-dataset .\mdeberta-ru-prompt-injection-35-65\stage-cache\dataset_split-1c6f5c81c7b8b4ac
 ```
 
+For manual local checks, `sample.py` also compares the student against the parent model `protectai/deberta-v3-base-prompt-injection-v2` unless `--no-parent-comparison` is passed.
+
 ## Training Data
 
 The final run used:
@@ -201,6 +206,13 @@ The training mix used:
 - Russian prompter messages from [`OpenAssistant/oasst1`](https://huggingface.co/datasets/OpenAssistant/oasst1) as benign examples
 - benign synthetic Russian instructions from [`IlyaGusev/ru_turbo_alpaca`](https://huggingface.co/datasets/IlyaGusev/ru_turbo_alpaca)
 - manually written benign hard negatives mentioning terms like "prompt injection", "system prompt", "ignore previous instructions", and "jailbreak"
+
+Corrective dataset builder defaults now add:
+
+- a larger benign:attack cap of `2.5`
+- targeted benign bucket sampling instead of simple random benign downsampling
+- generated benign document fragments with both full-text rows and sentence-split rows
+- buckets for historical addresses, biographies, catalog fragments, local history, OCR-like snippets, encyclopedic fragments, and RAG chunks
 
 Review upstream dataset licenses and terms before commercial use.
 
@@ -229,7 +241,7 @@ Base model:
 
 Teacher model used only as auxiliary signal:
 
-- `protectai/deberta-v3-base-prompt-injection`
+- `protectai/deberta-v3-base-prompt-injection-v2`
 
 Main settings:
 
@@ -241,7 +253,8 @@ Main settings:
 - learning rate: 2e-5
 - weight decay: 0.01
 - warmup ratio: 0.06
-- distillation weight: 0.05
+- distillation weight: 0.02
+- teacher distillation mode: `benign_only`
 - teacher confidence threshold: 0.80
 - trainable layers: classifier, pooler, and last 2 encoder layers
 - trainable parameters: 14,767,874 / 278,810,882 (5.30%)
@@ -249,6 +262,35 @@ Main settings:
 - optimizer: `adamw_torch`
 
 Training was performed on CPU. The final run took about 14 hours 58 minutes, plus final evaluation and artifact export.
+
+Recommended corrective retraining flow:
+
+```powershell
+uv run python build_training_dataset.py `
+  --output-dir training-dataset-v2 `
+  --validation-output-dir training-dataset-v2-validation `
+  --report-path training-dataset-v2-report.json `
+  --benign-to-attack-ratio 2.5 `
+  --max-manual-benign-document-fragments 20000
+
+uv run python train_mdeberta_ru_prompt_injection_option_b.py `
+  --prepared-dataset-dir training-dataset-v2 `
+  --output-dir mdeberta-ru-prompt-injection-v2-balanced `
+  --teacher-model protectai/deberta-v3-base-prompt-injection-v2 `
+  --teacher-distill-mode benign_only `
+  --distill-weight 0.02 `
+  --last-n-layers 2 `
+  --epochs 3 `
+  --no-trainer-auto-resume `
+  --rebuild-stage-cache
+```
+
+After training, validate both normal validation and benign stress validation:
+
+```powershell
+uv run python sample.py --model-id .\mdeberta-ru-prompt-injection-v2-balanced --validation-dataset training-dataset-v2-validation --threshold 0.5
+uv run python sample.py --model-id .\mdeberta-ru-prompt-injection-v2-balanced --validation-dataset benign-stress-validation --threshold 0.5
+```
 
 ## Limitations
 
@@ -284,7 +326,7 @@ Upload after `hf auth login`:
 .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection"
 ```
 
-The publish script stages the final root artifact files from `mdeberta-ru-prompt-injection-35-65` and excludes checkpoint optimizer state, scheduler state, RNG state, and cache directories.
+The publish script stages the final root artifact files from `mdeberta-ru-prompt-injection-35-65` by default and excludes checkpoint optimizer state, scheduler state, RNG state, and cache directories. For the corrective retrain, pass `-SourceDir .\mdeberta-ru-prompt-injection-v2-balanced`.
 
 ## Model License
 

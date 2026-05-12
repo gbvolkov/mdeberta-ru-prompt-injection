@@ -9,6 +9,7 @@ dependencies = [
     "datasets",
     "hf>=1.14.0",
     "huggingface-hub",
+    "nltk",
     "numpy",
     "protobuf",
     "scikit-learn",

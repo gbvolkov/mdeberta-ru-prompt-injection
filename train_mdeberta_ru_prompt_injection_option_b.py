@@ -3,9 +3,9 @@
 Train a Russian prompt-injection detector with option B:
 
     Student: microsoft/mdeberta-v3-base
-    Teacher/baseline: protectai/deberta-v3-base-prompt-injection
+    Teacher/baseline: protectai/deberta-v3-base-prompt-injection-v2
     Main signal: Russian hard labels
-    Auxiliary signal: conservative teacher distillation, default weight = 0.10
+    Auxiliary signal: conservative benign-only teacher distillation, default weight = 0.02
 
 The script is designed for local CPU training. It freezes most of mDeBERTa by
 default and trains the classification head plus the last N encoder layers.
@@ -40,7 +40,9 @@ Example CPU run:
         --max-attacks 12000 \
         --max-benign-oasst 8000 \
         --max-benign-alpaca 4000 \
-        --distill-weight 0.10 \
+        --teacher-model protectai/deberta-v3-base-prompt-injection-v2 \
+        --distill-weight 0.02 \
+        --teacher-distill-mode benign_only \
         --last-n-layers 2 \
         --epochs 3
 
@@ -103,7 +105,7 @@ import zstandard as zstd
 
 
 DEFAULT_STUDENT_MODEL = "microsoft/mdeberta-v3-base"
-DEFAULT_TEACHER_MODEL = "protectai/deberta-v3-base-prompt-injection"
+DEFAULT_TEACHER_MODEL = "protectai/deberta-v3-base-prompt-injection-v2"
 ALPACA_REPO_ID = "IlyaGusev/ru_turbo_alpaca"
 ALPACA_DATA_FILENAME = "ru_turbo_alpaca.jsonl.zst"
 STAGE_CACHE_SCHEMA_VERSION = 1
@@ -124,6 +126,7 @@ class RunConfig:
     distill_weight: float
     temperature: float
     teacher_conf_threshold: float
+    teacher_distill_mode: str
     last_n_layers: int
     epochs: float
     learning_rate: float
@@ -181,11 +184,20 @@ def parse_args() -> RunConfig:
     parser.add_argument(
         "--distill-weight",
         type=float,
-        default=0.10,
-        help="Option B default: 0.10. Set to 0.0 for no teacher distillation.",
+        default=0.02,
+        help="Default 0.02. Set to 0.0 for no teacher distillation.",
     )
     parser.add_argument("--temperature", type=float, default=2.0)
     parser.add_argument("--teacher-conf-threshold", type=float, default=0.80)
+    parser.add_argument(
+        "--teacher-distill-mode",
+        choices=["benign_only", "agreeing_only", "all_confident"],
+        default="benign_only",
+        help=(
+            "benign_only applies teacher KL only to confident teacher-benign rows whose hard label is benign. "
+            "This avoids weakening curated Russian attack labels when the teacher misses them."
+        ),
+    )
     parser.add_argument(
         "--skip-teacher",
         action="store_true",
@@ -1151,9 +1163,15 @@ def summarize_teacher_distillation_mask(ds: Dataset, cfg: RunConfig, split_name:
     teacher_conf = np.maximum(probs, 1.0 - probs)
     confident = teacher_conf >= cfg.teacher_conf_threshold
     agreement = teacher_preds == labels
-    used = confident & agreement
+    if cfg.teacher_distill_mode == "benign_only":
+        used = confident & (teacher_preds == 0) & (labels == 0)
+    elif cfg.teacher_distill_mode == "all_confident":
+        used = confident
+    else:
+        used = confident & agreement
 
     print(f"Teacher distillation diagnostics for {split_name}:")
+    print(f"  mode                          : {cfg.teacher_distill_mode}")
     print(f"  confident @ {cfg.teacher_conf_threshold:.2f}: {int(confident.sum()):,} / {len(labels):,} ({100 * confident.mean():.2f}%)")
     print(f"  agrees with hard label       : {int(agreement.sum()):,} / {len(labels):,} ({100 * agreement.mean():.2f}%)")
     print(f"  used for distillation        : {int(used.sum()):,} / {len(labels):,} ({100 * used.mean():.2f}%)")
@@ -1175,11 +1193,20 @@ class DistillationTrainer(Trainer):
     """
     Conservative binary distillation.
 
-    Hard labels remain the primary signal. Teacher KL loss is applied only where
-    teacher confidence >= teacher_conf_threshold.
+    Hard labels remain the primary signal. The default mode applies teacher KL
+    only to confident benign rows, so weak teacher recall on Russian attacks
+    cannot soften curated attack labels.
     """
 
-    def __init__(self, *args: Any, distill_weight: float, temperature: float, teacher_conf_threshold: float, **kwargs: Any):
+    def __init__(
+        self,
+        *args: Any,
+        distill_weight: float,
+        temperature: float,
+        teacher_conf_threshold: float,
+        teacher_distill_mode: str,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         # This loss is already a per-microbatch mean. Transformers 5.x passes
         # num_items_in_batch when it thinks the loss handles accumulation-aware
@@ -1189,6 +1216,7 @@ class DistillationTrainer(Trainer):
         self.distill_weight = float(distill_weight)
         self.temperature = float(temperature)
         self.teacher_conf_threshold = float(teacher_conf_threshold)
+        self.teacher_distill_mode = str(teacher_distill_mode)
 
     def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         labels = inputs.pop("labels")
@@ -1222,8 +1250,13 @@ class DistillationTrainer(Trainer):
             teacher_probs = torch.stack([1.0 - teacher_p1, teacher_p1], dim=-1)
 
             teacher_conf, teacher_pred = teacher_probs.max(dim=-1)
-            agrees_with_label = teacher_pred.eq(labels)
-            mask = (teacher_conf >= self.teacher_conf_threshold) & agrees_with_label
+            confident = teacher_conf >= self.teacher_conf_threshold
+            if self.teacher_distill_mode == "benign_only":
+                mask = confident & teacher_pred.eq(0) & labels.eq(0)
+            elif self.teacher_distill_mode == "all_confident":
+                mask = confident
+            else:
+                mask = confident & teacher_pred.eq(labels)
 
             if mask.any():
                 student_log_probs = F.log_softmax(logits[mask] / self.temperature, dim=-1)
@@ -1444,6 +1477,7 @@ def run_training_preflight(cfg: RunConfig, out_dir: Path, train_tok: Dataset, to
         distill_weight=0.0 if cfg.skip_teacher else cfg.distill_weight,
         temperature=cfg.temperature,
         teacher_conf_threshold=cfg.teacher_conf_threshold,
+        teacher_distill_mode=cfg.teacher_distill_mode,
         **make_trainer_init_kwargs(tokenizer),
     )
 
@@ -1578,6 +1612,9 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 MODEL_DIR = sys.argv[1] if len(sys.argv) > 1 else "./mdeberta-ru-prompt-injection-35-65"
 THRESHOLD = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
+MODEL_MAX_LENGTH = 256
+WINDOW_TOKEN_LENGTH = MODEL_MAX_LENGTH - 2
+WINDOW_TOKEN_STRIDE = 128
 
 texts = [
     "Объясни, что такое prompt injection.",
@@ -1589,11 +1626,32 @@ model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
 model.eval()
 model.to("cpu")
 
-with torch.no_grad():
-    enc = tokenizer(texts, padding=True, truncation=True, max_length=256, return_tensors="pt")
-    probs = torch.softmax(model(**enc).logits, dim=-1)[:, 1]
+def build_windows(text: str) -> list[str]:
+    input_ids = tokenizer(text, add_special_tokens=False)["input_ids"]
+    if len(input_ids) <= WINDOW_TOKEN_LENGTH:
+        return [text]
 
-for text, p in zip(texts, probs.tolist()):
+    windows = []
+    start = 0
+    last_start = max(0, len(input_ids) - WINDOW_TOKEN_LENGTH)
+    while start <= last_start:
+        chunk_ids = input_ids[start : start + WINDOW_TOKEN_LENGTH]
+        windows.append(tokenizer.decode(chunk_ids, skip_special_tokens=True))
+        if start == last_start:
+            break
+        start = min(start + WINDOW_TOKEN_STRIDE, last_start)
+    return windows
+
+
+def score_text(text: str) -> float:
+    windows = build_windows(text)
+    with torch.no_grad():
+        enc = tokenizer(windows, padding=True, truncation=True, max_length=MODEL_MAX_LENGTH, return_tensors="pt")
+        probs = torch.softmax(model(**enc).logits, dim=-1)[:, 1]
+    return float(torch.max(probs).item())
+
+for text in texts:
+    p = score_text(text)
     label = "prompt_injection" if p >= THRESHOLD else "benign"
     print({"text": text, "p_prompt_injection": round(p, 4), "label": label})
 '''
@@ -1697,6 +1755,7 @@ def main() -> None:
         distill_weight=0.0 if cfg.skip_teacher else cfg.distill_weight,
         temperature=cfg.temperature,
         teacher_conf_threshold=cfg.teacher_conf_threshold,
+        teacher_distill_mode=cfg.teacher_distill_mode,
         **make_trainer_init_kwargs(tokenizer),
     )
 

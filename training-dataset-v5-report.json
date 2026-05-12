@@ -1,0 +1,1215 @@
+{
+  "config": {
+    "output_dir": "training-dataset-v5",
+    "validation_output_dir": "training-dataset-v5-validation",
+    "report_path": "training-dataset-v5-report.json",
+    "seed": 42,
+    "validation_size": 0.15,
+    "min_text_chars": 5,
+    "max_text_chars": 4000,
+    "max_dmtrdr_attacks": 12000,
+    "max_jackhhao": 3000,
+    "max_lakera": 2000,
+    "max_deepset": 1000,
+    "max_open_safety_salad": 2000,
+    "max_promptwall": 500,
+    "max_manual_prompt_injection_attacks": 5000,
+    "max_oasst_ru": 8000,
+    "max_alpaca_ru": 4000,
+    "max_grandmaster": 12000,
+    "max_ru_instructions": 5000,
+    "max_ru_news": 1200,
+    "max_ru_sentiment": 1200,
+    "max_ru_bank_reviews": 900,
+    "max_notinject": 339,
+    "max_manual_hard_negatives": 4000,
+    "max_manual_benign_document_fragments": 20000,
+    "max_c4_ru": 0,
+    "benign_to_attack_ratio": 2.5,
+    "no_benign_bucket_targets": false,
+    "no_length_balanced_sampling": false,
+    "attack_curation_mode": "prompt_injection_only",
+    "attack_curation_audit_path": "training-dataset-v5-final-attack-curation-audit.jsonl",
+    "label_judgments_path": "training-dataset-v4-label-judgments.jsonl",
+    "label_judgment_conf_threshold": 0.8,
+    "include_judged_negative_rows": true,
+    "alpaca_cache_dir": null,
+    "alpaca_local_files_only": false,
+    "allow_unverified_schemas": false
+  },
+  "errors": [],
+  "attack_curation": {
+    "by_source": {
+      "Lakera/gandalf_ignore_instructions": {
+        "kept": 777
+      },
+      "OpenSafetyLab/Salad-Data": {
+        "dropped": 135
+      },
+      "cyberec/promptwall-injection-dataset": {
+        "kept": 430
+      },
+      "deepset/prompt-injections": {
+        "kept": 545
+      },
+      "dmtrdr/russian_prompt_injections": {
+        "kept": 1885,
+        "dropped": 19468,
+        "kept_llm_prompt_injection": 715,
+        "kept_llm_benign": 43,
+        "kept_llm_unsafe_non_injection": 3
+      },
+      "jackhhao/jailbreak-classification": {
+        "kept": 216,
+        "kept_llm_benign": 4,
+        "kept_llm_prompt_injection": 252
+      }
+    },
+    "reasons": {
+      "dropped:no_pi_evidence": 17804,
+      "dropped:unsafe_non_injection_or_no_pi_evidence": 1799,
+      "kept:secret_probe": 1790,
+      "kept:trusted_prompt_injection_source": 1337,
+      "kept:llm_judgment_prompt_injection": 967,
+      "kept:instruction_override": 468,
+      "kept:role_or_policy_bypass": 374,
+      "kept:multiple_pi_signals": 228,
+      "kept:tool_or_secret_exfiltration": 93,
+      "kept:llm_judgment_benign": 47,
+      "kept:hidden_prompt_exfiltration": 34,
+      "kept:llm_control_terms_combined": 17,
+      "kept:ru_llm_control_terms_combined": 5,
+      "kept:indirect_injection": 4,
+      "kept:llm_judgment_unsafe_non_injection": 3,
+      "kept:prompt_injection_meta": 1
+    },
+    "dropped_audit_rows": 19603
+  },
+  "splits": {
+    "train": {
+      "rows": 26979,
+      "labels": {
+        "benign": 19270,
+        "prompt_injection": 7709
+      },
+      "sources": {
+        "Vikhrmodels/GrandMaster-PRO-MAX": 5011,
+        "manual_prompt_injection_templates": 3747,
+        "manual_hard_negative_templates": 3376,
+        "manual_benign_document_fragments": 2753,
+        "dmtrdr/russian_prompt_injections": 2116,
+        "Den4ikAI/russian_instructions_2": 1682,
+        "manual_benign_document_fragments_sentence": 1674,
+        "IlyaGusev/ru_turbo_alpaca": 1184,
+        "OpenAssistant/oasst1": 1030,
+        "ScoutieAutoML/russian-news-telegram-dataset": 745,
+        "MonoHime/ru_sentiment_dataset": 723,
+        "Lakera/gandalf_ignore_instructions": 659,
+        "jackhhao/jailbreak-classification": 650,
+        "Romjiik/Russian_bank_reviews": 464,
+        "deepset/prompt-injections": 451,
+        "cyberec/promptwall-injection-dataset": 423,
+        "leolee99/NotInject": 291
+      },
+      "buckets": {
+        "benign_general": 9187,
+        "benign_hard_negative": 3721,
+        "direct_attack_ru": 2971,
+        "benign_historical_address_fragment": 1938,
+        "benign_document": 1932,
+        "direct_attack_en": 1590,
+        "benign_rag_chunk": 919,
+        "exfiltration_attack": 837,
+        "benign_catalog_fragment": 679,
+        "indirect_attack": 673,
+        "persona_attack": 614,
+        "benign_ocr_fragment": 577,
+        "long_jailbreak_attack": 390,
+        "multi_turn_attack": 231,
+        "encoded_attack": 218,
+        "attack_multilingual": 185,
+        "benign_biographical_note": 181,
+        "benign_document_bullet_fragment": 80,
+        "benign_local_history": 22,
+        "benign_encyclopedic_fragment": 17,
+        "benign_literature_art_fragment": 14,
+        "unsafe_non_injection": 3
+      },
+      "languages": {
+        "ru": 24419,
+        "en": 2560
+      },
+      "text_units": {
+        "full_text": 25305,
+        "sentence": 1674
+      },
+      "length_bins": {
+        "0000-0128": {
+          "rows": 9130,
+          "chars_avg": 74.5,
+          "chars_p50": 72,
+          "chars_p90": 121,
+          "chars_min": 7,
+          "chars_max": 128,
+          "benign_rows": 6960,
+          "attack_rows": 2170,
+          "benign_to_attack_ratio": 3.207
+        },
+        "0129-0256": {
+          "rows": 12910,
+          "chars_avg": 171.9,
+          "chars_p50": 167,
+          "chars_p90": 213,
+          "chars_min": 129,
+          "chars_max": 256,
+          "benign_rows": 8769,
+          "attack_rows": 4141,
+          "benign_to_attack_ratio": 2.118
+        },
+        "0257-0512": {
+          "rows": 1745,
+          "chars_avg": 367.2,
+          "chars_p50": 361,
+          "chars_p90": 477,
+          "chars_min": 257,
+          "chars_max": 512,
+          "benign_rows": 1344,
+          "attack_rows": 401,
+          "benign_to_attack_ratio": 3.352
+        },
+        "0513-1024": {
+          "rows": 1357,
+          "chars_avg": 715.8,
+          "chars_p50": 692,
+          "chars_p90": 931,
+          "chars_min": 513,
+          "chars_max": 1024,
+          "benign_rows": 1038,
+          "attack_rows": 319,
+          "benign_to_attack_ratio": 3.254
+        },
+        "1025-2048": {
+          "rows": 1307,
+          "chars_avg": 1404.5,
+          "chars_p50": 1358,
+          "chars_p90": 1838,
+          "chars_min": 1025,
+          "chars_max": 2045,
+          "benign_rows": 902,
+          "attack_rows": 405,
+          "benign_to_attack_ratio": 2.227
+        },
+        "2049+": {
+          "rows": 530,
+          "chars_avg": 2775.3,
+          "chars_p50": 2618,
+          "chars_p90": 3657,
+          "chars_min": 2053,
+          "chars_max": 3997,
+          "benign_rows": 257,
+          "attack_rows": 273,
+          "benign_to_attack_ratio": 0.941
+        }
+      },
+      "label_source": {
+        "benign|manual_benign_document_fragments": {
+          "rows": 2753,
+          "chars_avg": 136.6,
+          "chars_p50": 135,
+          "chars_p90": 156,
+          "chars_min": 107,
+          "chars_max": 180
+        },
+        "benign|manual_hard_negative_templates": {
+          "rows": 3376,
+          "chars_avg": 165.5,
+          "chars_p50": 167,
+          "chars_p90": 197,
+          "chars_min": 79,
+          "chars_max": 241
+        },
+        "benign|Vikhrmodels/GrandMaster-PRO-MAX": {
+          "rows": 5011,
+          "chars_avg": 422.6,
+          "chars_p50": 220,
+          "chars_p90": 1102,
+          "chars_min": 7,
+          "chars_max": 3754
+        },
+        "benign|manual_benign_document_fragments_sentence": {
+          "rows": 1674,
+          "chars_avg": 71.7,
+          "chars_p50": 72,
+          "chars_p90": 84,
+          "chars_min": 11,
+          "chars_max": 102
+        },
+        "benign|OpenAssistant/oasst1": {
+          "rows": 1030,
+          "chars_avg": 167.0,
+          "chars_p50": 89,
+          "chars_p90": 257,
+          "chars_min": 7,
+          "chars_max": 3703
+        },
+        "prompt_injection|dmtrdr/russian_prompt_injections": {
+          "rows": 2093,
+          "chars_avg": 581.5,
+          "chars_p50": 214,
+          "chars_p90": 1635,
+          "chars_min": 8,
+          "chars_max": 3997
+        },
+        "benign|MonoHime/ru_sentiment_dataset": {
+          "rows": 723,
+          "chars_avg": 716.2,
+          "chars_p50": 474,
+          "chars_p90": 1621,
+          "chars_min": 14,
+          "chars_max": 3866
+        },
+        "prompt_injection|jackhhao/jailbreak-classification": {
+          "rows": 390,
+          "chars_avg": 1565.3,
+          "chars_p50": 1392,
+          "chars_p90": 3147,
+          "chars_min": 33,
+          "chars_max": 3990
+        },
+        "benign|Romjiik/Russian_bank_reviews": {
+          "rows": 464,
+          "chars_avg": 1219.5,
+          "chars_p50": 1042,
+          "chars_p90": 2472,
+          "chars_min": 230,
+          "chars_max": 3592
+        },
+        "prompt_injection|manual_prompt_injection_templates": {
+          "rows": 3747,
+          "chars_avg": 172.9,
+          "chars_p50": 171,
+          "chars_p90": 200,
+          "chars_min": 118,
+          "chars_max": 230
+        },
+        "prompt_injection|deepset/prompt-injections": {
+          "rows": 451,
+          "chars_avg": 101.1,
+          "chars_p50": 62,
+          "chars_p90": 215,
+          "chars_min": 7,
+          "chars_max": 778
+        },
+        "benign|IlyaGusev/ru_turbo_alpaca": {
+          "rows": 1184,
+          "chars_avg": 93.1,
+          "chars_p50": 78,
+          "chars_p90": 157,
+          "chars_min": 25,
+          "chars_max": 582
+        },
+        "prompt_injection|Lakera/gandalf_ignore_instructions": {
+          "rows": 659,
+          "chars_avg": 72.4,
+          "chars_p50": 60,
+          "chars_p90": 126,
+          "chars_min": 12,
+          "chars_max": 504
+        },
+        "benign|Den4ikAI/russian_instructions_2": {
+          "rows": 1682,
+          "chars_avg": 121.3,
+          "chars_p50": 98,
+          "chars_p90": 228,
+          "chars_min": 15,
+          "chars_max": 518
+        },
+        "benign|ScoutieAutoML/russian-news-telegram-dataset": {
+          "rows": 745,
+          "chars_avg": 370.6,
+          "chars_p50": 196,
+          "chars_p90": 1028,
+          "chars_min": 20,
+          "chars_max": 2670
+        },
+        "benign|dmtrdr/russian_prompt_injections": {
+          "rows": 23,
+          "chars_avg": 723.1,
+          "chars_p50": 175,
+          "chars_p90": 2459,
+          "chars_min": 35,
+          "chars_max": 2600
+        },
+        "benign|jackhhao/jailbreak-classification": {
+          "rows": 260,
+          "chars_avg": 614.5,
+          "chars_p50": 232,
+          "chars_p90": 1967,
+          "chars_min": 62,
+          "chars_max": 3701
+        },
+        "benign|leolee99/NotInject": {
+          "rows": 291,
+          "chars_avg": 85.8,
+          "chars_p50": 90,
+          "chars_p90": 139,
+          "chars_min": 11,
+          "chars_max": 233
+        },
+        "prompt_injection|cyberec/promptwall-injection-dataset": {
+          "rows": 369,
+          "chars_avg": 74.2,
+          "chars_p50": 75,
+          "chars_p90": 96,
+          "chars_min": 22,
+          "chars_max": 155
+        },
+        "benign|cyberec/promptwall-injection-dataset": {
+          "rows": 54,
+          "chars_avg": 43,
+          "chars_p50": 42,
+          "chars_p90": 61,
+          "chars_min": 20,
+          "chars_max": 68
+        }
+      },
+      "label_bucket": {
+        "benign|benign_historical_address_fragment": {
+          "rows": 1938,
+          "chars_avg": 109.7,
+          "chars_p50": 128,
+          "chars_p90": 154,
+          "chars_min": 11,
+          "chars_max": 180
+        },
+        "benign|benign_hard_negative": {
+          "rows": 3721,
+          "chars_avg": 157.5,
+          "chars_p50": 163,
+          "chars_p90": 196,
+          "chars_min": 11,
+          "chars_max": 241
+        },
+        "benign|benign_general": {
+          "rows": 9187,
+          "chars_avg": 302.3,
+          "chars_p50": 160,
+          "chars_p90": 726,
+          "chars_min": 7,
+          "chars_max": 3754
+        },
+        "benign|benign_rag_chunk": {
+          "rows": 919,
+          "chars_avg": 114.5,
+          "chars_p50": 135,
+          "chars_p90": 158,
+          "chars_min": 62,
+          "chars_max": 173
+        },
+        "prompt_injection|direct_attack_ru": {
+          "rows": 2971,
+          "chars_avg": 458.2,
+          "chars_p50": 168,
+          "chars_p90": 1256,
+          "chars_min": 8,
+          "chars_max": 3997
+        },
+        "benign|benign_document": {
+          "rows": 1932,
+          "chars_avg": 703.8,
+          "chars_p50": 420,
+          "chars_p90": 1640,
+          "chars_min": 14,
+          "chars_max": 3866
+        },
+        "prompt_injection|long_jailbreak_attack": {
+          "rows": 390,
+          "chars_avg": 1565.3,
+          "chars_p50": 1392,
+          "chars_p90": 3147,
+          "chars_min": 33,
+          "chars_max": 3990
+        },
+        "prompt_injection|exfiltration_attack": {
+          "rows": 837,
+          "chars_avg": 157.0,
+          "chars_p50": 161,
+          "chars_p90": 179,
+          "chars_min": 39,
+          "chars_max": 195
+        },
+        "prompt_injection|direct_attack_en": {
+          "rows": 1590,
+          "chars_avg": 109.1,
+          "chars_p50": 93,
+          "chars_p90": 186,
+          "chars_min": 7,
+          "chars_max": 778
+        },
+        "prompt_injection|persona_attack": {
+          "rows": 614,
+          "chars_avg": 164.8,
+          "chars_p50": 168,
+          "chars_p90": 194,
+          "chars_min": 57,
+          "chars_max": 218
+        },
+        "prompt_injection|indirect_attack": {
+          "rows": 673,
+          "chars_avg": 187.2,
+          "chars_p50": 192,
+          "chars_p90": 210,
+          "chars_min": 69,
+          "chars_max": 230
+        },
+        "benign|benign_ocr_fragment": {
+          "rows": 577,
+          "chars_avg": 126.5,
+          "chars_p50": 125,
+          "chars_p90": 138,
+          "chars_min": 111,
+          "chars_max": 155
+        },
+        "benign|benign_catalog_fragment": {
+          "rows": 679,
+          "chars_avg": 102.6,
+          "chars_p50": 122,
+          "chars_p90": 131,
+          "chars_min": 64,
+          "chars_max": 136
+        },
+        "benign|benign_biographical_note": {
+          "rows": 181,
+          "chars_avg": 119.6,
+          "chars_p50": 125,
+          "chars_p90": 136,
+          "chars_min": 48,
+          "chars_max": 143
+        },
+        "prompt_injection|encoded_attack": {
+          "rows": 218,
+          "chars_avg": 167.1,
+          "chars_p50": 184,
+          "chars_p90": 203,
+          "chars_min": 31,
+          "chars_max": 216
+        },
+        "prompt_injection|multi_turn_attack": {
+          "rows": 231,
+          "chars_avg": 185.6,
+          "chars_p50": 198,
+          "chars_p90": 217,
+          "chars_min": 66,
+          "chars_max": 229
+        },
+        "prompt_injection|attack_multilingual": {
+          "rows": 185,
+          "chars_avg": 70.4,
+          "chars_p50": 72,
+          "chars_p90": 86,
+          "chars_min": 22,
+          "chars_max": 107
+        },
+        "benign|benign_encyclopedic_fragment": {
+          "rows": 17,
+          "chars_avg": 60.9,
+          "chars_p50": 27,
+          "chars_p90": 138,
+          "chars_min": 14,
+          "chars_max": 154
+        },
+        "benign|benign_document_bullet_fragment": {
+          "rows": 80,
+          "chars_avg": 107.9,
+          "chars_p50": 108,
+          "chars_p90": 108,
+          "chars_min": 107,
+          "chars_max": 108
+        },
+        "benign|benign_local_history": {
+          "rows": 22,
+          "chars_avg": 121.0,
+          "chars_p50": 102,
+          "chars_p90": 158,
+          "chars_min": 84,
+          "chars_max": 164
+        },
+        "benign|benign_literature_art_fragment": {
+          "rows": 14,
+          "chars_avg": 119.1,
+          "chars_p50": 117,
+          "chars_p90": 128,
+          "chars_min": 112,
+          "chars_max": 135
+        },
+        "benign|unsafe_non_injection": {
+          "rows": 3,
+          "chars_avg": 875.3,
+          "chars_p50": 165,
+          "chars_p90": 2381,
+          "chars_min": 80,
+          "chars_max": 2381
+        }
+      },
+      "label_length_bin": {
+        "benign|0129-0256": {
+          "rows": 8769,
+          "chars_avg": 171.1,
+          "chars_p50": 164,
+          "chars_p90": 220,
+          "chars_min": 129,
+          "chars_max": 256
+        },
+        "benign|0000-0128": {
+          "rows": 6960,
+          "chars_avg": 78.1,
+          "chars_p50": 74,
+          "chars_p90": 123,
+          "chars_min": 7,
+          "chars_max": 128
+        },
+        "benign|0513-1024": {
+          "rows": 1038,
+          "chars_avg": 711.0,
+          "chars_p50": 681,
+          "chars_p90": 927,
+          "chars_min": 513,
+          "chars_max": 1024
+        },
+        "prompt_injection|1025-2048": {
+          "rows": 405,
+          "chars_avg": 1409.1,
+          "chars_p50": 1349,
+          "chars_p90": 1838,
+          "chars_min": 1026,
+          "chars_max": 2041
+        },
+        "prompt_injection|2049+": {
+          "rows": 273,
+          "chars_avg": 2892.2,
+          "chars_p50": 2732,
+          "chars_p90": 3792,
+          "chars_min": 2058,
+          "chars_max": 3997
+        },
+        "benign|2049+": {
+          "rows": 257,
+          "chars_avg": 2651.2,
+          "chars_p50": 2551,
+          "chars_p90": 3419,
+          "chars_min": 2053,
+          "chars_max": 3866
+        },
+        "prompt_injection|0129-0256": {
+          "rows": 4141,
+          "chars_avg": 173.7,
+          "chars_p50": 172,
+          "chars_p90": 203,
+          "chars_min": 129,
+          "chars_max": 256
+        },
+        "prompt_injection|0000-0128": {
+          "rows": 2170,
+          "chars_avg": 63.0,
+          "chars_p50": 60,
+          "chars_p90": 105,
+          "chars_min": 7,
+          "chars_max": 128
+        },
+        "prompt_injection|0513-1024": {
+          "rows": 319,
+          "chars_avg": 731.3,
+          "chars_p50": 729,
+          "chars_p90": 940,
+          "chars_min": 514,
+          "chars_max": 1022
+        },
+        "benign|0257-0512": {
+          "rows": 1344,
+          "chars_avg": 367.7,
+          "chars_p50": 362,
+          "chars_p90": 476,
+          "chars_min": 257,
+          "chars_max": 512
+        },
+        "benign|1025-2048": {
+          "rows": 902,
+          "chars_avg": 1402.4,
+          "chars_p50": 1363,
+          "chars_p90": 1840,
+          "chars_min": 1025,
+          "chars_max": 2045
+        },
+        "prompt_injection|0257-0512": {
+          "rows": 401,
+          "chars_avg": 365.4,
+          "chars_p50": 358,
+          "chars_p90": 479,
+          "chars_min": 257,
+          "chars_max": 512
+        }
+      }
+    },
+    "validation": {
+      "rows": 4762,
+      "labels": {
+        "benign": 3402,
+        "prompt_injection": 1360
+      },
+      "sources": {
+        "Vikhrmodels/GrandMaster-PRO-MAX": 922,
+        "manual_prompt_injection_templates": 653,
+        "manual_hard_negative_templates": 606,
+        "manual_benign_document_fragments": 486,
+        "dmtrdr/russian_prompt_injections": 370,
+        "Den4ikAI/russian_instructions_2": 305,
+        "manual_benign_document_fragments_sentence": 298,
+        "IlyaGusev/ru_turbo_alpaca": 210,
+        "OpenAssistant/oasst1": 170,
+        "ScoutieAutoML/russian-news-telegram-dataset": 121,
+        "Lakera/gandalf_ignore_instructions": 117,
+        "jackhhao/jailbreak-classification": 104,
+        "Romjiik/Russian_bank_reviews": 96,
+        "deepset/prompt-injections": 94,
+        "MonoHime/ru_sentiment_dataset": 90,
+        "cyberec/promptwall-injection-dataset": 72,
+        "leolee99/NotInject": 48
+      },
+      "buckets": {
+        "benign_general": 1646,
+        "benign_hard_negative": 665,
+        "direct_attack_ru": 533,
+        "benign_historical_address_fragment": 349,
+        "benign_document": 307,
+        "direct_attack_en": 283,
+        "exfiltration_attack": 154,
+        "benign_rag_chunk": 152,
+        "benign_catalog_fragment": 133,
+        "persona_attack": 123,
+        "indirect_attack": 96,
+        "benign_ocr_fragment": 96,
+        "long_jailbreak_attack": 67,
+        "multi_turn_attack": 41,
+        "encoded_attack": 40,
+        "benign_biographical_note": 30,
+        "attack_multilingual": 23,
+        "benign_document_bullet_fragment": 14,
+        "benign_encyclopedic_fragment": 5,
+        "benign_local_history": 3,
+        "benign_literature_art_fragment": 2
+      },
+      "languages": {
+        "ru": 4320,
+        "en": 442
+      },
+      "text_units": {
+        "full_text": 4464,
+        "sentence": 298
+      },
+      "length_bins": {
+        "0000-0128": {
+          "rows": 1612,
+          "chars_avg": 75.5,
+          "chars_p50": 73,
+          "chars_p90": 122,
+          "chars_min": 8,
+          "chars_max": 128,
+          "benign_rows": 1229,
+          "attack_rows": 383,
+          "benign_to_attack_ratio": 3.209
+        },
+        "0129-0256": {
+          "rows": 2279,
+          "chars_avg": 171.7,
+          "chars_p50": 167,
+          "chars_p90": 214,
+          "chars_min": 129,
+          "chars_max": 256,
+          "benign_rows": 1548,
+          "attack_rows": 731,
+          "benign_to_attack_ratio": 2.118
+        },
+        "0257-0512": {
+          "rows": 308,
+          "chars_avg": 369.4,
+          "chars_p50": 360,
+          "chars_p90": 480,
+          "chars_min": 257,
+          "chars_max": 512,
+          "benign_rows": 237,
+          "attack_rows": 71,
+          "benign_to_attack_ratio": 3.338
+        },
+        "0513-1024": {
+          "rows": 239,
+          "chars_avg": 713.4,
+          "chars_p50": 693,
+          "chars_p90": 922,
+          "chars_min": 513,
+          "chars_max": 1015,
+          "benign_rows": 183,
+          "attack_rows": 56,
+          "benign_to_attack_ratio": 3.268
+        },
+        "1025-2048": {
+          "rows": 230,
+          "chars_avg": 1381.0,
+          "chars_p50": 1327,
+          "chars_p90": 1803,
+          "chars_min": 1025,
+          "chars_max": 2048,
+          "benign_rows": 159,
+          "attack_rows": 71,
+          "benign_to_attack_ratio": 2.239
+        },
+        "2049+": {
+          "rows": 94,
+          "chars_avg": 2737.7,
+          "chars_p50": 2546,
+          "chars_p90": 3671,
+          "chars_min": 2050,
+          "chars_max": 3883,
+          "benign_rows": 46,
+          "attack_rows": 48,
+          "benign_to_attack_ratio": 0.958
+        }
+      },
+      "label_source": {
+        "benign|Vikhrmodels/GrandMaster-PRO-MAX": {
+          "rows": 922,
+          "chars_avg": 413.9,
+          "chars_p50": 224,
+          "chars_p90": 1068,
+          "chars_min": 12,
+          "chars_max": 3583
+        },
+        "prompt_injection|dmtrdr/russian_prompt_injections": {
+          "rows": 368,
+          "chars_avg": 565.2,
+          "chars_p50": 228,
+          "chars_p90": 1643,
+          "chars_min": 21,
+          "chars_max": 3725
+        },
+        "benign|leolee99/NotInject": {
+          "rows": 48,
+          "chars_avg": 97.0,
+          "chars_p50": 98,
+          "chars_p90": 152,
+          "chars_min": 14,
+          "chars_max": 209
+        },
+        "prompt_injection|manual_prompt_injection_templates": {
+          "rows": 653,
+          "chars_avg": 172.4,
+          "chars_p50": 171,
+          "chars_p90": 199,
+          "chars_min": 122,
+          "chars_max": 233
+        },
+        "benign|manual_benign_document_fragments": {
+          "rows": 486,
+          "chars_avg": 136.2,
+          "chars_p50": 134,
+          "chars_p90": 155,
+          "chars_min": 107,
+          "chars_max": 179
+        },
+        "benign|manual_hard_negative_templates": {
+          "rows": 606,
+          "chars_avg": 165.1,
+          "chars_p50": 168,
+          "chars_p90": 198,
+          "chars_min": 100,
+          "chars_max": 218
+        },
+        "prompt_injection|deepset/prompt-injections": {
+          "rows": 94,
+          "chars_avg": 148.9,
+          "chars_p50": 67,
+          "chars_p90": 289,
+          "chars_min": 16,
+          "chars_max": 2014
+        },
+        "benign|ScoutieAutoML/russian-news-telegram-dataset": {
+          "rows": 121,
+          "chars_avg": 406.7,
+          "chars_p50": 220,
+          "chars_p90": 1124,
+          "chars_min": 32,
+          "chars_max": 1959
+        },
+        "benign|OpenAssistant/oasst1": {
+          "rows": 170,
+          "chars_avg": 193.6,
+          "chars_p50": 76,
+          "chars_p90": 250,
+          "chars_min": 8,
+          "chars_max": 3782
+        },
+        "benign|Den4ikAI/russian_instructions_2": {
+          "rows": 305,
+          "chars_avg": 120.0,
+          "chars_p50": 94,
+          "chars_p90": 223,
+          "chars_min": 21,
+          "chars_max": 514
+        },
+        "prompt_injection|Lakera/gandalf_ignore_instructions": {
+          "rows": 117,
+          "chars_avg": 77.0,
+          "chars_p50": 60,
+          "chars_p90": 134,
+          "chars_min": 16,
+          "chars_max": 399
+        },
+        "benign|IlyaGusev/ru_turbo_alpaca": {
+          "rows": 210,
+          "chars_avg": 94.8,
+          "chars_p50": 76,
+          "chars_p90": 162,
+          "chars_min": 21,
+          "chars_max": 315
+        },
+        "prompt_injection|cyberec/promptwall-injection-dataset": {
+          "rows": 61,
+          "chars_avg": 73.1,
+          "chars_p50": 72,
+          "chars_p90": 92,
+          "chars_min": 41,
+          "chars_max": 125
+        },
+        "benign|manual_benign_document_fragments_sentence": {
+          "rows": 298,
+          "chars_avg": 72.2,
+          "chars_p50": 73,
+          "chars_p90": 83,
+          "chars_min": 29,
+          "chars_max": 100
+        },
+        "benign|dmtrdr/russian_prompt_injections": {
+          "rows": 2,
+          "chars_avg": 330.5,
+          "chars_p50": 329,
+          "chars_p90": 332,
+          "chars_min": 329,
+          "chars_max": 332
+        },
+        "benign|MonoHime/ru_sentiment_dataset": {
+          "rows": 90,
+          "chars_avg": 768.2,
+          "chars_p50": 489,
+          "chars_p90": 1803,
+          "chars_min": 23,
+          "chars_max": 3765
+        },
+        "prompt_injection|jackhhao/jailbreak-classification": {
+          "rows": 67,
+          "chars_avg": 1567.0,
+          "chars_p50": 1339,
+          "chars_p90": 2935,
+          "chars_min": 33,
+          "chars_max": 3842
+        },
+        "benign|Romjiik/Russian_bank_reviews": {
+          "rows": 96,
+          "chars_avg": 1222.9,
+          "chars_p50": 1074,
+          "chars_p90": 2545,
+          "chars_min": 302,
+          "chars_max": 3395
+        },
+        "benign|jackhhao/jailbreak-classification": {
+          "rows": 37,
+          "chars_avg": 511.4,
+          "chars_p50": 196,
+          "chars_p90": 1104,
+          "chars_min": 70,
+          "chars_max": 3883
+        },
+        "benign|cyberec/promptwall-injection-dataset": {
+          "rows": 11,
+          "chars_avg": 43,
+          "chars_p50": 41,
+          "chars_p90": 52,
+          "chars_min": 30,
+          "chars_max": 52
+        }
+      },
+      "label_bucket": {
+        "benign|benign_general": {
+          "rows": 1646,
+          "chars_avg": 298.0,
+          "chars_p50": 159,
+          "chars_p90": 694,
+          "chars_min": 8,
+          "chars_max": 3883
+        },
+        "prompt_injection|direct_attack_ru": {
+          "rows": 533,
+          "chars_avg": 440.9,
+          "chars_p50": 168,
+          "chars_p90": 1338,
+          "chars_min": 21,
+          "chars_max": 3725
+        },
+        "benign|benign_hard_negative": {
+          "rows": 665,
+          "chars_avg": 158.2,
+          "chars_p50": 163,
+          "chars_p90": 196,
+          "chars_min": 14,
+          "chars_max": 218
+        },
+        "prompt_injection|indirect_attack": {
+          "rows": 96,
+          "chars_avg": 187.2,
+          "chars_p50": 191,
+          "chars_p90": 213,
+          "chars_min": 72,
+          "chars_max": 231
+        },
+        "prompt_injection|multi_turn_attack": {
+          "rows": 41,
+          "chars_avg": 190.8,
+          "chars_p50": 199,
+          "chars_p90": 222,
+          "chars_min": 76,
+          "chars_max": 233
+        },
+        "benign|benign_document_bullet_fragment": {
+          "rows": 14,
+          "chars_avg": 107.9,
+          "chars_p50": 108,
+          "chars_p90": 108,
+          "chars_min": 107,
+          "chars_max": 108
+        },
+        "benign|benign_historical_address_fragment": {
+          "rows": 349,
+          "chars_avg": 109.1,
+          "chars_p50": 127,
+          "chars_p90": 153,
+          "chars_min": 29,
+          "chars_max": 179
+        },
+        "prompt_injection|direct_attack_en": {
+          "rows": 283,
+          "chars_avg": 124.7,
+          "chars_p50": 93,
+          "chars_p90": 195,
+          "chars_min": 16,
+          "chars_max": 2014
+        },
+        "benign|benign_document": {
+          "rows": 307,
+          "chars_avg": 767.9,
+          "chars_p50": 501,
+          "chars_p90": 1803,
+          "chars_min": 23,
+          "chars_max": 3765
+        },
+        "prompt_injection|exfiltration_attack": {
+          "rows": 154,
+          "chars_avg": 153.0,
+          "chars_p50": 159,
+          "chars_p90": 178,
+          "chars_min": 41,
+          "chars_max": 196
+        },
+        "prompt_injection|persona_attack": {
+          "rows": 123,
+          "chars_avg": 163.9,
+          "chars_p50": 168,
+          "chars_p90": 190,
+          "chars_min": 62,
+          "chars_max": 220
+        },
+        "prompt_injection|encoded_attack": {
+          "rows": 40,
+          "chars_avg": 165.4,
+          "chars_p50": 183,
+          "chars_p90": 205,
+          "chars_min": 47,
+          "chars_max": 217
+        },
+        "benign|benign_rag_chunk": {
+          "rows": 152,
+          "chars_avg": 114.5,
+          "chars_p50": 100,
+          "chars_p90": 157,
+          "chars_min": 63,
+          "chars_max": 173
+        },
+        "benign|benign_catalog_fragment": {
+          "rows": 133,
+          "chars_avg": 103.5,
+          "chars_p50": 118,
+          "chars_p90": 131,
+          "chars_min": 53,
+          "chars_max": 136
+        },
+        "benign|benign_ocr_fragment": {
+          "rows": 96,
+          "chars_avg": 127.3,
+          "chars_p50": 126,
+          "chars_p90": 139,
+          "chars_min": 114,
+          "chars_max": 155
+        },
+        "benign|benign_encyclopedic_fragment": {
+          "rows": 5,
+          "chars_avg": 141,
+          "chars_p50": 143,
+          "chars_p90": 147,
+          "chars_min": 134,
+          "chars_max": 147
+        },
+        "prompt_injection|long_jailbreak_attack": {
+          "rows": 67,
+          "chars_avg": 1567.0,
+          "chars_p50": 1339,
+          "chars_p90": 2935,
+          "chars_min": 33,
+          "chars_max": 3842
+        },
+        "benign|benign_biographical_note": {
+          "rows": 30,
+          "chars_avg": 113,
+          "chars_p50": 124,
+          "chars_p90": 134,
+          "chars_min": 55,
+          "chars_max": 136
+        },
+        "prompt_injection|attack_multilingual": {
+          "rows": 23,
+          "chars_avg": 69.3,
+          "chars_p50": 68,
+          "chars_p90": 80,
+          "chars_min": 53,
+          "chars_max": 92
+        },
+        "benign|benign_literature_art_fragment": {
+          "rows": 2,
+          "chars_avg": 120,
+          "chars_p50": 114,
+          "chars_p90": 126,
+          "chars_min": 114,
+          "chars_max": 126
+        },
+        "benign|benign_local_history": {
+          "rows": 3,
+          "chars_avg": 124,
+          "chars_p50": 154,
+          "chars_p90": 157,
+          "chars_min": 61,
+          "chars_max": 157
+        }
+      },
+      "label_length_bin": {
+        "benign|0129-0256": {
+          "rows": 1548,
+          "chars_avg": 170.6,
+          "chars_p50": 163,
+          "chars_p90": 220,
+          "chars_min": 129,
+          "chars_max": 256
+        },
+        "prompt_injection|1025-2048": {
+          "rows": 71,
+          "chars_avg": 1446.0,
+          "chars_p50": 1383,
+          "chars_p90": 1864,
+          "chars_min": 1033,
+          "chars_max": 2048
+        },
+        "prompt_injection|0129-0256": {
+          "rows": 731,
+          "chars_avg": 173.9,
+          "chars_p50": 171,
+          "chars_p90": 205,
+          "chars_min": 129,
+          "chars_max": 253
+        },
+        "benign|0000-0128": {
+          "rows": 1229,
+          "chars_avg": 78.7,
+          "chars_p50": 75,
+          "chars_p90": 124,
+          "chars_min": 8,
+          "chars_max": 128
+        },
+        "benign|0257-0512": {
+          "rows": 237,
+          "chars_avg": 375.8,
+          "chars_p50": 367,
+          "chars_p90": 481,
+          "chars_min": 257,
+          "chars_max": 512
+        },
+        "prompt_injection|0000-0128": {
+          "rows": 383,
+          "chars_avg": 65.4,
+          "chars_p50": 63,
+          "chars_p90": 111,
+          "chars_min": 16,
+          "chars_max": 128
+        },
+        "benign|1025-2048": {
+          "rows": 159,
+          "chars_avg": 1351.9,
+          "chars_p50": 1284,
+          "chars_p90": 1779,
+          "chars_min": 1025,
+          "chars_max": 2047
+        },
+        "prompt_injection|0513-1024": {
+          "rows": 56,
+          "chars_avg": 740.0,
+          "chars_p50": 724,
+          "chars_p90": 962,
+          "chars_min": 513,
+          "chars_max": 1015
+        },
+        "benign|0513-1024": {
+          "rows": 183,
+          "chars_avg": 705.2,
+          "chars_p50": 685,
+          "chars_p90": 915,
+          "chars_min": 513,
+          "chars_max": 984
+        },
+        "prompt_injection|0257-0512": {
+          "rows": 71,
+          "chars_avg": 347.8,
+          "chars_p50": 328,
+          "chars_p90": 450,
+          "chars_min": 258,
+          "chars_max": 510
+        },
+        "prompt_injection|2049+": {
+          "rows": 48,
+          "chars_avg": 2751,
+          "chars_p50": 2559,
+          "chars_p90": 3631,
+          "chars_min": 2120,
+          "chars_max": 3842
+        },
+        "benign|2049+": {
+          "rows": 46,
+          "chars_avg": 2723.8,
+          "chars_p50": 2545,
+          "chars_p90": 3583,
+          "chars_min": 2050,
+          "chars_max": 3883
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "level": "warning",
+      "message": "Length-bin benign coverage is low relative to attacks; inspect length leakage before trusting validation. Undercovered bins: 2049+ benign=257 attack=273."
+    }
+  ]
+}
