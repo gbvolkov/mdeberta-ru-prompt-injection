@@ -37,7 +37,7 @@ $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
 
 if ([string]::IsNullOrWhiteSpace($SourceDir)) {
-    $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-35-65"
+    $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-v6"
 }
 if ([string]::IsNullOrWhiteSpace($StagingDir)) {
     $StagingDir = Join-Path $PSScriptRoot "hf-upload"
