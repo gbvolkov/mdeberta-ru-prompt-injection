@@ -1,0 +1,387 @@
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection> uv run python analyze_training_data.py --dataset-dir training-dataset-v7-full --validation-dataset-dir training-dataset-v7-full-validation | Tee-Object -FilePath training-dataset-v7-full-analysis.txt
+
+dataset: training
+path: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full
+
+== train ==
+rows: 43,018
+labels:
+  0: 30,728 (71.4%)
+  1: 12,290 (28.6%)
+sources:
+  Vikhrmodels/GrandMaster-PRO-MAX: 8,042 (18.7%)
+  manual_embedded_prompt_injection_train_pool: 5,100 (11.9%)
+  manual_embedded_quoted_hard_negative_train_pool: 5,100 (11.9%)
+  manual_prompt_injection_templates: 3,742 (8.7%)
+  manual_hard_negative_templates: 3,404 (7.9%)
+  manual_benign_document_fragments: 2,706 (6.3%)
+  Den4ikAI/russian_instructions_2: 2,121 (4.9%)
+  dmtrdr/russian_prompt_injections: 2,089 (4.9%)
+  manual_benign_document_fragments_sentence: 1,784 (4.1%)
+  IlyaGusev/ru_turbo_alpaca: 1,459 (3.4%)
+  manual_benign_long_document_fragments: 1,351 (3.1%)
+  OpenAssistant/oasst1: 1,272 (3.0%)
+  MonoHime/ru_sentiment_dataset: 997 (2.3%)
+  ScoutieAutoML/russian-news-telegram-dataset: 996 (2.3%)
+  jackhhao/jailbreak-classification: 737 (1.7%)
+  Romjiik/Russian_bank_reviews: 725 (1.7%)
+  Lakera/gandalf_ignore_instructions: 651 (1.5%)
+  cyberec/promptwall-injection-dataset: 431 (1.0%)
+  leolee99/NotInject: 295 (0.7%)
+  deepset/prompt-injections: 16 (0.0%)
+buckets:
+  benign_general: 13,307 (30.9%)
+  benign_hard_negative: 8,858 (20.6%)
+  embedded_indirect_attack: 5,100 (11.9%)
+  benign_document: 4,069 (9.5%)
+  direct_attack_ru: 2,903 (6.7%)
+  benign_historical_address_fragment: 1,996 (4.6%)
+  direct_attack_en: 1,122 (2.6%)
+  benign_rag_chunk: 875 (2.0%)
+  exfiltration_attack: 847 (2.0%)
+  benign_catalog_fragment: 755 (1.8%)
+  indirect_attack: 667 (1.6%)
+  persona_attack: 634 (1.5%)
+  benign_ocr_fragment: 555 (1.3%)
+  long_jailbreak_attack: 392 (0.9%)
+  multi_turn_attack: 227 (0.5%)
+  encoded_attack: 219 (0.5%)
+  attack_multilingual: 179 (0.4%)
+  benign_biographical_note: 178 (0.4%)
+  benign_document_bullet_fragment: 77 (0.2%)
+  benign_local_history: 21 (0.0%)
+  benign_encyclopedic_fragment: 18 (0.0%)
+  benign_literature_art_fragment: 15 (0.0%)
+  unsafe_non_injection: 4 (0.0%)
+languages:
+  ru: 40,808 (94.9%)
+  en: 2,210 (5.1%)
+text units:
+  full_text: 31,034 (72.1%)
+  attack_centered_window: 5,100 (11.9%)
+  quoted_attack_window: 5,100 (11.9%)
+  sentence: 1,784 (4.1%)
+length bins:
+  0000-0128: rows=9,940, benign=8,156, attack=1,784, benign/attack=4.57, avg=74.7, p50=72, p90=121, min=5, max=128
+  0129-0256: rows=12,733, benign=8,670, attack=4,063, benign/attack=2.13, avg=172.0, p50=168, p90=213, min=129, max=256
+  0257-0512: rows=9,254, benign=6,333, attack=2,921, benign/attack=2.17, avg=392.1, p50=364, p90=460, min=257, max=512
+  0513-1024: rows=8,004, benign=5,153, attack=2,851, benign/attack=1.81, avg=641.2, p50=639, p90=806, min=513, max=1024
+  1025-2048: rows=1,305, benign=903, attack=402, benign/attack=2.25, avg=1399.2, p50=1345, p90=1827, min=1025, max=2048
+  2049+: rows=1,782, benign=1,513, attack=269, benign/attack=5.62, avg=3430.0, p50=3543, p90=4000, min=2050, max=4000
+label/length bins:
+  label=0 length_bin=0000-0128: n=8,156, avg=76.9, p50=73, p90=122, min=5, max=128
+  label=0 length_bin=0129-0256: n=8,670, avg=171.3, p50=164, p90=220, min=129, max=256
+  label=0 length_bin=0257-0512: n=6,333, avg=386.7, p50=366, p90=460, min=257, max=512
+  label=0 length_bin=0513-1024: n=5,153, avg=655.7, p50=640, p90=851, min=513, max=1024
+  label=0 length_bin=1025-2048: n=903, avg=1393.1, p50=1341, p90=1810, min=1025, max=2047
+  label=0 length_bin=2049+: n=1,513, avg=3530.1, p50=3648, p90=4000, min=2050, max=4000
+  label=1 length_bin=0000-0128: n=1,784, avg=64.7, p50=63, p90=104, min=8, max=128
+  label=1 length_bin=0129-0256: n=4,063, avg=173.6, p50=172, p90=203, min=129, max=256
+  label=1 length_bin=0257-0512: n=2,921, avg=403.9, p50=360, p90=460, min=257, max=512
+  label=1 length_bin=0513-1024: n=2,851, avg=614.9, p50=639, p90=640, min=513, max=1021
+  label=1 length_bin=1025-2048: n=402, avg=1413.1, p50=1353, p90=1833, min=1027, max=2048
+  label=1 length_bin=2049+: n=269, avg=2866.9, p50=2704, p90=3770, min=2058, max=3990
+label/source lengths:
+  label=0 source=Den4ikAI/russian_instructions_2: n=2,121, avg=124.4, p50=93, p90=247, min=17, max=576
+  label=0 source=IlyaGusev/ru_turbo_alpaca: n=1,459, avg=90.9, p50=76, p90=153, min=16, max=582
+  label=0 source=MonoHime/ru_sentiment_dataset: n=997, avg=638.8, p50=487, p90=1303, min=14, max=3840
+  label=0 source=OpenAssistant/oasst1: n=1,272, avg=183.2, p50=90, p90=400, min=5, max=3703
+  label=0 source=Romjiik/Russian_bank_reviews: n=725, avg=864.2, p50=707, p90=1629, min=230, max=3592
+  label=0 source=ScoutieAutoML/russian-news-telegram-dataset: n=996, avg=425.9, p50=279, p90=975, min=21, max=2670
+  label=0 source=Vikhrmodels/GrandMaster-PRO-MAX: n=8,042, avg=427.1, p50=320, p90=861, min=9, max=3754
+  label=0 source=cyberec/promptwall-injection-dataset: n=60, avg=43.8, p50=42, p90=61, min=20, max=83
+  label=0 source=deepset/prompt-injections: n=12, avg=100.8, p50=47, p90=267, min=15, max=322
+  label=0 source=dmtrdr/russian_prompt_injections: n=59, avg=532.4, p50=259, p90=1190, min=26, max=3699
+  label=0 source=jackhhao/jailbreak-classification: n=345, avg=537.5, p50=269, p90=1280, min=25, max=3701
+  label=0 source=leolee99/NotInject: n=295, avg=88.4, p50=91, p90=147, min=11, max=233
+  label=0 source=manual_benign_document_fragments: n=2,706, avg=136.2, p50=134, p90=156, min=107, max=179
+  label=0 source=manual_benign_document_fragments_sentence: n=1,784, avg=71.5, p50=72, p90=83, min=11, max=102
+  label=0 source=manual_benign_long_document_fragments: n=1,351, avg=3634.3, p50=3734, p90=4000, min=2783, max=4000
+  label=0 source=manual_embedded_quoted_hard_negative_train_pool: n=5,100, avg=504.0, p50=460, p90=640, min=358, max=640
+  label=0 source=manual_hard_negative_templates: n=3,404, avg=165.5, p50=167, p90=197, min=89, max=241
+  label=1 source=Lakera/gandalf_ignore_instructions: n=651, avg=73.0, p50=60, p90=129, min=12, max=504
+  label=1 source=cyberec/promptwall-injection-dataset: n=371, avg=73.9, p50=74, p90=96, min=22, max=155
+  label=1 source=deepset/prompt-injections: n=4, avg=98.2, p50=116, p90=131, min=68, max=131
+  label=1 source=dmtrdr/russian_prompt_injections: n=2,030, avg=579.4, p50=222, p90=1646, min=8, max=3980
+  label=1 source=jackhhao/jailbreak-classification: n=392, avg=1580.5, p50=1395, p90=3210, min=33, max=3990
+  label=1 source=manual_embedded_prompt_injection_train_pool: n=5,100, avg=504.8, p50=460, p90=640, min=358, max=640
+  label=1 source=manual_prompt_injection_templates: n=3,742, avg=172.9, p50=171, p90=200, min=118, max=232
+label/bucket lengths:
+  label=0 bucket=benign_biographical_note: n=178, avg=119.1, p50=125, p90=136, min=48, max=143
+  label=0 bucket=benign_catalog_fragment: n=755, avg=100.8, p50=118, p90=131, min=64, max=136
+  label=0 bucket=benign_document: n=4,069, avg=1621.4, p50=822, p90=4000, min=14, max=4000
+  label=0 bucket=benign_document_bullet_fragment: n=77, avg=107.9, p50=108, p90=108, min=107, max=108
+  label=0 bucket=benign_encyclopedic_fragment: n=18, avg=76.3, p50=27, p90=144, min=14, max=154
+  label=0 bucket=benign_general: n=13,307, avg=321.6, p50=198, p90=722, min=5, max=3754
+  label=0 bucket=benign_hard_negative: n=8,858, avg=357.0, p50=360, p90=640, min=11, max=640
+  label=0 bucket=benign_historical_address_fragment: n=1,996, avg=107.1, p50=123, p90=153, min=11, max=179
+  label=0 bucket=benign_literature_art_fragment: n=15, avg=118.2, p50=117, p90=126, min=112, max=128
+  label=0 bucket=benign_local_history: n=21, avg=126.7, p50=149, p90=158, min=61, max=164
+  label=0 bucket=benign_ocr_fragment: n=555, avg=126.6, p50=126, p90=138, min=111, max=155
+  label=0 bucket=benign_rag_chunk: n=875, avg=115.1, p50=136, p90=158, min=62, max=173
+  label=0 bucket=unsafe_non_injection: n=4, avg=819.8, p50=653, p90=2381, min=80, max=2381
+  label=1 bucket=attack_multilingual: n=179, avg=70.7, p50=72, p90=86, min=22, max=107
+  label=1 bucket=direct_attack_en: n=1,122, avg=112.2, p50=111, p90=184, min=12, max=504
+  label=1 bucket=direct_attack_ru: n=2,903, avg=454.6, p50=169, p90=1256, min=8, max=3980
+  label=1 bucket=embedded_indirect_attack: n=5,100, avg=504.8, p50=460, p90=640, min=358, max=640
+  label=1 bucket=encoded_attack: n=219, avg=165.3, p50=184, p90=204, min=31, max=217
+  label=1 bucket=exfiltration_attack: n=847, avg=156.2, p50=161, p90=179, min=41, max=196
+  label=1 bucket=indirect_attack: n=667, avg=187.3, p50=191, p90=211, min=69, max=231
+  label=1 bucket=long_jailbreak_attack: n=392, avg=1580.5, p50=1395, p90=3210, min=33, max=3990
+  label=1 bucket=multi_turn_attack: n=227, avg=185.5, p50=198, p90=219, min=66, max=232
+  label=1 bucket=persona_attack: n=634, avg=165.0, p50=168, p90=194, min=57, max=218
+
+== validation ==
+rows: 7,592
+labels:
+  0: 5,422 (71.4%)
+  1: 2,170 (28.6%)
+sources:
+  Vikhrmodels/GrandMaster-PRO-MAX: 1,415 (18.6%)
+  manual_embedded_quoted_hard_negative_validation_pool: 900 (11.9%)
+  manual_embedded_prompt_injection_validation_pool: 900 (11.9%)
+  manual_prompt_injection_templates: 658 (8.7%)
+  manual_hard_negative_templates: 578 (7.6%)
+  manual_benign_document_fragments: 452 (6.0%)
+  dmtrdr/russian_prompt_injections: 382 (5.0%)
+  Den4ikAI/russian_instructions_2: 378 (5.0%)
+  manual_benign_document_fragments_sentence: 329 (4.3%)
+  OpenAssistant/oasst1: 259 (3.4%)
+  IlyaGusev/ru_turbo_alpaca: 251 (3.3%)
+  manual_benign_long_document_fragments: 235 (3.1%)
+  ScoutieAutoML/russian-news-telegram-dataset: 196 (2.6%)
+  MonoHime/ru_sentiment_dataset: 183 (2.4%)
+  jackhhao/jailbreak-classification: 129 (1.7%)
+  Romjiik/Russian_bank_reviews: 121 (1.6%)
+  Lakera/gandalf_ignore_instructions: 118 (1.6%)
+  cyberec/promptwall-injection-dataset: 60 (0.8%)
+  leolee99/NotInject: 44 (0.6%)
+  deepset/prompt-injections: 4 (0.1%)
+buckets:
+  benign_general: 2,378 (31.3%)
+  benign_hard_negative: 1,528 (20.1%)
+  embedded_indirect_attack: 900 (11.9%)
+  benign_document: 735 (9.7%)
+  direct_attack_ru: 546 (7.2%)
+  benign_historical_address_fragment: 364 (4.8%)
+  direct_attack_en: 205 (2.7%)
+  exfiltration_attack: 142 (1.9%)
+  benign_rag_chunk: 136 (1.8%)
+  benign_catalog_fragment: 132 (1.7%)
+  indirect_attack: 102 (1.3%)
+  persona_attack: 102 (1.3%)
+  benign_ocr_fragment: 90 (1.2%)
+  long_jailbreak_attack: 62 (0.8%)
+  multi_turn_attack: 45 (0.6%)
+  encoded_attack: 38 (0.5%)
+  benign_biographical_note: 33 (0.4%)
+  attack_multilingual: 28 (0.4%)
+  benign_document_bullet_fragment: 17 (0.2%)
+  benign_local_history: 4 (0.1%)
+  benign_encyclopedic_fragment: 4 (0.1%)
+  benign_literature_art_fragment: 1 (0.0%)
+languages:
+  ru: 7,223 (95.1%)
+  en: 369 (4.9%)
+text units:
+  full_text: 5,463 (72.0%)
+  quoted_attack_window: 900 (11.9%)
+  attack_centered_window: 900 (11.9%)
+  sentence: 329 (4.3%)
+length bins:
+  0000-0128: rows=1,754, benign=1,439, attack=315, benign/attack=4.57, avg=75.4, p50=73, p90=122, min=8, max=128
+  0129-0256: rows=2,247, benign=1,530, attack=717, benign/attack=2.13, avg=172.2, p50=167, p90=213, min=129, max=256
+  0257-0512: rows=1,614, benign=1,093, attack=521, benign/attack=2.10, avg=389.1, p50=360, p90=460, min=257, max=512
+  0513-1024: rows=1,432, benign=934, attack=498, benign/attack=1.88, avg=636.9, p50=639, p90=795, min=513, max=1024
+  1025-2048: rows=230, benign=159, attack=71, benign/attack=2.24, avg=1408.8, p50=1379, p90=1854, min=1025, max=2028
+  2049+: rows=315, benign=267, attack=48, benign/attack=5.56, avg=3432.3, p50=3513, p90=4000, min=2066, max=4000
+label/length bins:
+  label=0 length_bin=0000-0128: n=1,439, avg=77.2, p50=74, p90=122, min=8, max=128
+  label=0 length_bin=0129-0256: n=1,530, avg=171.5, p50=165, p90=223, min=129, max=256
+  label=0 length_bin=0257-0512: n=1,093, avg=381.2, p50=360, p90=460, min=257, max=512
+  label=0 length_bin=0513-1024: n=934, avg=648.5, p50=639, p90=829, min=513, max=1024
+  label=0 length_bin=1025-2048: n=159, avg=1409.1, p50=1383, p90=1859, min=1025, max=2028
+  label=0 length_bin=2049+: n=267, avg=3537.2, p50=3665, p90=4000, min=2072, max=4000
+  label=1 length_bin=0000-0128: n=315, avg=67.1, p50=66, p90=115, min=18, max=128
+  label=1 length_bin=0129-0256: n=717, avg=173.7, p50=171, p90=203, min=129, max=253
+  label=1 length_bin=0257-0512: n=521, avg=405.9, p50=393, p90=460, min=260, max=506
+  label=1 length_bin=0513-1024: n=498, avg=615.1, p50=638, p90=640, min=522, max=1022
+  label=1 length_bin=1025-2048: n=71, avg=1408.3, p50=1372, p90=1831, min=1026, max=2020
+  label=1 length_bin=2049+: n=48, avg=2848.5, p50=2701, p90=3643, min=2066, max=3997
+label/source lengths:
+  label=0 source=Den4ikAI/russian_instructions_2: n=378, avg=127.1, p50=98, p90=237, min=18, max=518
+  label=0 source=IlyaGusev/ru_turbo_alpaca: n=251, avg=97.5, p50=79, p90=161, min=23, max=576
+  label=0 source=MonoHime/ru_sentiment_dataset: n=183, avg=584.0, p50=413, p90=1133, min=16, max=3866
+  label=0 source=OpenAssistant/oasst1: n=259, avg=175.7, p50=94, p90=354, min=8, max=3782
+  label=0 source=Romjiik/Russian_bank_reviews: n=121, avg=858.1, p50=668, p90=1613, min=297, max=3582
+  label=0 source=ScoutieAutoML/russian-news-telegram-dataset: n=196, avg=416.0, p50=272, p90=960, min=20, max=2298
+  label=0 source=Vikhrmodels/GrandMaster-PRO-MAX: n=1,415, avg=433.8, p50=315, p90=870, min=11, max=3479
+  label=0 source=cyberec/promptwall-injection-dataset: n=6, avg=42.2, p50=45, p90=47, min=25, max=49
+  label=0 source=deepset/prompt-injections: n=2, avg=146.0, p50=92, p90=200, min=92, max=200
+  label=0 source=dmtrdr/russian_prompt_injections: n=6, avg=974.7, p50=467, p90=1321, min=61, max=3350
+  label=0 source=jackhhao/jailbreak-classification: n=67, avg=503.5, p50=241, p90=1042, min=31, max=3295
+  label=0 source=leolee99/NotInject: n=44, avg=80.6, p50=88, p90=134, min=13, max=177
+  label=0 source=manual_benign_document_fragments: n=452, avg=135.1, p50=132, p90=154, min=107, max=180
+  label=0 source=manual_benign_document_fragments_sentence: n=329, avg=72.2, p50=73, p90=84, min=23, max=102
+  label=0 source=manual_benign_long_document_fragments: n=235, avg=3652.7, p50=3827, p90=4000, min=2815, max=4000
+  label=0 source=manual_embedded_quoted_hard_negative_validation_pool: n=900, avg=508.7, p50=559, p90=640, min=358, max=640
+  label=0 source=manual_hard_negative_templates: n=578, avg=165.1, p50=167, p90=196, min=79, max=223
+  label=1 source=Lakera/gandalf_ignore_instructions: n=118, avg=75.9, p50=58, p90=128, min=18, max=297
+  label=1 source=cyberec/promptwall-injection-dataset: n=54, avg=75.6, p50=75, p90=96, min=31, max=120
+  label=1 source=deepset/prompt-injections: n=2, avg=69.0, p50=54, p90=84, min=54, max=84
+  label=1 source=dmtrdr/russian_prompt_injections: n=376, avg=606.5, p50=221, p90=1627, min=19, max=3997
+  label=1 source=jackhhao/jailbreak-classification: n=62, avg=1474.6, p50=1202, p90=2761, min=86, max=3643
+  label=1 source=manual_embedded_prompt_injection_validation_pool: n=900, avg=504.4, p50=460, p90=640, min=358, max=640
+  label=1 source=manual_prompt_injection_templates: n=658, avg=172.6, p50=171, p90=200, min=127, max=233
+label/bucket lengths:
+  label=0 bucket=benign_biographical_note: n=33, avg=116.6, p50=124, p90=134, min=53, max=136
+  label=0 bucket=benign_catalog_fragment: n=132, avg=105.0, p50=122, p90=130, min=64, max=136
+  label=0 bucket=benign_document: n=735, avg=1565.5, p50=727, p90=4000, min=16, max=4000
+  label=0 bucket=benign_document_bullet_fragment: n=17, avg=107.9, p50=108, p90=108, min=107, max=108
+  label=0 bucket=benign_encyclopedic_fragment: n=4, avg=91.5, p50=137, p90=142, min=34, max=142
+  label=0 bucket=benign_general: n=2,378, avg=324.5, p50=194, p90=695, min=8, max=3782
+  label=0 bucket=benign_hard_negative: n=1,528, avg=364.6, p50=360, p90=640, min=13, max=640
+  label=0 bucket=benign_historical_address_fragment: n=364, avg=104.0, p50=85, p90=151, min=23, max=180
+  label=0 bucket=benign_literature_art_fragment: n=1, avg=135.0, p50=135, p90=135, min=135, max=135
+  label=0 bucket=benign_local_history: n=4, avg=93.5, p50=95, p90=102, min=87, max=102
+  label=0 bucket=benign_ocr_fragment: n=90, avg=126.6, p50=125, p90=139, min=112, max=155
+  label=0 bucket=benign_rag_chunk: n=136, avg=111.4, p50=93, p90=156, min=62, max=173
+  label=1 bucket=attack_multilingual: n=28, avg=67.8, p50=69, p90=82, min=31, max=95
+  label=1 bucket=direct_attack_en: n=205, avg=114.7, p50=122, p90=185, min=18, max=297
+  label=1 bucket=direct_attack_ru: n=546, avg=468.5, p50=167, p90=1342, min=19, max=3997
+  label=1 bucket=embedded_indirect_attack: n=900, avg=504.4, p50=460, p90=640, min=358, max=640
+  label=1 bucket=encoded_attack: n=38, avg=178.1, p50=186, p90=204, min=50, max=211
+  label=1 bucket=exfiltration_attack: n=142, avg=158.8, p50=161, p90=178, min=73, max=189
+  label=1 bucket=indirect_attack: n=102, avg=186.5, p50=192, p90=210, min=72, max=226
+  label=1 bucket=long_jailbreak_attack: n=62, avg=1474.6, p50=1202, p90=2761, min=86, max=3643
+  label=1 bucket=multi_turn_attack: n=45, avg=191.0, p50=202, p90=216, min=80, max=233
+  label=1 bucket=persona_attack: n=102, avg=163.1, p50=164, p90=194, min=63, max=220
+
+dataset: validation
+path: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full-validation
+
+== dataset ==
+rows: 7,592
+labels:
+  0: 5,422 (71.4%)
+  1: 2,170 (28.6%)
+sources:
+  Vikhrmodels/GrandMaster-PRO-MAX: 1,415 (18.6%)
+  manual_embedded_quoted_hard_negative_validation_pool: 900 (11.9%)
+  manual_embedded_prompt_injection_validation_pool: 900 (11.9%)
+  manual_prompt_injection_templates: 658 (8.7%)
+  manual_hard_negative_templates: 578 (7.6%)
+  manual_benign_document_fragments: 452 (6.0%)
+  dmtrdr/russian_prompt_injections: 382 (5.0%)
+  Den4ikAI/russian_instructions_2: 378 (5.0%)
+  manual_benign_document_fragments_sentence: 329 (4.3%)
+  OpenAssistant/oasst1: 259 (3.4%)
+  IlyaGusev/ru_turbo_alpaca: 251 (3.3%)
+  manual_benign_long_document_fragments: 235 (3.1%)
+  ScoutieAutoML/russian-news-telegram-dataset: 196 (2.6%)
+  MonoHime/ru_sentiment_dataset: 183 (2.4%)
+  jackhhao/jailbreak-classification: 129 (1.7%)
+  Romjiik/Russian_bank_reviews: 121 (1.6%)
+  Lakera/gandalf_ignore_instructions: 118 (1.6%)
+  cyberec/promptwall-injection-dataset: 60 (0.8%)
+  leolee99/NotInject: 44 (0.6%)
+  deepset/prompt-injections: 4 (0.1%)
+buckets:
+  benign_general: 2,378 (31.3%)
+  benign_hard_negative: 1,528 (20.1%)
+  embedded_indirect_attack: 900 (11.9%)
+  benign_document: 735 (9.7%)
+  direct_attack_ru: 546 (7.2%)
+  benign_historical_address_fragment: 364 (4.8%)
+  direct_attack_en: 205 (2.7%)
+  exfiltration_attack: 142 (1.9%)
+  benign_rag_chunk: 136 (1.8%)
+  benign_catalog_fragment: 132 (1.7%)
+  indirect_attack: 102 (1.3%)
+  persona_attack: 102 (1.3%)
+  benign_ocr_fragment: 90 (1.2%)
+  long_jailbreak_attack: 62 (0.8%)
+  multi_turn_attack: 45 (0.6%)
+  encoded_attack: 38 (0.5%)
+  benign_biographical_note: 33 (0.4%)
+  attack_multilingual: 28 (0.4%)
+  benign_document_bullet_fragment: 17 (0.2%)
+  benign_local_history: 4 (0.1%)
+  benign_encyclopedic_fragment: 4 (0.1%)
+  benign_literature_art_fragment: 1 (0.0%)
+languages:
+  ru: 7,223 (95.1%)
+  en: 369 (4.9%)
+text units:
+  full_text: 5,463 (72.0%)
+  quoted_attack_window: 900 (11.9%)
+  attack_centered_window: 900 (11.9%)
+  sentence: 329 (4.3%)
+length bins:
+  0000-0128: rows=1,754, benign=1,439, attack=315, benign/attack=4.57, avg=75.4, p50=73, p90=122, min=8, max=128
+  0129-0256: rows=2,247, benign=1,530, attack=717, benign/attack=2.13, avg=172.2, p50=167, p90=213, min=129, max=256
+  0257-0512: rows=1,614, benign=1,093, attack=521, benign/attack=2.10, avg=389.1, p50=360, p90=460, min=257, max=512
+  0513-1024: rows=1,432, benign=934, attack=498, benign/attack=1.88, avg=636.9, p50=639, p90=795, min=513, max=1024
+  1025-2048: rows=230, benign=159, attack=71, benign/attack=2.24, avg=1408.8, p50=1379, p90=1854, min=1025, max=2028
+  2049+: rows=315, benign=267, attack=48, benign/attack=5.56, avg=3432.3, p50=3513, p90=4000, min=2066, max=4000
+label/length bins:
+  label=0 length_bin=0000-0128: n=1,439, avg=77.2, p50=74, p90=122, min=8, max=128
+  label=0 length_bin=0129-0256: n=1,530, avg=171.5, p50=165, p90=223, min=129, max=256
+  label=0 length_bin=0257-0512: n=1,093, avg=381.2, p50=360, p90=460, min=257, max=512
+  label=0 length_bin=0513-1024: n=934, avg=648.5, p50=639, p90=829, min=513, max=1024
+  label=0 length_bin=1025-2048: n=159, avg=1409.1, p50=1383, p90=1859, min=1025, max=2028
+  label=0 length_bin=2049+: n=267, avg=3537.2, p50=3665, p90=4000, min=2072, max=4000
+  label=1 length_bin=0000-0128: n=315, avg=67.1, p50=66, p90=115, min=18, max=128
+  label=1 length_bin=0129-0256: n=717, avg=173.7, p50=171, p90=203, min=129, max=253
+  label=1 length_bin=0257-0512: n=521, avg=405.9, p50=393, p90=460, min=260, max=506
+  label=1 length_bin=0513-1024: n=498, avg=615.1, p50=638, p90=640, min=522, max=1022
+  label=1 length_bin=1025-2048: n=71, avg=1408.3, p50=1372, p90=1831, min=1026, max=2020
+  label=1 length_bin=2049+: n=48, avg=2848.5, p50=2701, p90=3643, min=2066, max=3997
+label/source lengths:
+  label=0 source=Den4ikAI/russian_instructions_2: n=378, avg=127.1, p50=98, p90=237, min=18, max=518
+  label=0 source=IlyaGusev/ru_turbo_alpaca: n=251, avg=97.5, p50=79, p90=161, min=23, max=576
+  label=0 source=MonoHime/ru_sentiment_dataset: n=183, avg=584.0, p50=413, p90=1133, min=16, max=3866
+  label=0 source=OpenAssistant/oasst1: n=259, avg=175.7, p50=94, p90=354, min=8, max=3782
+  label=0 source=Romjiik/Russian_bank_reviews: n=121, avg=858.1, p50=668, p90=1613, min=297, max=3582
+  label=0 source=ScoutieAutoML/russian-news-telegram-dataset: n=196, avg=416.0, p50=272, p90=960, min=20, max=2298
+  label=0 source=Vikhrmodels/GrandMaster-PRO-MAX: n=1,415, avg=433.8, p50=315, p90=870, min=11, max=3479
+  label=0 source=cyberec/promptwall-injection-dataset: n=6, avg=42.2, p50=45, p90=47, min=25, max=49
+  label=0 source=deepset/prompt-injections: n=2, avg=146.0, p50=92, p90=200, min=92, max=200
+  label=0 source=dmtrdr/russian_prompt_injections: n=6, avg=974.7, p50=467, p90=1321, min=61, max=3350
+  label=0 source=jackhhao/jailbreak-classification: n=67, avg=503.5, p50=241, p90=1042, min=31, max=3295
+  label=0 source=leolee99/NotInject: n=44, avg=80.6, p50=88, p90=134, min=13, max=177
+  label=0 source=manual_benign_document_fragments: n=452, avg=135.1, p50=132, p90=154, min=107, max=180
+  label=0 source=manual_benign_document_fragments_sentence: n=329, avg=72.2, p50=73, p90=84, min=23, max=102
+  label=0 source=manual_benign_long_document_fragments: n=235, avg=3652.7, p50=3827, p90=4000, min=2815, max=4000
+  label=0 source=manual_embedded_quoted_hard_negative_validation_pool: n=900, avg=508.7, p50=559, p90=640, min=358, max=640
+  label=0 source=manual_hard_negative_templates: n=578, avg=165.1, p50=167, p90=196, min=79, max=223
+  label=1 source=Lakera/gandalf_ignore_instructions: n=118, avg=75.9, p50=58, p90=128, min=18, max=297
+  label=1 source=cyberec/promptwall-injection-dataset: n=54, avg=75.6, p50=75, p90=96, min=31, max=120
+  label=1 source=deepset/prompt-injections: n=2, avg=69.0, p50=54, p90=84, min=54, max=84
+  label=1 source=dmtrdr/russian_prompt_injections: n=376, avg=606.5, p50=221, p90=1627, min=19, max=3997
+  label=1 source=jackhhao/jailbreak-classification: n=62, avg=1474.6, p50=1202, p90=2761, min=86, max=3643
+  label=1 source=manual_embedded_prompt_injection_validation_pool: n=900, avg=504.4, p50=460, p90=640, min=358, max=640
+  label=1 source=manual_prompt_injection_templates: n=658, avg=172.6, p50=171, p90=200, min=127, max=233
+label/bucket lengths:
+  label=0 bucket=benign_biographical_note: n=33, avg=116.6, p50=124, p90=134, min=53, max=136
+  label=0 bucket=benign_catalog_fragment: n=132, avg=105.0, p50=122, p90=130, min=64, max=136
+  label=0 bucket=benign_document: n=735, avg=1565.5, p50=727, p90=4000, min=16, max=4000
+  label=0 bucket=benign_document_bullet_fragment: n=17, avg=107.9, p50=108, p90=108, min=107, max=108
+  label=0 bucket=benign_encyclopedic_fragment: n=4, avg=91.5, p50=137, p90=142, min=34, max=142
+  label=0 bucket=benign_general: n=2,378, avg=324.5, p50=194, p90=695, min=8, max=3782
+  label=0 bucket=benign_hard_negative: n=1,528, avg=364.6, p50=360, p90=640, min=13, max=640
+  label=0 bucket=benign_historical_address_fragment: n=364, avg=104.0, p50=85, p90=151, min=23, max=180
+  label=0 bucket=benign_literature_art_fragment: n=1, avg=135.0, p50=135, p90=135, min=135, max=135
+  label=0 bucket=benign_local_history: n=4, avg=93.5, p50=95, p90=102, min=87, max=102
+  label=0 bucket=benign_ocr_fragment: n=90, avg=126.6, p50=125, p90=139, min=112, max=155
+  label=0 bucket=benign_rag_chunk: n=136, avg=111.4, p50=93, p90=156, min=62, max=173
+  label=1 bucket=attack_multilingual: n=28, avg=67.8, p50=69, p90=82, min=31, max=95
+  label=1 bucket=direct_attack_en: n=205, avg=114.7, p50=122, p90=185, min=18, max=297
+  label=1 bucket=direct_attack_ru: n=546, avg=468.5, p50=167, p90=1342, min=19, max=3997
+  label=1 bucket=embedded_indirect_attack: n=900, avg=504.4, p50=460, p90=640, min=358, max=640
+  label=1 bucket=encoded_attack: n=38, avg=178.1, p50=186, p90=204, min=50, max=211
+  label=1 bucket=exfiltration_attack: n=142, avg=158.8, p50=161, p90=178, min=73, max=189
+  label=1 bucket=indirect_attack: n=102, avg=186.5, p50=192, p90=210, min=72, max=226
+  label=1 bucket=long_jailbreak_attack: n=62, avg=1474.6, p50=1202, p90=2761, min=86, max=3643
+  label=1 bucket=multi_turn_attack: n=45, avg=191.0, p50=202, p90=216, min=80, max=233
+  label=1 bucket=persona_attack: n=102, avg=163.1, p50=164, p90=194, min=63, max=220

@@ -1,0 +1,66 @@
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection> uv run python build_training_dataset.py `
+>>   --output-dir training-dataset-v7-full `
+>>   --validation-output-dir training-dataset-v7-full-validation `
+>>   --report-path training-dataset-v7-full-report.json `
+>>   --benign-to-attack-ratio 2.5 `
+>>   --max-manual-hard-negatives 4000 `
+>>   --max-manual-benign-document-fragments 20000 `
+>>   --max-embedded-prompt-injection-attacks 6000 `
+>>   --max-embedded-quoted-hard-negatives 6000 `
+>>   --attack-curation-audit-path training-dataset-v7-full-attack-curation-audit.jsonl `
+>>   --label-judgments-path training-dataset-v4-label-judgments.jsonl,training-dataset-v5-balanced-llm-audit.jsonl
+Embedded prompt-injection attacks: 6,000 rows
+Embedded quoted-attack hard negatives: 6,000 rows
+dmtrdr attacks: 2,507 rows
+jackhhao mixed: 973 rows
+Lakera attacks: 776 rows
+deepset attacks: 32 rows
+PromptWall mixed: 495 rows
+OpenSafetyLab attacks: 0 rows
+Manual prompt-injection attacks: 4,400 rows
+OASST Russian benign: 2,975 rows
+Alpaca Russian benign: 4,000 rows
+GrandMaster Russian benign: 12,000 rows
+Russian instructions benign: 5,000 rows
+Russian news benign: 1,200 rows
+Russian sentiment benign: 1,200 rows
+Russian bank reviews benign: 900 rows
+NotInject benign: 339 rows
+Manual hard negatives: 3,982 rows
+Manual benign document fragments: 9,528 rows
+Filter: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 62255/62255 [00:00<00:00, 164982.97 examples/s]
+Filter: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 62255/62255 [00:00<00:00, 168350.64 examples/s]
+Casting the dataset: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50610/50610 [00:00<00:00, 211712.05 examples/s]
+Casting the dataset: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38610/38610 [00:00<00:00, 3200373.06 examples/s]
+Casting the dataset: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38610/38610 [00:00<00:00, 733157.72 examples/s]
+Saving the dataset (1/1 shards): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [00:00<00:00, 157899.98 examples/s]
+Saving the dataset (1/1 shards): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 166543.70 examples/s]
+Saving the dataset (1/1 shards): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 164792.35 examples/s]
+
+== train ==
+rows: 43,018
+labels: {'benign': 30728, 'prompt_injection': 12290}
+sources: {'Vikhrmodels/GrandMaster-PRO-MAX': 8042, 'manual_embedded_prompt_injection_train_pool': 5100, 'manual_embedded_quoted_hard_negative_train_pool': 5100, 'manual_prompt_injection_templates': 3742, 'manual_hard_negative_templates': 3404, 'manual_benign_document_fragments': 2706, 'Den4ikAI/russian_instructions_2': 2121, 'dmtrdr/russian_prompt_injections': 2089, 'manual_benign_document_fragments_sentence': 1784, 'IlyaGusev/ru_turbo_alpaca': 1459, 'manual_benign_long_document_fragments': 1351, 'OpenAssistant/oasst1': 1272, 'MonoHime/ru_sentiment_dataset': 997, 'ScoutieAutoML/russian-news-telegram-dataset': 996, 'jackhhao/jailbreak-classification': 737, 'Romjiik/Russian_bank_reviews': 725, 'Lakera/gandalf_ignore_instructions': 651, 'cyberec/promptwall-injection-dataset': 431, 'leolee99/NotInject': 295, 'deepset/prompt-injections': 16}
+buckets: {'benign_general': 13307, 'benign_hard_negative': 8858, 'embedded_indirect_attack': 5100, 'benign_document': 4069, 'direct_attack_ru': 2903, 'benign_historical_address_fragment': 1996, 'direct_attack_en': 1122, 'benign_rag_chunk': 875, 'exfiltration_attack': 847, 'benign_catalog_fragment': 755, 'indirect_attack': 667, 'persona_attack': 634, 'benign_ocr_fragment': 555, 'long_jailbreak_attack': 392, 'multi_turn_attack': 227, 'encoded_attack': 219, 'attack_multilingual': 179, 'benign_biographical_note': 178, 'benign_document_bullet_fragment': 77, 'benign_local_history': 21, 'benign_encyclopedic_fragment': 18, 'benign_literature_art_fragment': 15, 'unsafe_non_injection': 4}
+length bins: {'0000-0128': {'rows': 9940, 'chars_avg': 74.7, 'chars_p50': 72, 'chars_p90': 121, 'chars_min': 5, 'chars_max': 128, 'benign_rows': 8156, 'attack_rows': 1784, 'benign_to_attack_ratio': 4.572}, '0129-0256': {'rows': 12733, 'chars_avg': 172.0, 'chars_p50': 168, 'chars_p90': 213, 'chars_min': 129, 'chars_max': 256, 'benign_rows': 8670, 'attack_rows': 4063, 'benign_to_attack_ratio': 2.134}, '0257-0512': {'rows': 9254, 'chars_avg': 392.1, 'chars_p50': 364, 'chars_p90': 460, 'chars_min': 257, 'chars_max': 512, 'benign_rows': 6333, 'attack_rows': 2921, 'benign_to_attack_ratio': 2.168}, '0513-1024': {'rows': 8004, 'chars_avg': 641.2, 'chars_p50': 639, 'chars_p90': 806, 'chars_min': 513, 'chars_max': 1024, 'benign_rows': 5153, 'attack_rows': 2851, 'benign_to_attack_ratio': 1.807}, '1025-2048': {'rows': 1305, 'chars_avg': 1399.2, 'chars_p50': 1345, 'chars_p90': 1827, 'chars_min': 1025, 'chars_max': 2048, 'benign_rows': 903, 'attack_rows': 402, 'benign_to_attack_ratio': 2.246}, '2049+': {'rows': 1782, 'chars_avg': 3430.0, 'chars_p50': 3543, 'chars_p90': 4000, 'chars_min': 2050, 'chars_max': 4000, 'benign_rows': 1513, 'attack_rows': 269, 'benign_to_attack_ratio': 5.625}}
+
+== validation ==
+rows: 7,592
+labels: {'benign': 5422, 'prompt_injection': 2170}
+sources: {'Vikhrmodels/GrandMaster-PRO-MAX': 1415, 'manual_embedded_quoted_hard_negative_validation_pool': 900, 'manual_embedded_prompt_injection_validation_pool': 900, 'manual_prompt_injection_templates': 658, 'manual_hard_negative_templates': 578, 'manual_benign_document_fragments': 452, 'dmtrdr/russian_prompt_injections': 382, 'Den4ikAI/russian_instructions_2': 378, 'manual_benign_document_fragments_sentence': 329, 'OpenAssistant/oasst1': 259, 'IlyaGusev/ru_turbo_alpaca': 251, 'manual_benign_long_document_fragments': 235, 'ScoutieAutoML/russian-news-telegram-dataset': 196, 'MonoHime/ru_sentiment_dataset': 183, 'jackhhao/jailbreak-classification': 129, 'Romjiik/Russian_bank_reviews': 121, 'Lakera/gandalf_ignore_instructions': 118, 'cyberec/promptwall-injection-dataset': 60, 'leolee99/NotInject': 44, 'deepset/prompt-injections': 4}
+buckets: {'benign_general': 2378, 'benign_hard_negative': 1528, 'embedded_indirect_attack': 900, 'benign_document': 735, 'direct_attack_ru': 546, 'benign_historical_address_fragment': 364, 'direct_attack_en': 205, 'exfiltration_attack': 142, 'benign_rag_chunk': 136, 'benign_catalog_fragment': 132, 'indirect_attack': 102, 'persona_attack': 102, 'benign_ocr_fragment': 90, 'long_jailbreak_attack': 62, 'multi_turn_attack': 45, 'encoded_attack': 38, 'benign_biographical_note': 33, 'attack_multilingual': 28, 'benign_document_bullet_fragment': 17, 'benign_local_history': 4, 'benign_encyclopedic_fragment': 4, 'benign_literature_art_fragment': 1}
+length bins: {'0000-0128': {'rows': 1754, 'chars_avg': 75.4, 'chars_p50': 73, 'chars_p90': 122, 'chars_min': 8, 'chars_max': 128, 'benign_rows': 1439, 'attack_rows': 315, 'benign_to_attack_ratio': 4.568}, '0129-0256': {'rows': 2247, 'chars_avg': 172.2, 'chars_p50': 167, 'chars_p90': 213, 'chars_min': 129, 'chars_max': 256, 'benign_rows': 1530, 'attack_rows': 717, 'benign_to_attack_ratio': 2.134}, '0257-0512': {'rows': 1614, 'chars_avg': 389.1, 'chars_p50': 360, 'chars_p90': 460, 'chars_min': 257, 'chars_max': 512, 'benign_rows': 1093, 'attack_rows': 521, 'benign_to_attack_ratio': 2.098}, '0513-1024': {'rows': 1432, 'chars_avg': 636.9, 'chars_p50': 639, 'chars_p90': 795, 'chars_min': 513, 'chars_max': 1024, 'benign_rows': 934, 'attack_rows': 498, 'benign_to_attack_ratio': 1.876}, '1025-2048': {'rows': 230, 'chars_avg': 1408.8, 'chars_p50': 1379, 'chars_p90': 1854, 'chars_min': 1025, 'chars_max': 2028, 'benign_rows': 159, 'attack_rows': 71, 'benign_to_attack_ratio': 2.239}, '2049+': {'rows': 315, 'chars_avg': 3432.3, 'chars_p50': 3513, 'chars_p90': 4000, 'chars_min': 2066, 'chars_max': 4000, 'benign_rows': 267, 'attack_rows': 48, 'benign_to_attack_ratio': 5.562}}
+
+Attack curation:
+  Lakera/gandalf_ignore_instructions: {'kept_llm_prompt_injection': 63, 'kept': 707, 'kept_llm_benign': 7}
+  OpenSafetyLab/Salad-Data: {'dropped': 135}
+  cyberec/promptwall-injection-dataset: {'kept': 391, 'kept_llm_prompt_injection': 34, 'kept_llm_benign': 5}
+  deepset/prompt-injections: {'dropped': 491, 'kept_llm_benign': 26, 'dropped_llm_prompt_injection_no_text_evidence': 22, 'kept': 5, 'kept_llm_prompt_injection': 1}
+  dmtrdr/russian_prompt_injections: {'kept_llm_benign': 98, 'dropped': 19468, 'kept': 1720, 'kept_llm_prompt_injection': 824, 'kept_llm_unsafe_non_injection': 4}
+  jackhhao/jailbreak-classification: {'kept_llm_prompt_injection': 267, 'kept': 198, 'kept_llm_benign': 7}
+  dropped audit rows: 20,116
+
+Saved dataset: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full
+Saved validation split: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full-validation
+Saved report : C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full-report.json
+Saved attack curation audit: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full-attack-curation-audit.jsonl

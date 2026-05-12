@@ -35,28 +35,67 @@ developer message
 игнорируй предыдущие инструкции
 ```
 
-## Target Training Balance
+## Current Implemented Builder
 
-For the next training pass, target:
+`build_training_dataset.py` now has two modes:
 
 ```text
-prompt_injection: 45–50%
-benign:           50–55%
+Full corrected dataset:
+- public attack datasets
+- public benign datasets
+- project-authored benign document fragments
+- project-authored hard negatives
+- project-authored embedded prompt-injection windows
+- project-authored quoted-attack hard negatives
+
+Embedded-only dataset:
+- project-authored embedded prompt-injection windows
+- project-authored quoted-attack hard negatives
 ```
 
-A slightly benign-heavy mix is often better for production because false positives are expensive.
+The embedded-only mode is intended for a short corrective fine-tune of an existing checkpoint:
+
+```powershell
+uv run python build_training_dataset.py `
+  --embedded-only `
+  --output-dir training-dataset-embedded-v1 `
+  --validation-output-dir training-dataset-embedded-v1-validation `
+  --report-path training-dataset-embedded-v1-report.json `
+  --max-embedded-prompt-injection-attacks 6000 `
+  --max-embedded-quoted-hard-negatives 6000
+```
+
+The generated embedded positives insert short prompt-injection snippets into benign document/RAG-like Russian text, then crop an attack-centered window so the malicious span remains visible under the current `max_len=256` training setup. The generated benign hard negatives quote or discuss prompt-injection phrases in safe tasks such as translation, audit-log analysis, documentation, unit tests, and moderation guidelines.
+
+Synthetic train and validation rows are kept separate with:
+
+```text
+separate attack snippet pools
+separate benign carrier pools
+fixed split_hint values
+```
+
+This reduces train/validation leakage for the embedded validation split. It is still synthetic validation, so it should be supplemented with production-like held-out data before publishing a final model.
+
+## Target Training Balance
+
+For the full corrective training pass, target a benign-heavy mix:
+
+```text
+prompt_injection: 28–35%
+benign:           65–72%
+```
+
+A benign-heavy mix is useful here because false positives are expensive and the current corrective builder adds many targeted document and hard-negative rows.
 
 Recommended command-line setting:
 
 ```bash
---benign-to-attack-ratio 1.1
+--benign-to-attack-ratio 2.5
 ```
 
-or, if false positives remain high:
+For experiments where recall is more important and false positives are acceptable, lower this ratio and re-check benign stress validation. Do not choose the ratio from overall F1 alone.
 
-```bash
---benign-to-attack-ratio 1.2
-```
 
 ## Target Benign Buckets
 
@@ -692,46 +731,45 @@ ATTACK_DATASETS = [
 
 # Practical Recommendation
 
-For the next run, I would use:
+For the full corrected run, use the implemented builder defaults as the baseline:
 
 ```text
 Benign:
 - GrandMaster-PRO-MAX
-- Aya
-- more OASST
-- ru_stackoverflow
-- 2k–5k generated hard negatives
-- NotInject mostly as held-out eval
+- OASST
+- ru_turbo_alpaca
+- Russian instructions
+- Russian news / sentiment / bank reviews
+- generated document fragments
+- generated hard negatives
+- generated quoted-attack hard negatives
+- NotInject as a small hard-negative source
 
 Attack:
-- current dmtrdr Russian attacks
-- small PromptWall sample
-- small Gandalf sample
-- indirect attack sample only if your production system uses RAG/email/documents
+- current dmtrdr Russian attacks after curation
+- manual Russian/mixed prompt-injection templates
+- embedded prompt-injection windows
+- PromptWall / Gandalf / deepset / OpenSafetyLab curated rows
 ```
 
 Start with:
 
 ```bash
---benign-to-attack-ratio 1.1
+--benign-to-attack-ratio 2.5
 ```
 
-If the model still overblocks benign Russian technical or security text, increase to:
+For the interim embedded-only fine-tune, use:
 
 ```bash
---benign-to-attack-ratio 1.2
-```
-
-Also consider reducing `distill_weight`:
-
-```bash
---distill-weight 0.05
-```
-
-or disabling distillation temporarily:
-
-```bash
+--embedded-only
 --distill-weight 0.0
+```
+
+For the full from-scratch run, keep conservative benign-only teacher distillation:
+
+```bash
+--teacher-distill-mode benign_only
+--distill-weight 0.02
 ```
 
 The ProtectAI teacher is English-specialized, so it should not dominate Russian training.
