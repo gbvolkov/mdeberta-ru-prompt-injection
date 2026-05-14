@@ -19,7 +19,7 @@ training-dataset*/
 training-dataset-validation*/
 benign-stress-validation/
 mdeberta-ru-prompt-injection*/
-
+tmp*/
 
 #secrets
 .env

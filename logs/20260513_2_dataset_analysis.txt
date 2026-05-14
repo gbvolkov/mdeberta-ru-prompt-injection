@@ -1,3 +1,381 @@
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection> uv run python train_mdeberta_ru_prompt_injection_option_b.py `
+>>   --student-model microsoft/mdeberta-v3-base `
+>>   --prepared-dataset-dir training-dataset-v7-full `
+>>   --output-dir mdeberta-ru-prompt-injection-v7-full `
+>>   --teacher-model protectai/deberta-v3-base-prompt-injection-v2 `
+>>   --teacher-distill-mode benign_only `
+>>   --distill-weight 0.02 `
+>>   --last-n-layers 2 `
+>>   --epochs 3 `
+>>   --no-trainer-auto-resume `
+>>   --rebuild-stage-cache
+CPU threading:
+  os.cpu_count              : 16
+  torch num threads         : 16
+  torch inter-op threads    : 1
+Run configuration:
+{
+  "student_model": "microsoft/mdeberta-v3-base",
+  "teacher_model": "protectai/deberta-v3-base-prompt-injection-v2",
+  "output_dir": "mdeberta-ru-prompt-injection-v7-full",
+  "seed": 42,
+  "max_len": 256,
+  "max_attacks": 12000,
+  "max_benign_oasst": 8000,
+  "max_benign_alpaca": 4000,
+  "benign_to_attack_ratio": 1.0,
+  "validation_size": 0.15,
+  "distill_weight": 0.02,
+  "temperature": 2.0,
+  "teacher_conf_threshold": 0.8,
+  "teacher_distill_mode": "benign_only",
+  "last_n_layers": 2,
+  "epochs": 3.0,
+  "learning_rate": 2e-05,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.06,
+  "optim": "adamw_torch",
+  "checkpoint_steps": 100,
+  "preflight_steps": 2,
+  "preflight_only": false,
+  "train_batch_size": 8,
+  "eval_batch_size": 32,
+  "gradient_accumulation_steps": 4,
+  "teacher_batch_size": 16,
+  "skip_teacher": false,
+  "skip_alpaca": false,
+  "add_manual_attacks": false,
+  "num_workers": 0,
+  "torch_num_threads": 16,
+  "torch_num_interop_threads": 1,
+  "pad_to_max_length": false,
+  "no_group_by_length": true,
+  "alpaca_cache_dir": null,
+  "download_alpaca_only": false,
+  "alpaca_local_files_only": false,
+  "stage_cache_dir": null,
+  "no_stage_cache": false,
+  "rebuild_stage_cache": true,
+  "prepared_dataset_dir": "training-dataset-v7-full",
+  "resume_from_checkpoint": null,
+  "no_trainer_auto_resume": true
+}
+Loaded prepared dataset from: C:\Projects\guardrails\mdeberta-ru-prompt-injection\training-dataset-v7-full
+  train     : 43,018
+  validation: 7,592
+Saving dataset_split stage cache to: C:\Projects\guardrails\mdeberta-ru-prompt-injection\mdeberta-ru-prompt-injection-v7-full\stage-cache\dataset_split-3d91b127e13c689f
+Saving the dataset (1/1 shards): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [00:00<00:00, 907749.12 examples/s]
+Saving the dataset (1/1 shards): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 574060.86 examples/s]
+Scoring ProtectAI teacher for train split on CPU...
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 202/202 [00:00<00:00, 4735.17it/s]
+Teacher model parameter dtype: torch.float32
+Map: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [2:06:15<00:00,  5.68 examples/s]
+Scoring ProtectAI teacher for validation split on CPU...
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 202/202 [00:00<00:00, 9184.08it/s]
+Teacher model parameter dtype: torch.float32
+Map: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [18:31<00:00,  6.83 examples/s]
+Saving teacher_scored stage cache to: C:\Projects\guardrails\mdeberta-ru-prompt-injection\mdeberta-ru-prompt-injection-v7-full\stage-cache\teacher_scored-f54662732b33feaa
+Saving the dataset (1/1 shards): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [00:00<00:00, 658941.01 examples/s]
+Saving the dataset (1/1 shards): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 545007.55 examples/s]
+Teacher distillation diagnostics for train:
+  mode                          : benign_only
+  confident @ 0.80: 42,123 / 43,018 (97.92%)
+  agrees with hard label       : 32,665 / 43,018 (75.93%)
+  used for distillation        : 23,861 / 43,018 (55.47%)
+Teacher distillation diagnostics for validation:
+  mode                          : benign_only
+  confident @ 0.80: 7,425 / 7,592 (97.80%)
+  agrees with hard label       : 5,784 / 7,592 (76.19%)
+  used for distillation        : 4,405 / 7,592 (58.02%)
+Teacher baseline metrics on validation:
+{
+  "teacher_accuracy": 0.761854583772392,
+  "teacher_precision": 0.5793163891323401,
+  "teacher_recall": 0.6092165898617512,
+  "teacher_f1": 0.5938903863432166,
+  "teacher_tn": 4462,
+  "teacher_fp": 960,
+  "teacher_fn": 848,
+  "teacher_tp": 1322,
+  "teacher_roc_auc": 0.8129414299483075,
+  "teacher_pr_auc": 0.6046293476003833
+}
+Map: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [00:02<00:00, 15392.81 examples/s]
+Map: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 14604.21 examples/s]
+Saving tokenized stage cache to: C:\Projects\guardrails\mdeberta-ru-prompt-injection\mdeberta-ru-prompt-injection-v7-full\stage-cache\tokenized-e5bb14e75684103b
+Saving the dataset (1/1 shards): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43018/43018 [00:00<00:00, 1330864.10 examples/s]
+Saving the dataset (1/1 shards): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 7592/7592 [00:00<00:00, 892340.09 examples/s]
+Running training preflight for 2 optimizer step(s)...
+  This uses a throwaway model/trainer and does not save checkpoints.
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 198/198 [00:00<00:00, 1124.64it/s]
+[transformers] DebertaV2ForSequenceClassification LOAD REPORT from: microsoft/mdeberta-v3-base
+Key                                        | Status     | Details
+-------------------------------------------+------------+--------
+lm_predictions.lm_head.dense.bias          | UNEXPECTED |
+deberta.embeddings.word_embeddings._weight | UNEXPECTED |
+mask_predictions.dense.weight              | UNEXPECTED |
+mask_predictions.LayerNorm.weight          | UNEXPECTED |
+mask_predictions.dense.bias                | UNEXPECTED |
+mask_predictions.LayerNorm.bias            | UNEXPECTED |
+lm_predictions.lm_head.bias                | UNEXPECTED |
+mask_predictions.classifier.bias           | UNEXPECTED |
+mask_predictions.classifier.weight         | UNEXPECTED |
+lm_predictions.lm_head.LayerNorm.bias      | UNEXPECTED |
+lm_predictions.lm_head.dense.weight        | UNEXPECTED |
+lm_predictions.lm_head.LayerNorm.weight    | UNEXPECTED |
+pooler.dense.weight                        | MISSING    |
+classifier.bias                            | MISSING    |
+pooler.dense.bias                          | MISSING    |
+classifier.weight                          | MISSING    |
+
+Notes:
+- UNEXPECTED:   can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:      those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Preflight student model parameter dtype: torch.float32
+Trainable parameters: 14,767,874 / 278,810,882 (5.30%)
+[transformers] warmup_ratio is deprecated and will be removed in v5.2. Use `warmup_steps` instead.
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 2, 'bos_token_id': 1}.
+{'loss': '0.703', 'grad_norm': '0.9849', 'learning_rate': '0', 'epoch': '0.0007438'}
+{'loss': '0.6823', 'grad_norm': '1.097', 'learning_rate': '2e-05', 'epoch': '0.001488'}
+{'train_runtime': '22.31', 'train_samples_per_second': '2.868', 'train_steps_per_second': '0.09', 'train_loss': '0.6927', 'epoch': '0.001488'}
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:22<00:00, 11.16s/it]
+Preflight passed after 2 optimizer step(s).
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 198/198 [00:00<00:00, 5838.82it/s]
+[transformers] DebertaV2ForSequenceClassification LOAD REPORT from: microsoft/mdeberta-v3-base
+Key                                        | Status     | Details
+-------------------------------------------+------------+--------
+lm_predictions.lm_head.dense.bias          | UNEXPECTED |
+deberta.embeddings.word_embeddings._weight | UNEXPECTED |
+mask_predictions.dense.weight              | UNEXPECTED |
+mask_predictions.LayerNorm.weight          | UNEXPECTED |
+mask_predictions.dense.bias                | UNEXPECTED |
+mask_predictions.LayerNorm.bias            | UNEXPECTED |
+lm_predictions.lm_head.bias                | UNEXPECTED |
+mask_predictions.classifier.bias           | UNEXPECTED |
+mask_predictions.classifier.weight         | UNEXPECTED |
+lm_predictions.lm_head.LayerNorm.bias      | UNEXPECTED |
+lm_predictions.lm_head.dense.weight        | UNEXPECTED |
+lm_predictions.lm_head.LayerNorm.weight    | UNEXPECTED |
+pooler.dense.weight                        | MISSING    |
+classifier.bias                            | MISSING    |
+pooler.dense.bias                          | MISSING    |
+classifier.weight                          | MISSING    |
+
+Notes:
+- UNEXPECTED:   can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:      those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Student model parameter dtype: torch.float32
+Trainable parameters: 14,767,874 / 278,810,882 (5.30%)
+[transformers] warmup_ratio is deprecated and will be removed in v5.2. Use `warmup_steps` instead.
+Starting student training...
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 2, 'bos_token_id': 1}.
+{'loss': '0.7137', 'grad_norm': '3.355', 'learning_rate': '4.033e-06', 'epoch': '0.03719'}
+{'loss': '0.6399', 'grad_norm': '1.831', 'learning_rate': '8.148e-06', 'epoch': '0.07438'}
+{'eval_loss': '0.5904', 'eval_accuracy': '0.7142', 'eval_precision': '0', 'eval_recall': '0', 'eval_f1': '0', 'eval_roc_auc': '0.7114', 'eval_pr_auc': '0.4095', 'eval_fp': '0', 'eval_fn': '2170', 'eval_runtime': '1061', 'eval_samples_per_second': '7.154', 'eval_steps_per_second': '0.224', 'epoch': '0.07438'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.08it/s]
+{'loss': '0.5303', 'grad_norm': '4.262', 'learning_rate': '1.226e-05', 'epoch': '0.1116'}
+{'loss': '0.4809', 'grad_norm': '5.51', 'learning_rate': '1.638e-05', 'epoch': '0.1488'}
+{'eval_loss': '0.3898', 'eval_accuracy': '0.8307', 'eval_precision': '0.7094', 'eval_recall': '0.6908', 'eval_f1': '0.7', 'eval_roc_auc': '0.8903', 'eval_pr_auc': '0.6897', 'eval_fp': '614', 'eval_fn': '671', 'eval_runtime': '1053', 'eval_samples_per_second': '7.207', 'eval_steps_per_second': '0.226', 'epoch': '0.1488'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.84s/it]
+{'loss': '0.3776', 'grad_norm': '7.372', 'learning_rate': '1.997e-05', 'epoch': '0.1859'}
+{'loss': '0.2558', 'grad_norm': '8.181', 'learning_rate': '1.97e-05', 'epoch': '0.2231'}
+{'eval_loss': '0.1901', 'eval_accuracy': '0.937', 'eval_precision': '0.9213', 'eval_recall': '0.8525', 'eval_f1': '0.8856', 'eval_roc_auc': '0.9763', 'eval_pr_auc': '0.9543', 'eval_fp': '158', 'eval_fn': '320', 'eval_runtime': '1053', 'eval_samples_per_second': '7.211', 'eval_steps_per_second': '0.226', 'epoch': '0.2231'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.17it/s]
+{'loss': '0.1536', 'grad_norm': '8.956', 'learning_rate': '1.944e-05', 'epoch': '0.2603'}
+{'loss': '0.09978', 'grad_norm': '3.438', 'learning_rate': '1.918e-05', 'epoch': '0.2975'}
+{'eval_loss': '0.1962', 'eval_accuracy': '0.951', 'eval_precision': '0.9945', 'eval_recall': '0.8332', 'eval_f1': '0.9067', 'eval_roc_auc': '0.9908', 'eval_pr_auc': '0.9856', 'eval_fp': '10', 'eval_fn': '362', 'eval_runtime': '1052', 'eval_samples_per_second': '7.217', 'eval_steps_per_second': '0.226', 'epoch': '0.2975'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.10s/it]
+{'loss': '0.1199', 'grad_norm': '15.64', 'learning_rate': '1.891e-05', 'epoch': '0.3347'}
+{'loss': '0.1097', 'grad_norm': '14.2', 'learning_rate': '1.865e-05', 'epoch': '0.3719'}
+{'eval_loss': '0.08028', 'eval_accuracy': '0.9797', 'eval_precision': '0.9782', 'eval_recall': '0.9502', 'eval_f1': '0.964', 'eval_roc_auc': '0.9952', 'eval_pr_auc': '0.9915', 'eval_fp': '46', 'eval_fn': '108', 'eval_runtime': '1056', 'eval_samples_per_second': '7.189', 'eval_steps_per_second': '0.225', 'epoch': '0.3719'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.05s/it]
+{'loss': '0.08745', 'grad_norm': '21.38', 'learning_rate': '1.839e-05', 'epoch': '0.4091'}
+{'loss': '0.09168', 'grad_norm': '33.82', 'learning_rate': '1.812e-05', 'epoch': '0.4463'}
+{'eval_loss': '0.07377', 'eval_accuracy': '0.9791', 'eval_precision': '0.9585', 'eval_recall': '0.9687', 'eval_f1': '0.9636', 'eval_roc_auc': '0.9963', 'eval_pr_auc': '0.9934', 'eval_fp': '91', 'eval_fn': '68', 'eval_runtime': '1050', 'eval_samples_per_second': '7.228', 'eval_steps_per_second': '0.227', 'epoch': '0.4463'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.11s/it]
+{'loss': '0.0711', 'grad_norm': '10.56', 'learning_rate': '1.786e-05', 'epoch': '0.4835'}
+{'loss': '0.08627', 'grad_norm': '3.136', 'learning_rate': '1.759e-05', 'epoch': '0.5206'}
+{'eval_loss': '0.07615', 'eval_accuracy': '0.9823', 'eval_precision': '0.982', 'eval_recall': '0.9558', 'eval_f1': '0.9687', 'eval_roc_auc': '0.9964', 'eval_pr_auc': '0.994', 'eval_fp': '38', 'eval_fn': '96', 'eval_runtime': '1067', 'eval_samples_per_second': '7.114', 'eval_steps_per_second': '0.223', 'epoch': '0.5206'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.16s/it]
+{'loss': '0.08574', 'grad_norm': '2.965', 'learning_rate': '1.733e-05', 'epoch': '0.5578'}
+{'loss': '0.0593', 'grad_norm': '1.504', 'learning_rate': '1.707e-05', 'epoch': '0.595'}
+{'eval_loss': '0.08035', 'eval_accuracy': '0.9833', 'eval_precision': '0.9853', 'eval_recall': '0.9558', 'eval_f1': '0.9703', 'eval_roc_auc': '0.9966', 'eval_pr_auc': '0.994', 'eval_fp': '31', 'eval_fn': '96', 'eval_runtime': '1051', 'eval_samples_per_second': '7.221', 'eval_steps_per_second': '0.226', 'epoch': '0.595'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.19s/it]
+{'loss': '0.04436', 'grad_norm': '24.94', 'learning_rate': '1.68e-05', 'epoch': '0.6322'}
+{'loss': '0.07677', 'grad_norm': '1.849', 'learning_rate': '1.654e-05', 'epoch': '0.6694'}
+{'eval_loss': '0.0706', 'eval_accuracy': '0.9838', 'eval_precision': '0.978', 'eval_recall': '0.965', 'eval_f1': '0.9715', 'eval_roc_auc': '0.996', 'eval_pr_auc': '0.993', 'eval_fp': '47', 'eval_fn': '76', 'eval_runtime': '1051', 'eval_samples_per_second': '7.225', 'eval_steps_per_second': '0.226', 'epoch': '0.6694'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.16s/it]
+{'loss': '0.06694', 'grad_norm': '0.08365', 'learning_rate': '1.628e-05', 'epoch': '0.7066'}
+{'loss': '0.06685', 'grad_norm': '9.498', 'learning_rate': '1.601e-05', 'epoch': '0.7438'}
+{'eval_loss': '0.07584', 'eval_accuracy': '0.9837', 'eval_precision': '0.9923', 'eval_recall': '0.9502', 'eval_f1': '0.9708', 'eval_roc_auc': '0.9968', 'eval_pr_auc': '0.9949', 'eval_fp': '16', 'eval_fn': '108', 'eval_runtime': '1047', 'eval_samples_per_second': '7.249', 'eval_steps_per_second': '0.227', 'epoch': '0.7438'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.18it/s]
+{'loss': '0.05564', 'grad_norm': '23.05', 'learning_rate': '1.575e-05', 'epoch': '0.781'}
+{'loss': '0.06023', 'grad_norm': '0.209', 'learning_rate': '1.549e-05', 'epoch': '0.8181'}
+{'eval_loss': '0.07771', 'eval_accuracy': '0.9841', 'eval_precision': '0.9923', 'eval_recall': '0.9516', 'eval_f1': '0.9715', 'eval_roc_auc': '0.9969', 'eval_pr_auc': '0.9954', 'eval_fp': '16', 'eval_fn': '105', 'eval_runtime': '1051', 'eval_samples_per_second': '7.222', 'eval_steps_per_second': '0.226', 'epoch': '0.8181'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.17it/s]
+{'loss': '0.05721', 'grad_norm': '9.378', 'learning_rate': '1.522e-05', 'epoch': '0.8553'}
+{'loss': '0.07201', 'grad_norm': '1.871', 'learning_rate': '1.496e-05', 'epoch': '0.8925'}
+{'eval_loss': '0.06529', 'eval_accuracy': '0.9856', 'eval_precision': '0.9909', 'eval_recall': '0.9585', 'eval_f1': '0.9745', 'eval_roc_auc': '0.9978', 'eval_pr_auc': '0.9962', 'eval_fp': '19', 'eval_fn': '90', 'eval_runtime': '1051', 'eval_samples_per_second': '7.225', 'eval_steps_per_second': '0.227', 'epoch': '0.8925'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.08s/it]
+{'loss': '0.06559', 'grad_norm': '9.553', 'learning_rate': '1.469e-05', 'epoch': '0.9297'}
+{'loss': '0.05934', 'grad_norm': '0.1653', 'learning_rate': '1.443e-05', 'epoch': '0.9669'}
+{'eval_loss': '0.06708', 'eval_accuracy': '0.986', 'eval_precision': '0.9905', 'eval_recall': '0.9604', 'eval_f1': '0.9752', 'eval_roc_auc': '0.9978', 'eval_pr_auc': '0.9962', 'eval_fp': '20', 'eval_fn': '86', 'eval_runtime': '1149', 'eval_samples_per_second': '6.609', 'eval_steps_per_second': '0.207', 'epoch': '0.9669'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.02s/it]
+{'loss': '0.04648', 'grad_norm': '0.05252', 'learning_rate': '1.417e-05', 'epoch': '1.004'}
+{'loss': '0.06305', 'grad_norm': '15.62', 'learning_rate': '1.39e-05', 'epoch': '1.041'}
+{'eval_loss': '0.05458', 'eval_accuracy': '0.9874', 'eval_precision': '0.9814', 'eval_recall': '0.9742', 'eval_f1': '0.9778', 'eval_roc_auc': '0.9982', 'eval_pr_auc': '0.9965', 'eval_fp': '40', 'eval_fn': '56', 'eval_runtime': '1261', 'eval_samples_per_second': '6.019', 'eval_steps_per_second': '0.189', 'epoch': '1.041'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.37s/it]
+{'loss': '0.05518', 'grad_norm': '9.164', 'learning_rate': '1.364e-05', 'epoch': '1.078'}
+{'loss': '0.05963', 'grad_norm': '1.868', 'learning_rate': '1.338e-05', 'epoch': '1.115'}
+{'eval_loss': '0.0605', 'eval_accuracy': '0.9866', 'eval_precision': '0.9905', 'eval_recall': '0.9622', 'eval_f1': '0.9762', 'eval_roc_auc': '0.9983', 'eval_pr_auc': '0.9968', 'eval_fp': '20', 'eval_fn': '82', 'eval_runtime': '1332', 'eval_samples_per_second': '5.699', 'eval_steps_per_second': '0.179', 'epoch': '1.115'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.41s/it]
+{'loss': '0.04046', 'grad_norm': '0.08437', 'learning_rate': '1.311e-05', 'epoch': '1.152'}
+{'loss': '0.04489', 'grad_norm': '2.846', 'learning_rate': '1.285e-05', 'epoch': '1.19'}
+{'eval_loss': '0.06678', 'eval_accuracy': '0.9859', 'eval_precision': '0.9928', 'eval_recall': '0.9576', 'eval_f1': '0.9749', 'eval_roc_auc': '0.9977', 'eval_pr_auc': '0.9963', 'eval_fp': '15', 'eval_fn': '92', 'eval_runtime': '1283', 'eval_samples_per_second': '5.918', 'eval_steps_per_second': '0.186', 'epoch': '1.19'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.38s/it]
+{'loss': '0.0709', 'grad_norm': '40.78', 'learning_rate': '1.258e-05', 'epoch': '1.227'}
+{'loss': '0.046', 'grad_norm': '14.25', 'learning_rate': '1.232e-05', 'epoch': '1.264'}
+{'eval_loss': '0.05266', 'eval_accuracy': '0.9892', 'eval_precision': '0.9883', 'eval_recall': '0.9737', 'eval_f1': '0.981', 'eval_roc_auc': '0.9982', 'eval_pr_auc': '0.9967', 'eval_fp': '25', 'eval_fn': '57', 'eval_runtime': '1291', 'eval_samples_per_second': '5.882', 'eval_steps_per_second': '0.184', 'epoch': '1.264'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.08s/it]
+{'loss': '0.04486', 'grad_norm': '1.892', 'learning_rate': '1.206e-05', 'epoch': '1.301'}
+{'loss': '0.04906', 'grad_norm': '0.02979', 'learning_rate': '1.179e-05', 'epoch': '1.338'}
+{'eval_loss': '0.055', 'eval_accuracy': '0.9868', 'eval_precision': '0.9756', 'eval_recall': '0.9783', 'eval_f1': '0.977', 'eval_roc_auc': '0.9982', 'eval_pr_auc': '0.9964', 'eval_fp': '53', 'eval_fn': '47', 'eval_runtime': '1287', 'eval_samples_per_second': '5.899', 'eval_steps_per_second': '0.185', 'epoch': '1.338'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.85s/it]
+{'loss': '0.06453', 'grad_norm': '11.16', 'learning_rate': '1.153e-05', 'epoch': '1.376'}
+{'loss': '0.06924', 'grad_norm': '4.106', 'learning_rate': '1.127e-05', 'epoch': '1.413'}
+{'eval_loss': '0.05043', 'eval_accuracy': '0.987', 'eval_precision': '0.9859', 'eval_recall': '0.9682', 'eval_f1': '0.977', 'eval_roc_auc': '0.9985', 'eval_pr_auc': '0.9972', 'eval_fp': '30', 'eval_fn': '69', 'eval_runtime': '1327', 'eval_samples_per_second': '5.721', 'eval_steps_per_second': '0.179', 'epoch': '1.413'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.60s/it]
+{'loss': '0.04223', 'grad_norm': '0.04978', 'learning_rate': '1.1e-05', 'epoch': '1.45'}
+{'loss': '0.05887', 'grad_norm': '0.8286', 'learning_rate': '1.074e-05', 'epoch': '1.487'}
+{'eval_loss': '0.05226', 'eval_accuracy': '0.9878', 'eval_precision': '0.9762', 'eval_recall': '0.9811', 'eval_f1': '0.9786', 'eval_roc_auc': '0.9985', 'eval_pr_auc': '0.997', 'eval_fp': '52', 'eval_fn': '41', 'eval_runtime': '1485', 'eval_samples_per_second': '5.114', 'eval_steps_per_second': '0.16', 'epoch': '1.487'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.54s/it]
+{'loss': '0.03216', 'grad_norm': '2.345', 'learning_rate': '1.047e-05', 'epoch': '1.524'}
+{'loss': '0.05697', 'grad_norm': '16.4', 'learning_rate': '1.021e-05', 'epoch': '1.562'}
+{'eval_loss': '0.05148', 'eval_accuracy': '0.9892', 'eval_precision': '0.9847', 'eval_recall': '0.9774', 'eval_f1': '0.981', 'eval_roc_auc': '0.9983', 'eval_pr_auc': '0.997', 'eval_fp': '33', 'eval_fn': '49', 'eval_runtime': '1427', 'eval_samples_per_second': '5.322', 'eval_steps_per_second': '0.167', 'epoch': '1.562'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.76s/it]
+{'loss': '0.02862', 'grad_norm': '7.682', 'learning_rate': '9.947e-06', 'epoch': '1.599'}
+{'loss': '0.06224', 'grad_norm': '0.05545', 'learning_rate': '9.684e-06', 'epoch': '1.636'}
+{'eval_loss': '0.06097', 'eval_accuracy': '0.9878', 'eval_precision': '0.9919', 'eval_recall': '0.965', 'eval_f1': '0.9783', 'eval_roc_auc': '0.9983', 'eval_pr_auc': '0.9971', 'eval_fp': '17', 'eval_fn': '76', 'eval_runtime': '1365', 'eval_samples_per_second': '5.564', 'eval_steps_per_second': '0.174', 'epoch': '1.636'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.42s/it]
+{'loss': '0.04375', 'grad_norm': '0.7766', 'learning_rate': '9.42e-06', 'epoch': '1.673'}
+{'loss': '0.01798', 'grad_norm': '1.319', 'learning_rate': '9.156e-06', 'epoch': '1.71'}
+{'eval_loss': '0.05383', 'eval_accuracy': '0.9896', 'eval_precision': '0.9897', 'eval_recall': '0.9737', 'eval_f1': '0.9816', 'eval_roc_auc': '0.9985', 'eval_pr_auc': '0.9972', 'eval_fp': '22', 'eval_fn': '57', 'eval_runtime': '1556', 'eval_samples_per_second': '4.88', 'eval_steps_per_second': '0.153', 'epoch': '1.71'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:03<00:00,  3.80s/it]
+{'loss': '0.05874', 'grad_norm': '0.08669', 'learning_rate': '8.892e-06', 'epoch': '1.747'}
+{'loss': '0.06766', 'grad_norm': '16.79', 'learning_rate': '8.629e-06', 'epoch': '1.785'}
+{'eval_loss': '0.05219', 'eval_accuracy': '0.9892', 'eval_precision': '0.9883', 'eval_recall': '0.9737', 'eval_f1': '0.981', 'eval_roc_auc': '0.9985', 'eval_pr_auc': '0.9973', 'eval_fp': '25', 'eval_fn': '57', 'eval_runtime': '1574', 'eval_samples_per_second': '4.822', 'eval_steps_per_second': '0.151', 'epoch': '1.785'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.73s/it]
+{'loss': '0.0319', 'grad_norm': '0.1996', 'learning_rate': '8.365e-06', 'epoch': '1.822'}
+{'loss': '0.04357', 'grad_norm': '12.36', 'learning_rate': '8.101e-06', 'epoch': '1.859'}
+{'eval_loss': '0.04954', 'eval_accuracy': '0.9903', 'eval_precision': '0.9884', 'eval_recall': '0.9774', 'eval_f1': '0.9829', 'eval_roc_auc': '0.9984', 'eval_pr_auc': '0.9972', 'eval_fp': '25', 'eval_fn': '49', 'eval_runtime': '2152', 'eval_samples_per_second': '3.528', 'eval_steps_per_second': '0.111', 'epoch': '1.859'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.27s/it]
+{'loss': '0.0486', 'grad_norm': '18.82', 'learning_rate': '7.838e-06', 'epoch': '1.896'}
+{'loss': '0.03408', 'grad_norm': '27.34', 'learning_rate': '7.574e-06', 'epoch': '1.933'}
+{'eval_loss': '0.06847', 'eval_accuracy': '0.9864', 'eval_precision': '0.9943', 'eval_recall': '0.9581', 'eval_f1': '0.9758', 'eval_roc_auc': '0.9985', 'eval_pr_auc': '0.9974', 'eval_fp': '12', 'eval_fn': '91', 'eval_runtime': '1529', 'eval_samples_per_second': '4.966', 'eval_steps_per_second': '0.156', 'epoch': '1.933'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.16s/it]
+{'loss': '0.04968', 'grad_norm': '0.08189', 'learning_rate': '7.31e-06', 'epoch': '1.971'}
+{'loss': '0.02606', 'grad_norm': '0.03408', 'learning_rate': '7.046e-06', 'epoch': '2.007'}
+{'eval_loss': '0.05318', 'eval_accuracy': '0.9883', 'eval_precision': '0.992', 'eval_recall': '0.9668', 'eval_f1': '0.9792', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9976', 'eval_fp': '17', 'eval_fn': '72', 'eval_runtime': '1559', 'eval_samples_per_second': '4.868', 'eval_steps_per_second': '0.153', 'epoch': '2.007'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.49s/it]
+{'loss': '0.04353', 'grad_norm': '0.02547', 'learning_rate': '6.783e-06', 'epoch': '2.045'}
+{'loss': '0.05976', 'grad_norm': '0.064', 'learning_rate': '6.519e-06', 'epoch': '2.082'}
+{'eval_loss': '0.04745', 'eval_accuracy': '0.9908', 'eval_precision': '0.9884', 'eval_recall': '0.9793', 'eval_f1': '0.9838', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9977', 'eval_fp': '25', 'eval_fn': '45', 'eval_runtime': '1365', 'eval_samples_per_second': '5.561', 'eval_steps_per_second': '0.174', 'epoch': '2.082'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.30s/it]
+{'loss': '0.02602', 'grad_norm': '1.071', 'learning_rate': '6.255e-06', 'epoch': '2.119'}
+{'loss': '0.04116', 'grad_norm': '13.56', 'learning_rate': '5.992e-06', 'epoch': '2.156'}
+{'eval_loss': '0.0525', 'eval_accuracy': '0.9895', 'eval_precision': '0.9906', 'eval_recall': '0.9724', 'eval_f1': '0.9814', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9977', 'eval_fp': '20', 'eval_fn': '60', 'eval_runtime': '1511', 'eval_samples_per_second': '5.024', 'eval_steps_per_second': '0.158', 'epoch': '2.156'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.35s/it]
+{'loss': '0.05024', 'grad_norm': '17.02', 'learning_rate': '5.728e-06', 'epoch': '2.193'}
+{'loss': '0.03394', 'grad_norm': '19.22', 'learning_rate': '5.464e-06', 'epoch': '2.231'}
+{'eval_loss': '0.04635', 'eval_accuracy': '0.9914', 'eval_precision': '0.9884', 'eval_recall': '0.9816', 'eval_f1': '0.985', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9976', 'eval_fp': '25', 'eval_fn': '40', 'eval_runtime': '1343', 'eval_samples_per_second': '5.652', 'eval_steps_per_second': '0.177', 'epoch': '2.231'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.26s/it]
+{'loss': '0.03084', 'grad_norm': '0.03632', 'learning_rate': '5.2e-06', 'epoch': '2.268'}
+{'loss': '0.03371', 'grad_norm': '13.28', 'learning_rate': '4.937e-06', 'epoch': '2.305'}
+{'eval_loss': '0.04852', 'eval_accuracy': '0.9906', 'eval_precision': '0.9902', 'eval_recall': '0.977', 'eval_f1': '0.9835', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9978', 'eval_fp': '21', 'eval_fn': '50', 'eval_runtime': '1479', 'eval_samples_per_second': '5.134', 'eval_steps_per_second': '0.161', 'epoch': '2.305'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.19s/it]
+{'loss': '0.05269', 'grad_norm': '7.855', 'learning_rate': '4.673e-06', 'epoch': '2.342'}
+{'loss': '0.02791', 'grad_norm': '0.02812', 'learning_rate': '4.409e-06', 'epoch': '2.379'}
+{'eval_loss': '0.04723', 'eval_accuracy': '0.9909', 'eval_precision': '0.9897', 'eval_recall': '0.9783', 'eval_f1': '0.984', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9977', 'eval_fp': '22', 'eval_fn': '47', 'eval_runtime': '1515', 'eval_samples_per_second': '5.01', 'eval_steps_per_second': '0.157', 'epoch': '2.379'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:06<00:00,  6.44s/it]
+{'loss': '0.04904', 'grad_norm': '0.03238', 'learning_rate': '4.146e-06', 'epoch': '2.417'}
+{'loss': '0.0271', 'grad_norm': '0.07001', 'learning_rate': '3.882e-06', 'epoch': '2.454'}
+{'eval_loss': '0.05243', 'eval_accuracy': '0.9897', 'eval_precision': '0.9915', 'eval_recall': '0.9724', 'eval_f1': '0.9819', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9976', 'eval_fp': '18', 'eval_fn': '60', 'eval_runtime': '1416', 'eval_samples_per_second': '5.362', 'eval_steps_per_second': '0.168', 'epoch': '2.454'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.50s/it]
+{'loss': '0.05031', 'grad_norm': '22.91', 'learning_rate': '3.618e-06', 'epoch': '2.491'}
+{'loss': '0.04561', 'grad_norm': '14.12', 'learning_rate': '3.354e-06', 'epoch': '2.528'}
+{'eval_loss': '0.04427', 'eval_accuracy': '0.9913', 'eval_precision': '0.9893', 'eval_recall': '0.9802', 'eval_f1': '0.9847', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '23', 'eval_fn': '43', 'eval_runtime': '1138', 'eval_samples_per_second': '6.671', 'eval_steps_per_second': '0.209', 'epoch': '2.528'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.11it/s]
+{'loss': '0.03938', 'grad_norm': '0.02865', 'learning_rate': '3.091e-06', 'epoch': '2.565'}
+{'loss': '0.01337', 'grad_norm': '0.02929', 'learning_rate': '2.827e-06', 'epoch': '2.602'}
+{'eval_loss': '0.0535', 'eval_accuracy': '0.9891', 'eval_precision': '0.992', 'eval_recall': '0.9696', 'eval_f1': '0.9807', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9977', 'eval_fp': '17', 'eval_fn': '66', 'eval_runtime': '1128', 'eval_samples_per_second': '6.729', 'eval_steps_per_second': '0.211', 'epoch': '2.602'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.13it/s]
+{'loss': '0.03206', 'grad_norm': '0.04144', 'learning_rate': '2.563e-06', 'epoch': '2.64'}
+{'loss': '0.04687', 'grad_norm': '0.04977', 'learning_rate': '2.3e-06', 'epoch': '2.677'}
+{'eval_loss': '0.05327', 'eval_accuracy': '0.9899', 'eval_precision': '0.992', 'eval_recall': '0.9724', 'eval_f1': '0.9821', 'eval_roc_auc': '0.9987', 'eval_pr_auc': '0.9977', 'eval_fp': '17', 'eval_fn': '60', 'eval_runtime': '1110', 'eval_samples_per_second': '6.839', 'eval_steps_per_second': '0.214', 'epoch': '2.677'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.16it/s]
+{'loss': '0.04976', 'grad_norm': '18.28', 'learning_rate': '2.036e-06', 'epoch': '2.714'}
+{'loss': '0.03556', 'grad_norm': '0.3348', 'learning_rate': '1.772e-06', 'epoch': '2.751'}
+{'eval_loss': '0.04524', 'eval_accuracy': '0.9909', 'eval_precision': '0.9888', 'eval_recall': '0.9793', 'eval_f1': '0.984', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '24', 'eval_fn': '45', 'eval_runtime': '968.9', 'eval_samples_per_second': '7.836', 'eval_steps_per_second': '0.246', 'epoch': '2.751'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.16it/s]
+{'loss': '0.03212', 'grad_norm': '0.05623', 'learning_rate': '1.508e-06', 'epoch': '2.788'}
+{'loss': '0.02322', 'grad_norm': '0.05231', 'learning_rate': '1.245e-06', 'epoch': '2.826'}
+{'eval_loss': '0.04722', 'eval_accuracy': '0.9909', 'eval_precision': '0.9902', 'eval_recall': '0.9779', 'eval_f1': '0.984', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '21', 'eval_fn': '48', 'eval_runtime': '932.9', 'eval_samples_per_second': '8.138', 'eval_steps_per_second': '0.255', 'epoch': '2.826'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.03s/it]
+{'loss': '0.02743', 'grad_norm': '0.1014', 'learning_rate': '9.81e-07', 'epoch': '2.863'}
+{'loss': '0.02977', 'grad_norm': '0.1446', 'learning_rate': '7.173e-07', 'epoch': '2.9'}
+{'eval_loss': '0.04638', 'eval_accuracy': '0.991', 'eval_precision': '0.9897', 'eval_recall': '0.9788', 'eval_f1': '0.9842', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '22', 'eval_fn': '46', 'eval_runtime': '925.4', 'eval_samples_per_second': '8.204', 'eval_steps_per_second': '0.257', 'epoch': '2.9'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.13it/s]
+{'loss': '0.02261', 'grad_norm': '3.414', 'learning_rate': '4.536e-07', 'epoch': '2.937'}
+{'loss': '0.04673', 'grad_norm': '0.184', 'learning_rate': '1.899e-07', 'epoch': '2.974'}
+{'eval_loss': '0.04666', 'eval_accuracy': '0.991', 'eval_precision': '0.9897', 'eval_recall': '0.9788', 'eval_f1': '0.9842', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '22', 'eval_fn': '46', 'eval_runtime': '915.6', 'eval_samples_per_second': '8.292', 'eval_steps_per_second': '0.26', 'epoch': '2.974'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.13it/s]
+{'eval_loss': '0.0466', 'eval_accuracy': '0.991', 'eval_precision': '0.9897', 'eval_recall': '0.9788', 'eval_f1': '0.9842', 'eval_roc_auc': '0.9988', 'eval_pr_auc': '0.9977', 'eval_fp': '22', 'eval_fn': '46', 'eval_runtime': '925.3', 'eval_samples_per_second': '8.205', 'eval_steps_per_second': '0.257', 'epoch': '3'}
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.23it/s]
+{'train_runtime': '9.377e+04', 'train_samples_per_second': '1.376', 'train_steps_per_second': '0.043', 'train_loss': '0.08604', 'epoch': '3'}
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4035/4035 [26:02:53<00:00, 23.24s/it]
+Final student evaluation:
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 238/238 [15:45<00:00,  3.97s/it]
+{
+  "eval_loss": 0.04635358974337578,
+  "eval_accuracy": 0.9914383561643836,
+  "eval_precision": 0.988399071925754,
+  "eval_recall": 0.9815668202764977,
+  "eval_f1": 0.9849710982658959,
+  "eval_roc_auc": 0.9987447028406204,
+  "eval_pr_auc": 0.9976202575309469,
+  "eval_fp": 25.0,
+  "eval_fn": 40.0,
+  "eval_runtime": 948.085,
+  "eval_samples_per_second": 8.008,
+  "eval_steps_per_second": 0.251,
+  "epoch": 3.0
+}
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 238/238 [15:39<00:00,  3.95s/it]
+Threshold recommendations:
+{
+  "threshold_for_at_least_95_recall": {
+    "threshold": 0.993056,
+    "precision": 0.9961886612672701,
+    "recall": 0.9635944700460829,
+    "f1": 0.9796205200281096
+  },
+  "threshold_for_at_least_90_recall": {
+    "threshold": 0.998812,
+    "precision": 0.9969788519637462,
+    "recall": 0.9124423963133641,
+    "f1": 0.9528392685274302
+  },
+  "note": "Tune thresholds on your own representative Russian production validation set before deployment."
+}
+Saving model and tokenizer...
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.24it/s]
+Done. Artifacts saved to: C:\Projects\guardrails\mdeberta-ru-prompt-injection\mdeberta-ru-prompt-injection-v7-full
+Also wrote inference_example.py into the output directory.
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection>
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection>
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection>
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection>
+(.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection>
 (.venv) PS C:\Projects\guardrails\mdeberta-ru-prompt-injection> uv run python analyze_training_data.py --dataset-dir training-dataset-v7-full --validation-dataset-dir training-dataset-v7-full-validation | Tee-Object -FilePath training-dataset-v7-full-analysis.txt
 
 dataset: training
