@@ -103,6 +103,95 @@ Most commands assume the project root as the working directory:
 cd C:\Projects\guardrails\mdeberta-ru-prompt-injection
 ```
 
+## Full Workflow
+
+Use this sequence for a complete rebuild and release.
+
+1. Install dependencies:
+
+```powershell
+uv sync
+```
+
+2. Build the v9 coverage dataset:
+
+```powershell
+uv run python build_v9_coverage_dataset.py
+```
+
+3. Validate dataset coverage and split integrity:
+
+```powershell
+uv run python analyze_training_data.py `
+  --dataset-dir training-dataset-v9-coverage `
+  --validation-dataset-dir training-dataset-v9-coverage-validation `
+  --tokenizer-model .\mdeberta-ru-prompt-injection-v8-complete-ft `
+  --json-report-path training-dataset-v9-coverage-validator-report.json `
+  | Tee-Object -FilePath training-dataset-v9-coverage-validator-report.txt
+```
+
+4. Choose a training path:
+
+Use the fine-tune path when iterating on top of the current v8/v9 line. Use the from-scratch path when preparing a clean release candidate from the base `microsoft/mdeberta-v3-base` checkpoint.
+
+5. Fine-tune from v8:
+
+```powershell
+uv run python train_mdeberta_ru_prompt_injection_option_b.py `
+  --student-model .\mdeberta-ru-prompt-injection-v8-complete-ft `
+  --prepared-dataset-dir training-dataset-v9-coverage `
+  --output-dir mdeberta-ru-prompt-injection-v9-coverage-ft `
+  --learning-rate 5e-6 `
+  --epochs 1 `
+  --distill-weight 0.0 `
+  --last-n-layers 2 `
+  --no-trainer-auto-resume `
+  --rebuild-stage-cache
+```
+
+6. Or train from scratch from the base model:
+
+```powershell
+uv run python train_mdeberta_ru_prompt_injection_option_b.py `
+  --student-model microsoft/mdeberta-v3-base `
+  --prepared-dataset-dir training-dataset-v9-coverage `
+  --output-dir mdeberta-ru-prompt-injection-v9-coverage-scratch `
+  --teacher-model protectai/deberta-v3-base-prompt-injection-v2 `
+  --teacher-distill-mode benign_only `
+  --distill-weight 0.02 `
+  --last-n-layers 2 `
+  --epochs 3 `
+  --learning-rate 2e-5 `
+  --no-trainer-auto-resume `
+  --rebuild-stage-cache
+```
+
+The from-scratch path is slower because it starts from the base model and, with `--distill-weight 0.02`, scores the teacher model before training. If you want a hard-label-only from-scratch run, set `--distill-weight 0.0`.
+
+7. Stress-test the trained artifact:
+
+```powershell
+uv run python sample.py `
+  --model-id .\mdeberta-ru-prompt-injection-v9-coverage-ft `
+  --validation-dataset training-dataset-v9-coverage-validation `
+  --threshold 0.839796 `
+  --no-parent-comparison `
+  | Tee-Object -FilePath stress-v9-coverage-ft-on-v9-coverage-validation-threshold-0.839796.json
+```
+
+For a from-scratch artifact, replace `.\mdeberta-ru-prompt-injection-v9-coverage-ft` with `.\mdeberta-ru-prompt-injection-v9-coverage-scratch` and adjust the output filename.
+
+8. Publish after reviewing the staged files:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\publish_to_hf.ps1 `
+  -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection" `
+  -SkipUpload
+
+powershell -NoProfile -ExecutionPolicy Bypass -File .\publish_to_hf.ps1 `
+  -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection"
+```
+
 ## Build the v9 Dataset
 
 Build the current coverage dataset:
@@ -159,11 +248,24 @@ uv run python train_mdeberta_ru_prompt_injection_option_b.py `
 
 This fine-tunes classifier, pooler, and the last 2 encoder layers. It does not train from scratch.
 
-To train from the base model instead, change `--student-model`:
+For a full release candidate from the base model, train from scratch:
 
 ```powershell
---student-model microsoft/mdeberta-v3-base
+uv run python train_mdeberta_ru_prompt_injection_option_b.py `
+  --student-model microsoft/mdeberta-v3-base `
+  --prepared-dataset-dir training-dataset-v9-coverage `
+  --output-dir mdeberta-ru-prompt-injection-v9-coverage-scratch `
+  --teacher-model protectai/deberta-v3-base-prompt-injection-v2 `
+  --teacher-distill-mode benign_only `
+  --distill-weight 0.02 `
+  --last-n-layers 2 `
+  --epochs 3 `
+  --learning-rate 2e-5 `
+  --no-trainer-auto-resume `
+  --rebuild-stage-cache
 ```
+
+This starts from `microsoft/mdeberta-v3-base`, not from an existing local detector checkpoint. It is the cleanest way to produce a final release candidate after the dataset shape has stabilized.
 
 ## Stress Test
 
@@ -297,7 +399,7 @@ Review upstream dataset cards and licenses before redistribution or commercial u
 ## Limitations
 
 - The model is optimized mainly for Russian and mixed Russian-English text.
-- It may miss novel obfuscation, domain-specific jailbreaks, or attacks outside the validation distribution.
+- Novel obfuscation, domain-specific jailbreaks, and attacks outside the validation distribution cannot be fully eliminated by training alone. Broader adversarial data and production feedback can reduce this risk, but not remove it.
 - It may flag benign quoted or discussed attack phrases when the surrounding context is ambiguous.
 - It should not be the only security boundary. Use logging, policy checks, allow/deny rules, and human review for high-risk workflows.
 - Production threshold should be calibrated on representative traffic.
