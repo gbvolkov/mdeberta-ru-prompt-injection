@@ -66,9 +66,14 @@ class BuildConfig:
     max_embedded_prompt_injection_attacks: int
     max_deep_embedded_prompt_injection_attacks: int
     max_embedded_quoted_hard_negatives: int
+    max_short_embedded_exfiltration_attacks: int
+    max_short_exfiltration_hard_negatives: int
+    short_exfiltration_phrase_bank_path: str
+    short_exfiltration_min_carrier_chars: int
     max_c4_ru: int
     embedded_only: bool
     deep_embedded_only: bool
+    short_exfiltration_only: bool
     benign_to_attack_ratio: float
     no_benign_bucket_targets: bool
     no_length_balanced_sampling: bool
@@ -161,6 +166,35 @@ def parse_args() -> BuildConfig:
         ),
     )
     parser.add_argument(
+        "--max-short-embedded-exfiltration-attacks",
+        type=int,
+        default=10000,
+        help=(
+            "Synthetic short positives where bare exfiltration/override snippets are embedded into real benign "
+            "carrier text from external benign datasets."
+        ),
+    )
+    parser.add_argument(
+        "--max-short-exfiltration-hard-negatives",
+        type=int,
+        default=10000,
+        help=(
+            "Synthetic benign quoted/discussion hard negatives using the same dangerous phrases embedded into "
+            "real benign carrier text from external benign datasets."
+        ),
+    )
+    parser.add_argument(
+        "--short-exfiltration-phrase-bank-path",
+        default="short_exfiltration_phrase_variants_v1.json",
+        help="JSON phrase/template bank for short exfiltration augmentation.",
+    )
+    parser.add_argument(
+        "--short-exfiltration-min-carrier-chars",
+        type=int,
+        default=600,
+        help="Minimum character length for real benign carrier texts used by short exfiltration augmentation.",
+    )
+    parser.add_argument(
         "--max-c4-ru",
         type=int,
         default=0,
@@ -178,6 +212,14 @@ def parse_args() -> BuildConfig:
         "--deep-embedded-only",
         action="store_true",
         help="Build only the deep embedded prompt-injection augmentation dataset.",
+    )
+    parser.add_argument(
+        "--short-exfiltration-only",
+        action="store_true",
+        help=(
+            "Build only the short exfiltration augmentation dataset. Real benign source datasets are still loaded "
+            "as carriers, but the carrier rows themselves are not emitted."
+        ),
     )
     parser.add_argument("--alpaca-cache-dir", default=None)
     parser.add_argument("--alpaca-local-files-only", action="store_true")
@@ -1625,12 +1667,274 @@ def make_embedded_quoted_hard_negatives(cfg: BuildConfig) -> Dataset:
     )
 
 
+def make_short_exfiltration_augmentation(
+    cfg: BuildConfig,
+    real_benign_parts: list[Dataset],
+) -> tuple[Dataset, set[str]]:
+    total_positive = cfg.max_short_embedded_exfiltration_attacks
+    total_negative = cfg.max_short_exfiltration_hard_negatives
+    if total_positive <= 0 and total_negative <= 0:
+        return Dataset.from_list([]), set()
+
+    phrase_bank = load_short_exfiltration_phrase_bank(cfg.short_exfiltration_phrase_bank_path)
+    carriers = collect_real_benign_carriers(
+        real_benign_parts,
+        min_chars=cfg.short_exfiltration_min_carrier_chars,
+    )
+    if not carriers:
+        raise ValueError(
+            "No real benign carrier rows available for short exfiltration augmentation. "
+            "Enable at least one external benign source or lower --short-exfiltration-min-carrier-chars."
+        )
+
+    rows: list[dict[str, Any]] = []
+    used_carrier_hashes: set[str] = set()
+    train_positive, validation_positive = split_synthetic_counts(total_positive, cfg.validation_size)
+    train_negative, validation_negative = split_synthetic_counts(total_negative, cfg.validation_size)
+    rows.extend(
+        make_short_exfiltration_rows_for_split(
+            cfg=cfg,
+            phrase_bank=phrase_bank,
+            carriers=carriers,
+            split_hint="train",
+            count=train_positive,
+            label=1,
+            seed=cfg.seed + 20260516,
+            used_carrier_hashes=used_carrier_hashes,
+        )
+    )
+    rows.extend(
+        make_short_exfiltration_rows_for_split(
+            cfg=cfg,
+            phrase_bank=phrase_bank,
+            carriers=carriers,
+            split_hint="validation",
+            count=validation_positive,
+            label=1,
+            seed=cfg.seed + 20260517,
+            used_carrier_hashes=used_carrier_hashes,
+        )
+    )
+    rows.extend(
+        make_short_exfiltration_rows_for_split(
+            cfg=cfg,
+            phrase_bank=phrase_bank,
+            carriers=carriers,
+            split_hint="train",
+            count=train_negative,
+            label=0,
+            seed=cfg.seed + 20260518,
+            used_carrier_hashes=used_carrier_hashes,
+        )
+    )
+    rows.extend(
+        make_short_exfiltration_rows_for_split(
+            cfg=cfg,
+            phrase_bank=phrase_bank,
+            carriers=carriers,
+            split_hint="validation",
+            count=validation_negative,
+            label=0,
+            seed=cfg.seed + 20260519,
+            used_carrier_hashes=used_carrier_hashes,
+        )
+    )
+    return rows_to_dataset(rows), used_carrier_hashes
+
+
 def split_synthetic_counts(total: int, validation_size: float) -> tuple[int, int]:
     if total <= 1:
         return total, 0
     validation_count = max(1, int(round(total * validation_size)))
     validation_count = min(validation_count, total - 1)
     return total - validation_count, validation_count
+
+
+def load_short_exfiltration_phrase_bank(path: str) -> dict[str, Any]:
+    bank_path = Path(path)
+    if not bank_path.is_absolute():
+        bank_path = Path(__file__).resolve().parent / bank_path
+    with bank_path.open("r", encoding="utf-8") as f:
+        bank = json.load(f)
+    required = {"phrase_families", "positive_snippet_templates", "benign_snippet_templates", "snippet_joiners"}
+    missing = required.difference(bank)
+    if missing:
+        raise ValueError(f"Short exfiltration phrase bank is missing keys: {sorted(missing)}")
+    return bank
+
+
+def make_short_exfiltration_rows_for_split(
+    cfg: BuildConfig,
+    phrase_bank: dict[str, Any],
+    carriers: list[dict[str, str]],
+    split_hint: str,
+    count: int,
+    label: int,
+    seed: int,
+    used_carrier_hashes: set[str],
+) -> list[dict[str, Any]]:
+    if count <= 0:
+        return []
+
+    rng = random.Random(seed)
+    split_carriers = partition_carriers(carriers, split_hint)
+    if not split_carriers:
+        split_carriers = carriers
+    split_carriers = list(split_carriers)
+    rng.shuffle(split_carriers)
+    reserved_carrier_count = min(len(split_carriers), max(128, count // 3))
+    split_carriers = split_carriers[:reserved_carrier_count]
+    phrases = phrase_bank_phrases_for_split(phrase_bank, split_hint)
+    templates = phrase_bank_templates_for_split(phrase_bank, split_hint, label)
+    joiners = list(phrase_bank.get("snippet_joiners") or [" {snippet} "])
+    target_chars = list(phrase_bank.get("recommended_generation", {}).get("target_text_char_lengths") or [128, 180, 240, 320])
+    rows: list[dict[str, Any]] = []
+    attempts = 0
+    max_attempts = max(count * 80, 1000)
+    while len(rows) < count and attempts < max_attempts:
+        attempts += 1
+        carrier = rng.choice(split_carriers)
+        phrase = rng.choice(phrases)
+        template = rng.choice(templates)
+        phrase_text = apply_phrase_surface_variation(str(phrase["text"]), rng)
+        snippet = normalize_text(str(template["text"]).format(phrase=phrase_text))
+        insertion = normalize_text(rng.choice(joiners).format(snippet=snippet))
+        position = rng.choice(["prefix", "middle", "suffix"])
+        embedded, start, end = embed_text_at_position(carrier["text"], insertion, position, rng)
+        text = crop_around_span(embedded, start, end, rng.choice(target_chars))
+        if not within_length(text, cfg):
+            continue
+
+        carrier_hash = carrier["hash"]
+        used_carrier_hashes.add(carrier_hash)
+        if label == 1:
+            bucket = "short_embedded_exfiltration_attack"
+            source_name = "manual_short_embedded_exfiltration_pool"
+            text_unit = "short_attack_context_window"
+        else:
+            bucket = str(template.get("bucket", "short_exfiltration_discussion_hard_negative"))
+            source_name = "manual_short_exfiltration_hard_negative_pool"
+            text_unit = "short_quoted_attack_window" if "quoted" in bucket else "short_discussion_attack_window"
+
+        carrier_source = slugify_parent_id(carrier.get("source_name", "unknown"))
+        rows.append(
+            {
+                "text": text,
+                "label": label,
+                "source_name": source_name,
+                "bucket": bucket,
+                "language": infer_language(text),
+                "text_unit": text_unit,
+                "parent_id": f"real_benign_carrier:{carrier_source}:{split_hint}:{carrier_hash}",
+                "split_hint": split_hint,
+            }
+        )
+    if len(rows) < count:
+        raise ValueError(
+            f"Generated only {len(rows):,}/{count:,} short exfiltration rows for split={split_hint} label={label}."
+        )
+    return rows
+
+
+def phrase_bank_phrases_for_split(phrase_bank: dict[str, Any], split_hint: str) -> list[dict[str, str]]:
+    phrases: list[dict[str, str]] = []
+    for family in phrase_bank["phrase_families"]:
+        family_id = str(family["family_id"])
+        for phrase in partition_pool(list(family["base_phrases"]), split_hint):
+            phrases.append(
+                {
+                    "family_id": family_id,
+                    "phrase_id": str(phrase.get("id", "")),
+                    "language": str(phrase.get("language", "")),
+                    "text": str(phrase["text"]),
+                }
+            )
+    if not phrases:
+        raise ValueError("Short exfiltration phrase bank has no phrases for split.")
+    return phrases
+
+
+def phrase_bank_templates_for_split(
+    phrase_bank: dict[str, Any],
+    split_hint: str,
+    label: int,
+) -> list[dict[str, Any]]:
+    key = "positive_snippet_templates" if label == 1 else "benign_snippet_templates"
+    templates = partition_pool(list(phrase_bank[key]), split_hint)
+    if not templates:
+        raise ValueError(f"Short exfiltration phrase bank has no templates for {key}.")
+    return templates
+
+
+def apply_phrase_surface_variation(phrase: str, rng: random.Random) -> str:
+    phrase = normalize_text(phrase)
+    variant = rng.choice(["as_is", "as_is", "as_is", "capitalized", "period", "exclamation"])
+    if variant == "capitalized" and phrase:
+        return phrase[:1].upper() + phrase[1:]
+    if variant == "period":
+        return phrase.rstrip(".!?") + "."
+    if variant == "exclamation":
+        return phrase.rstrip(".!?") + "!"
+    return phrase
+
+
+def collect_real_benign_carriers(
+    real_benign_parts: list[Dataset],
+    min_chars: int,
+) -> list[dict[str, str]]:
+    carriers: list[dict[str, str]] = []
+    seen_hashes: set[str] = set()
+    for part in real_benign_parts:
+        for row in part:
+            if int(row["label"]) != 0:
+                continue
+            source_name = str(row.get("source_name", ""))
+            if source_name.startswith("manual_"):
+                continue
+            text = normalize_text(row.get("text"))
+            if len(text) < min_chars or not weak_injection_filter_for_benign(text):
+                continue
+            text_hash = stable_text_hash(text)
+            if text_hash in seen_hashes:
+                continue
+            seen_hashes.add(text_hash)
+            carriers.append(
+                {
+                    "text": text,
+                    "hash": text_hash,
+                    "source_name": source_name,
+                }
+            )
+    return carriers
+
+
+def partition_carriers(carriers: list[dict[str, str]], split_hint: str) -> list[dict[str, str]]:
+    if len(carriers) < 4:
+        return carriers
+    ordered = sorted(carriers, key=lambda item: item["hash"])
+    cut = max(1, int(round(len(ordered) * 0.75)))
+    if split_hint == "validation":
+        return ordered[cut:] or ordered[-1:]
+    return ordered[:cut] or ordered[:1]
+
+
+def stable_text_hash(text: str) -> str:
+    normalized = normalize_text(text).lower()
+    return hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:16]
+
+
+def slugify_parent_id(value: str) -> str:
+    slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", value).strip("_")
+    return slug or "unknown"
+
+
+def filter_used_carriers_from_parts(parts: list[Dataset], used_hashes: set[str]) -> list[Dataset]:
+    if not used_hashes:
+        return parts
+    filtered = []
+    for part in parts:
+        filtered.append(part.filter(lambda row: stable_text_hash(str(row["text"])) not in used_hashes))
+    return filtered
 
 
 def make_embedded_attack_rows(cfg: BuildConfig, total: int, seed_offset: int) -> list[dict[str, Any]]:
@@ -1683,7 +1987,7 @@ def make_embedded_attack_rows_for_split(
             {
                 "text": text,
                 "label": 1,
-                "source_name": f"manual_embedded_prompt_injection_{split_hint}_pool",
+                "source_name": "manual_embedded_prompt_injection_pool",
                 "bucket": "embedded_indirect_attack",
                 "language": infer_language(text),
                 "text_unit": "attack_centered_window",
@@ -1744,7 +2048,7 @@ def make_deep_embedded_attack_rows_for_split(
             {
                 "text": text,
                 "label": 1,
-                "source_name": f"manual_deep_embedded_prompt_injection_{split_hint}_pool",
+                "source_name": "manual_deep_embedded_prompt_injection_pool",
                 "bucket": f"deep_embedded_indirect_attack_{script_size}",
                 "language": infer_language(text),
                 "text_unit": "deep_attack_context_window",
@@ -1807,7 +2111,7 @@ def make_embedded_quoted_hard_negative_rows_for_split(
             {
                 "text": text,
                 "label": 0,
-                "source_name": f"manual_embedded_quoted_hard_negative_{split_hint}_pool",
+                "source_name": "manual_embedded_quoted_hard_negative_pool",
                 "bucket": "benign_hard_negative",
                 "language": infer_language(text),
                 "text_unit": "quoted_attack_window",
@@ -2226,6 +2530,43 @@ def build_dataset(cfg: BuildConfig) -> tuple[DatasetDict, dict[str, Any]]:
             ),
         ]
 
+    def load_real_benign_parts() -> list[Dataset]:
+        return [
+            load_or_skip("OASST Russian benign", cfg, lambda: load_oasst_ru_benign(cfg), errors),
+            load_or_skip("Alpaca Russian benign", cfg, lambda: load_alpaca_ru_benign(cfg), errors),
+            load_or_skip("GrandMaster Russian benign", cfg, lambda: load_grandmaster_benign(cfg), errors),
+            load_or_skip("Russian instructions benign", cfg, lambda: load_ru_instructions_benign(cfg), errors),
+            load_or_skip("Russian news benign", cfg, lambda: load_ru_news_benign(cfg), errors),
+            load_or_skip("Russian sentiment benign", cfg, lambda: load_ru_sentiment_benign(cfg), errors),
+            load_or_skip("Russian bank reviews benign", cfg, lambda: load_ru_bank_reviews_benign(cfg), errors),
+        ]
+
+    def load_manual_and_hard_benign_parts() -> list[Dataset]:
+        return [
+            load_or_skip("NotInject benign", cfg, lambda: load_notinject_benign(cfg), errors),
+            load_or_skip("Manual hard negatives", cfg, lambda: make_manual_hard_negatives(cfg), errors),
+            load_or_skip(
+                "Manual benign document fragments",
+                cfg,
+                lambda: make_manual_benign_document_fragments(cfg),
+                errors,
+            ),
+        ]
+
+    def load_short_exfiltration_part(real_benign_parts: list[Dataset]) -> tuple[Dataset, set[str]]:
+        try:
+            ds, used_hashes = make_short_exfiltration_augmentation(cfg, real_benign_parts)
+            print(f"Short embedded exfiltration augmentation: {len(ds):,} rows")
+            print(f"Short exfiltration real benign carriers used: {len(used_hashes):,}")
+            return ds, used_hashes
+        except Exception as exc:
+            message = f"Short embedded exfiltration augmentation: {type(exc).__name__}: {exc}"
+            if cfg.allow_unverified_schemas:
+                print(f"Skipping {message}")
+                errors.append(message)
+                return Dataset.from_list([]), set()
+            raise
+
     if cfg.deep_embedded_only:
         parts = [
             load_or_skip(
@@ -2235,10 +2576,23 @@ def build_dataset(cfg: BuildConfig) -> tuple[DatasetDict, dict[str, Any]]:
                 errors,
             )
         ]
+    elif cfg.short_exfiltration_only:
+        real_benign_parts = load_real_benign_parts()
+        short_part, _ = load_short_exfiltration_part(real_benign_parts)
+        parts = [short_part]
     elif cfg.embedded_only:
-        parts = load_embedded_parts()
+        real_benign_parts = load_real_benign_parts()
+        short_part, _ = load_short_exfiltration_part(real_benign_parts)
+        parts = [*load_embedded_parts(), short_part]
     else:
         embedded_parts = load_embedded_parts()
+        real_benign_parts = load_real_benign_parts()
+        short_part, used_carrier_hashes = load_short_exfiltration_part(real_benign_parts)
+        real_benign_parts = filter_used_carriers_from_parts(real_benign_parts, used_carrier_hashes)
+        if used_carrier_hashes:
+            remaining = sum(len(part) for part in real_benign_parts)
+            print(f"External benign rows after reserving short-exfiltration carriers: {remaining:,}")
+        manual_and_hard_benign_parts = load_manual_and_hard_benign_parts()
         parts = [
             load_or_skip("dmtrdr attacks", cfg, lambda: load_dmtrdr_attacks(cfg), errors),
             load_or_skip("jackhhao mixed", cfg, lambda: load_jackhhao(cfg), errors),
@@ -2253,23 +2607,11 @@ def build_dataset(cfg: BuildConfig) -> tuple[DatasetDict, dict[str, Any]]:
                 errors,
             ),
             *embedded_parts,
-            load_or_skip("OASST Russian benign", cfg, lambda: load_oasst_ru_benign(cfg), errors),
-            load_or_skip("Alpaca Russian benign", cfg, lambda: load_alpaca_ru_benign(cfg), errors),
-            load_or_skip("GrandMaster Russian benign", cfg, lambda: load_grandmaster_benign(cfg), errors),
-            load_or_skip("Russian instructions benign", cfg, lambda: load_ru_instructions_benign(cfg), errors),
-            load_or_skip("Russian news benign", cfg, lambda: load_ru_news_benign(cfg), errors),
-            load_or_skip("Russian sentiment benign", cfg, lambda: load_ru_sentiment_benign(cfg), errors),
-            load_or_skip("Russian bank reviews benign", cfg, lambda: load_ru_bank_reviews_benign(cfg), errors),
-            load_or_skip("NotInject benign", cfg, lambda: load_notinject_benign(cfg), errors),
-            load_or_skip("Manual hard negatives", cfg, lambda: make_manual_hard_negatives(cfg), errors),
-            load_or_skip(
-                "Manual benign document fragments",
-                cfg,
-                lambda: make_manual_benign_document_fragments(cfg),
-                errors,
-            ),
+            short_part,
+            *real_benign_parts,
+            *manual_and_hard_benign_parts,
         ]
-    if not cfg.embedded_only and cfg.max_c4_ru > 0:
+    if not cfg.embedded_only and not cfg.short_exfiltration_only and not cfg.deep_embedded_only and cfg.max_c4_ru > 0:
         parts.append(load_or_skip("C4 Russian benign", cfg, lambda: load_c4_ru_benign(cfg), errors))
 
     non_empty = [part for part in parts if len(part) > 0]
@@ -2625,11 +2967,12 @@ def run_checks(report: dict[str, Any]) -> list[dict[str, str]]:
     config = report.get("config", {})
     embedded_only = bool(config.get("embedded_only", False))
     deep_embedded_only = bool(config.get("deep_embedded_only", False))
-    augmentation_only = embedded_only or deep_embedded_only
+    short_exfiltration_only = bool(config.get("short_exfiltration_only", False))
+    augmentation_only = embedded_only or deep_embedded_only or short_exfiltration_only
     train_labels = report["splits"]["train"]["labels"]
     benign = train_labels.get("benign", 0)
     attacks = train_labels.get("prompt_injection", 0)
-    if benign < attacks and not deep_embedded_only:
+    if benign < attacks and not deep_embedded_only and not short_exfiltration_only:
         checks.append(
             {
                 "level": "warning",
@@ -2666,7 +3009,7 @@ def run_checks(report: dict[str, Any]) -> list[dict[str, str]]:
             }
         )
     hard_negatives = train["label_bucket"].get("benign|benign_hard_negative", {}).get("rows", 0)
-    if hard_negatives < 1000 and not deep_embedded_only:
+    if hard_negatives < 1000 and not deep_embedded_only and not short_exfiltration_only:
         checks.append(
             {
                 "level": "warning",

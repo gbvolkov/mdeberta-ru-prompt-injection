@@ -1,0 +1,733 @@
+{
+  "dataset_dir": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\tmp-deep-embedded-dataset",
+  "validation_dataset_dir": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\tmp-deep-embedded-validation",
+  "tokenizer_model": ".\\mdeberta-ru-prompt-injection-v8-complete-ft",
+  "gates": {
+    "max_source_share": 0.35,
+    "max_distribution_jsd": 0.15,
+    "min_critical_bucket_rows": 200,
+    "critical_buckets": [
+      "short_embedded_exfiltration_attack",
+      "deep_embedded_indirect_attack_short",
+      "deep_embedded_indirect_attack_medium",
+      "deep_embedded_indirect_attack_long",
+      "embedded_indirect_attack",
+      "benign_hard_negative",
+      "benign_document"
+    ]
+  },
+  "splits": [
+    {
+      "dataset": "training",
+      "split": "train",
+      "path": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\tmp-deep-embedded-dataset",
+      "rows": 51,
+      "composition": {
+        "labels": {
+          "1": 51
+        },
+        "sources": {
+          "manual_deep_embedded_prompt_injection_train_pool": 51
+        },
+        "buckets": {
+          "deep_embedded_indirect_attack_short": 23,
+          "deep_embedded_indirect_attack_medium": 16,
+          "deep_embedded_indirect_attack_long": 12
+        },
+        "languages": {
+          "ru": 51
+        },
+        "text_units": {
+          "deep_attack_context_window": 51
+        },
+        "source_entropy": 0.0,
+        "source_effective_count": 1.0,
+        "bucket_entropy": 1.0632635480250523,
+        "bucket_effective_count": 2.895806187346256,
+        "top_source_share": 1.0,
+        "top_bucket_share": 0.45098039215686275
+      },
+      "length_bins": {
+        "0513-1024": {
+          "rows": 23,
+          "benign": 0,
+          "attack": 23,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 826.6,
+            "p50": 760,
+            "p90": 900,
+            "min": 758,
+            "max": 900
+          }
+        },
+        "1025-2048": {
+          "rows": 28,
+          "benign": 0,
+          "attack": 28,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 1163.2,
+            "p50": 1080,
+            "p90": 1240,
+            "min": 1038,
+            "max": 1420
+          }
+        }
+      },
+      "token_and_windows": {
+        "token_length_stats": {
+          "avg": 302.8,
+          "p50": 307,
+          "p90": 375,
+          "min": 211,
+          "max": 441
+        },
+        "token_length_bins": {
+          "0129-0256": 12,
+          "0257-0512": 39
+        },
+        "window_count_stats": {
+          "avg": 1.9,
+          "p50": 2,
+          "p90": 2,
+          "min": 1,
+          "max": 3
+        },
+        "window_count_bins": {
+          "1": 12,
+          "2": 34,
+          "3": 5
+        },
+        "label_token_length_bins": {
+          "1|0129-0256": 12,
+          "1|0257-0512": 39
+        },
+        "label_window_count_bins": {
+          "1|1": 12,
+          "1|2": 34,
+          "1|3": 5
+        }
+      },
+      "taxonomy": {
+        "phrase_family_or_intent": {
+          "other_or_unmatched_attack": 28,
+          "system_prompt_exfiltration": 11,
+          "hidden_instruction_exfiltration": 4,
+          "developer_message_exfiltration": 4,
+          "instruction_override": 4
+        },
+        "attack_strength": {
+          "other_attack": 10,
+          "bare_or_exfiltration_command": 19,
+          "long_jailbreak_or_document_attack": 18,
+          "explicit_override": 4
+        },
+        "attack_surface": {
+          "html_or_comment": 10,
+          "ocr_like": 9,
+          "metadata_or_structured_field": 9,
+          "plain_text": 17,
+          "markdown_or_code_block": 6
+        },
+        "attack_position": {
+          "no_known_phrase": 28,
+          "middle": 23
+        },
+        "wrapper": {
+          "html_or_comment": 10,
+          "ocr_like": 9,
+          "metadata_or_structured_field": 9,
+          "plain_text": 17,
+          "markdown_or_code_block": 6
+        },
+        "attack_window_count_bins": {
+          "1": 12,
+          "2": 34,
+          "3": 5
+        }
+      },
+      "phrase_families": {
+        "system_prompt_exfiltration": {
+          "rows": 11,
+          "attack_rows": 11,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": 0.0
+        },
+        "hidden_instruction_exfiltration": {
+          "rows": 4,
+          "attack_rows": 4,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": 0.0
+        },
+        "developer_message_exfiltration": {
+          "rows": 4,
+          "attack_rows": 4,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": 0.0
+        },
+        "instruction_override": {
+          "rows": 4,
+          "attack_rows": 4,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": 0.0
+        },
+        "tool_or_secret_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        }
+      },
+      "text_quality": {
+        "flag_counts": {
+          "mixed_cyrillic_latin": 5
+        },
+        "examples": {
+          "mixed_cyrillic_latin": [
+            {
+              "index": 15,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_train_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "справке перечислены адреса, даты и имена. К. С. Станиславский упоминается рядом с домом 14; сведения приведены по архивной описи. - Поварская улица, дом 79: архивный корпус; около "
+            },
+            {
+              "index": 22,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_train_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "тенка и помета о сверке с оригиналом. Архивная строка распознана не полностью: видны номер 19, фамилия Елена Васильевна Сафонова, название улицы Кривоарбатский переулок и помета о "
+            },
+            {
+              "index": 30,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_train_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "ейной карточке. Кратко о теме: топонимический комментарий, Кривоарбатский переулок. В справке перечислены адреса, даты и имена. Елена Васильевна Сафонова упоминается рядом с домом "
+            },
+            {
+              "index": 41,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_train_pool",
+              "bucket": "deep_embedded_indirect_attack_medium",
+              "text_preview": "а о сверке с оригиналом. Фрагмент документа для поиска: топонимический комментарий, Кривоарбатский переулок, 1929 год. Текст используется как источник фактов, а не как инструкция и"
+            },
+            {
+              "index": 46,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_train_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "около 1894 года. Материал и авторство уточняются по музейной карточке. Каталог: дом, инвентарный номер 2208, датировка около 1961 года. Материал и авторство уточняются по музейной "
+            }
+          ]
+        }
+      },
+      "duplicates": {
+        "exact_duplicate_texts": 0,
+        "exact_duplicate_rows": 0,
+        "normalized_duplicate_texts": 0,
+        "normalized_duplicate_rows": 0,
+        "conflicting_normalized_label_texts": 0,
+        "conflicting_normalized_label_examples": []
+      },
+      "issues": [
+        "only one label present: {1: 51}",
+        "top source share 1.000 exceeds 0.350"
+      ]
+    },
+    {
+      "dataset": "training",
+      "split": "validation",
+      "path": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\tmp-deep-embedded-dataset",
+      "rows": 9,
+      "composition": {
+        "labels": {
+          "1": 9
+        },
+        "sources": {
+          "manual_deep_embedded_prompt_injection_validation_pool": 9
+        },
+        "buckets": {
+          "deep_embedded_indirect_attack_medium": 3,
+          "deep_embedded_indirect_attack_short": 4,
+          "deep_embedded_indirect_attack_long": 2
+        },
+        "languages": {
+          "ru": 9
+        },
+        "text_units": {
+          "deep_attack_context_window": 9
+        },
+        "source_entropy": 0.0,
+        "source_effective_count": 1.0,
+        "bucket_entropy": 1.0608569471580214,
+        "bucket_effective_count": 2.8888455168024434,
+        "top_source_share": 1.0,
+        "top_bucket_share": 0.4444444444444444
+      },
+      "length_bins": {
+        "0513-1024": {
+          "rows": 5,
+          "benign": 0,
+          "attack": 5,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 843.6,
+            "p50": 899,
+            "p90": 900,
+            "min": 759,
+            "max": 900
+          }
+        },
+        "1025-2048": {
+          "rows": 4,
+          "benign": 0,
+          "attack": 4,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 1109.8,
+            "p50": 1080,
+            "p90": 1240,
+            "min": 1040,
+            "max": 1240
+          }
+        }
+      },
+      "token_and_windows": {
+        "token_length_stats": {
+          "avg": 287.2,
+          "p50": 281,
+          "p90": 342,
+          "min": 217,
+          "max": 362
+        },
+        "token_length_bins": {
+          "0129-0256": 2,
+          "0257-0512": 7
+        },
+        "window_count_stats": {
+          "avg": 1.8,
+          "p50": 2,
+          "p90": 2,
+          "min": 1,
+          "max": 2
+        },
+        "window_count_bins": {
+          "1": 2,
+          "2": 7
+        },
+        "label_token_length_bins": {
+          "1|0129-0256": 2,
+          "1|0257-0512": 7
+        },
+        "label_window_count_bins": {
+          "1|1": 2,
+          "1|2": 7
+        }
+      },
+      "taxonomy": {
+        "phrase_family_or_intent": {
+          "other_or_unmatched_attack": 9
+        },
+        "attack_strength": {
+          "long_jailbreak_or_document_attack": 4,
+          "other_attack": 5
+        },
+        "attack_surface": {
+          "metadata_or_structured_field": 1,
+          "ocr_like": 2,
+          "plain_text": 3,
+          "markdown_or_code_block": 2,
+          "html_or_comment": 1
+        },
+        "attack_position": {
+          "no_known_phrase": 9
+        },
+        "wrapper": {
+          "metadata_or_structured_field": 1,
+          "ocr_like": 2,
+          "plain_text": 3,
+          "markdown_or_code_block": 2,
+          "html_or_comment": 1
+        },
+        "attack_window_count_bins": {
+          "2": 7,
+          "1": 2
+        }
+      },
+      "phrase_families": {
+        "system_prompt_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "hidden_instruction_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "developer_message_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "instruction_override": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "tool_or_secret_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        }
+      },
+      "text_quality": {
+        "flag_counts": {
+          "mixed_cyrillic_latin": 1
+        },
+        "examples": {
+          "mixed_cyrillic_latin": [
+            {
+              "index": 2,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_validation_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "Мейерхольд. Фрагмент нужен для краеведческого указателя и сверки источников. Биографическая заметка: М. А. Врубель кратко упоминается в описании района. Запись содержит адрес, пери"
+            }
+          ]
+        }
+      },
+      "duplicates": {
+        "exact_duplicate_texts": 0,
+        "exact_duplicate_rows": 0,
+        "normalized_duplicate_texts": 0,
+        "normalized_duplicate_rows": 0,
+        "conflicting_normalized_label_texts": 0,
+        "conflicting_normalized_label_examples": []
+      },
+      "issues": [
+        "only one label present: {1: 9}",
+        "top source share 1.000 exceeds 0.350",
+        "critical bucket missing: short_embedded_exfiltration_attack",
+        "critical bucket deep_embedded_indirect_attack_short has 4 rows, below 200",
+        "critical bucket deep_embedded_indirect_attack_medium has 3 rows, below 200",
+        "critical bucket deep_embedded_indirect_attack_long has 2 rows, below 200",
+        "critical bucket missing: embedded_indirect_attack",
+        "critical bucket missing: benign_hard_negative",
+        "critical bucket missing: benign_document",
+        "phrase family system_prompt_exfiltration has only 0 short attack rows",
+        "phrase family hidden_instruction_exfiltration has only 0 short attack rows",
+        "phrase family developer_message_exfiltration has only 0 short attack rows"
+      ]
+    },
+    {
+      "dataset": "validation",
+      "split": "dataset",
+      "path": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\tmp-deep-embedded-validation",
+      "rows": 9,
+      "composition": {
+        "labels": {
+          "1": 9
+        },
+        "sources": {
+          "manual_deep_embedded_prompt_injection_validation_pool": 9
+        },
+        "buckets": {
+          "deep_embedded_indirect_attack_medium": 3,
+          "deep_embedded_indirect_attack_short": 4,
+          "deep_embedded_indirect_attack_long": 2
+        },
+        "languages": {
+          "ru": 9
+        },
+        "text_units": {
+          "deep_attack_context_window": 9
+        },
+        "source_entropy": 0.0,
+        "source_effective_count": 1.0,
+        "bucket_entropy": 1.0608569471580214,
+        "bucket_effective_count": 2.8888455168024434,
+        "top_source_share": 1.0,
+        "top_bucket_share": 0.4444444444444444
+      },
+      "length_bins": {
+        "0513-1024": {
+          "rows": 5,
+          "benign": 0,
+          "attack": 5,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 843.6,
+            "p50": 899,
+            "p90": 900,
+            "min": 759,
+            "max": 900
+          }
+        },
+        "1025-2048": {
+          "rows": 4,
+          "benign": 0,
+          "attack": 4,
+          "benign_to_attack_ratio": 0.0,
+          "lengths": {
+            "avg": 1109.8,
+            "p50": 1080,
+            "p90": 1240,
+            "min": 1040,
+            "max": 1240
+          }
+        }
+      },
+      "token_and_windows": {
+        "token_length_stats": {
+          "avg": 287.2,
+          "p50": 281,
+          "p90": 342,
+          "min": 217,
+          "max": 362
+        },
+        "token_length_bins": {
+          "0129-0256": 2,
+          "0257-0512": 7
+        },
+        "window_count_stats": {
+          "avg": 1.8,
+          "p50": 2,
+          "p90": 2,
+          "min": 1,
+          "max": 2
+        },
+        "window_count_bins": {
+          "1": 2,
+          "2": 7
+        },
+        "label_token_length_bins": {
+          "1|0129-0256": 2,
+          "1|0257-0512": 7
+        },
+        "label_window_count_bins": {
+          "1|1": 2,
+          "1|2": 7
+        }
+      },
+      "taxonomy": {
+        "phrase_family_or_intent": {
+          "other_or_unmatched_attack": 9
+        },
+        "attack_strength": {
+          "long_jailbreak_or_document_attack": 4,
+          "other_attack": 5
+        },
+        "attack_surface": {
+          "metadata_or_structured_field": 1,
+          "ocr_like": 2,
+          "plain_text": 3,
+          "markdown_or_code_block": 2,
+          "html_or_comment": 1
+        },
+        "attack_position": {
+          "no_known_phrase": 9
+        },
+        "wrapper": {
+          "metadata_or_structured_field": 1,
+          "ocr_like": 2,
+          "plain_text": 3,
+          "markdown_or_code_block": 2,
+          "html_or_comment": 1
+        },
+        "attack_window_count_bins": {
+          "2": 7,
+          "1": 2
+        }
+      },
+      "phrase_families": {
+        "system_prompt_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "hidden_instruction_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "developer_message_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "instruction_override": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        },
+        "tool_or_secret_exfiltration": {
+          "rows": 0,
+          "attack_rows": 0,
+          "benign_rows": 0,
+          "benign_quoted_or_discussed_rows": 0,
+          "short_attack_rows": 0,
+          "quoted_negative_to_attack_ratio": null
+        }
+      },
+      "text_quality": {
+        "flag_counts": {
+          "mixed_cyrillic_latin": 1
+        },
+        "examples": {
+          "mixed_cyrillic_latin": [
+            {
+              "index": 2,
+              "label": 1,
+              "source_name": "manual_deep_embedded_prompt_injection_validation_pool",
+              "bucket": "deep_embedded_indirect_attack_long",
+              "text_preview": "Мейерхольд. Фрагмент нужен для краеведческого указателя и сверки источников. Биографическая заметка: М. А. Врубель кратко упоминается в описании района. Запись содержит адрес, пери"
+            }
+          ]
+        }
+      },
+      "duplicates": {
+        "exact_duplicate_texts": 0,
+        "exact_duplicate_rows": 0,
+        "normalized_duplicate_texts": 0,
+        "normalized_duplicate_rows": 0,
+        "conflicting_normalized_label_texts": 0,
+        "conflicting_normalized_label_examples": []
+      },
+      "issues": [
+        "only one label present: {1: 9}",
+        "top source share 1.000 exceeds 0.350",
+        "critical bucket missing: short_embedded_exfiltration_attack",
+        "critical bucket deep_embedded_indirect_attack_short has 4 rows, below 200",
+        "critical bucket deep_embedded_indirect_attack_medium has 3 rows, below 200",
+        "critical bucket deep_embedded_indirect_attack_long has 2 rows, below 200",
+        "critical bucket missing: embedded_indirect_attack",
+        "critical bucket missing: benign_hard_negative",
+        "critical bucket missing: benign_document",
+        "phrase family system_prompt_exfiltration has only 0 short attack rows",
+        "phrase family hidden_instruction_exfiltration has only 0 short attack rows",
+        "phrase family developer_message_exfiltration has only 0 short attack rows"
+      ]
+    }
+  ],
+  "cross_split_integrity": {
+    "comparisons": [
+      {
+        "train_split": "training/train",
+        "validation_split": "training/validation",
+        "shared_exact_texts": 0,
+        "shared_normalized_texts": 0,
+        "shared_parent_ids": 0
+      },
+      {
+        "train_split": "training/train",
+        "validation_split": "validation/dataset",
+        "shared_exact_texts": 0,
+        "shared_normalized_texts": 0,
+        "shared_parent_ids": 0
+      }
+    ]
+  },
+  "distribution_drift": {
+    "comparisons": [
+      {
+        "train_split": "training/train",
+        "validation_split": "training/validation",
+        "label_jsd": 0.0,
+        "source_jsd": 1.0,
+        "bucket_jsd": 0.00036626768853647435,
+        "language_jsd": 0.0,
+        "text_unit_jsd": 0.0,
+        "length_bin_jsd": 0.007903413390187797,
+        "token_length_bin_jsd": 0.0001746792280923103,
+        "window_count_bin_jsd": 0.05224006064548554
+      },
+      {
+        "train_split": "training/train",
+        "validation_split": "validation/dataset",
+        "label_jsd": 0.0,
+        "source_jsd": 1.0,
+        "bucket_jsd": 0.00036626768853647435,
+        "language_jsd": 0.0,
+        "text_unit_jsd": 0.0,
+        "length_bin_jsd": 0.007903413390187797,
+        "token_length_bin_jsd": 0.0001746792280923103,
+        "window_count_bin_jsd": 0.05224006064548554
+      }
+    ],
+    "split_report_keys": [
+      "('training', 'train')",
+      "('training', 'validation')",
+      "('validation', 'dataset')"
+    ]
+  },
+  "issues": [
+    "training/train: only one label present: {1: 51}",
+    "training/train: top source share 1.000 exceeds 0.350",
+    "training/validation: only one label present: {1: 9}",
+    "training/validation: top source share 1.000 exceeds 0.350",
+    "training/validation: critical bucket missing: short_embedded_exfiltration_attack",
+    "training/validation: critical bucket deep_embedded_indirect_attack_short has 4 rows, below 200",
+    "training/validation: critical bucket deep_embedded_indirect_attack_medium has 3 rows, below 200",
+    "training/validation: critical bucket deep_embedded_indirect_attack_long has 2 rows, below 200",
+    "training/validation: critical bucket missing: embedded_indirect_attack",
+    "training/validation: critical bucket missing: benign_hard_negative",
+    "training/validation: critical bucket missing: benign_document",
+    "training/validation: phrase family system_prompt_exfiltration has only 0 short attack rows",
+    "training/validation: phrase family hidden_instruction_exfiltration has only 0 short attack rows",
+    "training/validation: phrase family developer_message_exfiltration has only 0 short attack rows",
+    "validation/dataset: only one label present: {1: 9}",
+    "validation/dataset: top source share 1.000 exceeds 0.350",
+    "validation/dataset: critical bucket missing: short_embedded_exfiltration_attack",
+    "validation/dataset: critical bucket deep_embedded_indirect_attack_short has 4 rows, below 200",
+    "validation/dataset: critical bucket deep_embedded_indirect_attack_medium has 3 rows, below 200",
+    "validation/dataset: critical bucket deep_embedded_indirect_attack_long has 2 rows, below 200",
+    "validation/dataset: critical bucket missing: embedded_indirect_attack",
+    "validation/dataset: critical bucket missing: benign_hard_negative",
+    "validation/dataset: critical bucket missing: benign_document",
+    "validation/dataset: phrase family system_prompt_exfiltration has only 0 short attack rows",
+    "validation/dataset: phrase family hidden_instruction_exfiltration has only 0 short attack rows",
+    "validation/dataset: phrase family developer_message_exfiltration has only 0 short attack rows",
+    "training/train -> training/validation source_jsd=1.0000 exceeds 0.1500",
+    "training/train -> validation/dataset source_jsd=1.0000 exceeds 0.1500"
+  ]
+}

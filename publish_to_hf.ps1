@@ -4,6 +4,7 @@ Prepare and upload the trained Russian prompt-injection detector to Hugging Face
 Examples:
   .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection" -SkipUpload
   .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection"
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection" -SkipUpload
 
 Before uploading:
   hf auth login
@@ -36,14 +37,16 @@ $OutputEncoding = [System.Text.UTF8Encoding]::new()
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
 
+$DefaultModelVersion = "v9-coverage-ft"
+
 if ([string]::IsNullOrWhiteSpace($SourceDir)) {
-    $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-v6"
+    $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-$DefaultModelVersion"
 }
 if ([string]::IsNullOrWhiteSpace($StagingDir)) {
-    $StagingDir = Join-Path $PSScriptRoot "hf-upload"
+    $StagingDir = Join-Path $PSScriptRoot "hf-upload-$DefaultModelVersion"
 }
 if ([string]::IsNullOrWhiteSpace($ReadmePath)) {
-    $ReadmePath = Join-Path $PSScriptRoot "README.md"
+    $ReadmePath = Join-Path $PSScriptRoot "MODEL_CARD_V9.md"
 }
 
 if ($RepoId -match "YOUR(_HF)?_USERNAME") {
@@ -78,6 +81,15 @@ function Copy-IfExists([string]$FromDir, [string]$Pattern, [string]$ToDir) {
         Copy-Item -LiteralPath $file.FullName -Destination (Join-Path $ToDir $file.Name) -Force
     }
     return @($files).Count
+}
+
+function Copy-ProjectFileIfExists([string]$FileName, [string]$ToDir) {
+    $filePath = Join-Path $PSScriptRoot $FileName
+    if (Test-Path -LiteralPath $filePath) {
+        Copy-Item -LiteralPath $filePath -Destination (Join-Path $ToDir $FileName) -Force
+        return 1
+    }
+    return 0
 }
 
 function Require-StagedFile([string]$Pattern, [string]$Message) {
@@ -159,6 +171,15 @@ if (Test-Path -LiteralPath $sampleScript) {
     Copy-Item -LiteralPath $sampleScript -Destination (Join-Path $StagePath "sample.py") -Force
 }
 
+$evaluationArtifacts = @(
+    "training-dataset-v9-coverage-validator-report.json",
+    "stress-v9-coverage-ft-on-v9-coverage-validation-threshold-0.5.json",
+    "stress-v9-coverage-ft-on-v9-coverage-validation-threshold-0.839796.json"
+)
+foreach ($artifact in $evaluationArtifacts) {
+    [void](Copy-ProjectFileIfExists $artifact $StagePath)
+}
+
 Require-StagedFile "README.md" "README.md was not staged."
 Require-StagedFile "config.json" "config.json was not found in source model directory."
 
@@ -192,7 +213,8 @@ Write-Host "Total staged size: $totalGb GB"
 
 Write-Host "`nExcluded by construction: checkpoint-*/, stage-cache/, preflight-check*/, optimizer.pt, scheduler.pt, rng_state.pth."
 
-$uploadCommand = "hf upload $RepoId `"$StagePath`" . --commit-message `"Upload mDeBERTa Russian prompt-injection detector`""
+$commitMessage = "Upload mDeBERTa Russian prompt-injection detector $DefaultModelVersion"
+$uploadCommand = "hf upload $RepoId `"$StagePath`" . --commit-message `"$commitMessage`""
 if ($SkipUpload) {
     Write-Host "`nSkipUpload set. Review staged files, then run:"
     Write-Host "  $uploadCommand"
@@ -207,7 +229,6 @@ Write-Host "`nChecking Hugging Face authentication..."
 Invoke-Hf auth whoami
 
 Write-Host "`nUploading to Hugging Face..."
-Invoke-Hf upload $RepoId $StagePath "." --commit-message "Upload mDeBERTa Russian prompt-injection detector"
+Invoke-Hf upload $RepoId $StagePath "." --commit-message $commitMessage
 
 Write-Host "`nDone. Model repo: https://huggingface.co/$RepoId"
-
