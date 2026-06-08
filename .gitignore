@@ -8,6 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+.venv*/
 
 #data
 hf-dataset-cache
@@ -17,9 +18,25 @@ mdeberta-ru-prompt-injection-35-65
 hf-upload*/
 training-dataset*/
 training-dataset-validation*/
+*.json*
+!*summary.json*
+!*report.json*
 benign-stress-validation/
 mdeberta-ru-prompt-injection*/
+validation-comparison*/
 tmp*/
+arc/*
 
 #secrets
 .env
+
+arc/*.tgz
+arc/*.exe
+*.tgz
+false-positive-review-*.jsonl
+false-positive-corpus-documents.jsonl
+benign-prod-*.jsonl
+malicious-document-*.jsonl
+v*-document-splits.jsonl
+logs/*.log
+arc/logs/*.log

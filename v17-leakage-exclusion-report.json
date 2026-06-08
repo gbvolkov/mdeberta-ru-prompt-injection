@@ -1,0 +1,260 @@
+{
+  "excluded_counts": {
+    "attack_template_ids": 1780,
+    "attack_text_hashes": 1780,
+    "carrier_document_ids": 2640,
+    "generated_instance_ids": 0,
+    "source_document_ids": 41325,
+    "text_hashes": 40792
+  },
+  "index_files": [],
+  "jsonl_files": [
+    {
+      "path": "v16-proper-validation-suite\\dropped-malicious-dev-documents-without-visible-attack.jsonl",
+      "rows_with_text": 339
+    },
+    {
+      "path": "v16-proper-validation-suite\\proper-benign-prod-dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "v16-proper-validation-suite\\proper-benign-windows.jsonl",
+      "rows_with_text": 2266
+    },
+    {
+      "path": "v16-proper-validation-suite\\proper-critical-attack-windows.jsonl",
+      "rows_with_text": 3512
+    },
+    {
+      "path": "v16-proper-validation-suite\\proper-malicious-dev-documents.jsonl",
+      "rows_with_text": 1161
+    },
+    {
+      "path": "v13-benign-validation-corpus.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "v13-critical-ru-validation-corpus.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "v13-critical-ru-validation-false-negatives-threshold-0.95.jsonl",
+      "rows_with_text": 35
+    },
+    {
+      "path": "v13-critical-ru-validation-results.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "v13-validation-window-corpus.jsonl",
+      "rows_with_text": 4000
+    },
+    {
+      "path": "v14-diagnostic-errors-used-for-training.jsonl",
+      "rows_with_text": 186
+    },
+    {
+      "path": "v15-diagnostic-errors-used-for-training.jsonl",
+      "rows_with_text": 191
+    },
+    {
+      "path": "v16-diagnostic-errors-used-for-training.jsonl",
+      "rows_with_text": 341
+    },
+    {
+      "path": "v16-error-inspection-benign-prod-dev-fp-at-0.95.jsonl",
+      "rows_with_text": 58
+    },
+    {
+      "path": "v16-error-inspection-benign-prod-dev-fp-at-0.99.jsonl",
+      "rows_with_text": 35
+    },
+    {
+      "path": "v16-error-inspection-critical-ru-fn-at-0.95.jsonl",
+      "rows_with_text": 27
+    },
+    {
+      "path": "v16-exact-attack-inputs-27-critical-ru-fn.jsonl",
+      "rows_with_text": 27
+    },
+    {
+      "path": "v16-exact-attack-inputs-train.jsonl",
+      "rows_with_text": 23436
+    },
+    {
+      "path": "v16-exact-attack-inputs-validation.jsonl",
+      "rows_with_text": 3734
+    },
+    {
+      "path": "validation-comparison-progress-smoke\\v13\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 3
+    },
+    {
+      "path": "validation-comparison-progress-smoke\\v13\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 3
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v10\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v10\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v10\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v10\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v11\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v11\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v11\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v11\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v12\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v12\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v12\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v12\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v13\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v13\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v13\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v13\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v15\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v15\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v15\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v13-core\\v15\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v10\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v10\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v11\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v11\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v12\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v12\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v13\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v13-smoke\\v13\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2
+    },
+    {
+      "path": "validation-comparison-v10-v14-core\\v14\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v10-v14-core\\v14\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v10-v14-core\\v14\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v10-v14-core\\v14\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v13\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v13\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v13\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v13\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v16\\benign_prod_dev-documents.jsonl",
+      "rows_with_text": 3000
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v16\\malicious_dev-documents.jsonl",
+      "rows_with_text": 1500
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v16\\v13_benign_windows-documents.jsonl",
+      "rows_with_text": 1166
+    },
+    {
+      "path": "validation-comparison-v13-v16-core\\v16\\v13_critical_ru-documents.jsonl",
+      "rows_with_text": 2459
+    }
+  ],
+  "note": "Previous artifacts are used only as an exclusion index, never as V17 row sources.",
+  "prepared_dataset_dirs_read_for_exclusion_only": [],
+  "total_exclusion_values": 88317
+}

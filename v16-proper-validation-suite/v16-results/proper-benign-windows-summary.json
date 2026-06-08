@@ -1,0 +1,463 @@
+{
+  "by_category": {
+    "admin_instructions": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.015375585936884312
+      ],
+      "documents": 246,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 246,
+      "tp": 0
+    },
+    "corporate_procedures": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.02147968846835207
+      ],
+      "documents": 175,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 175,
+      "tp": 0
+    },
+    "hr_policies": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        3.469446951953614e-18,
+        0.038475587857675686
+      ],
+      "documents": 96,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 96,
+      "tp": 0
+    },
+    "job_descriptions": {
+      "benign_fp_rate": 0.0011210762331838565,
+      "benign_fp_rate_ci95": [
+        0.00019792490216542996,
+        0.006322714172056425
+      ],
+      "documents": 892,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 1,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 891,
+      "tp": 0
+    },
+    "knowledge_base": {
+      "benign_fp_rate": 0.024390243902439025,
+      "benign_fp_rate_ci95": [
+        0.006714370331163358,
+        0.08463378391063939
+      ],
+      "documents": 82,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 2,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 80,
+      "tp": 0
+    },
+    "legal_templates": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        1.734723475976807e-18,
+        0.02261790994594346
+      ],
+      "documents": 166,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 166,
+      "tp": 0
+    },
+    "meeting_minutes": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.05580153132285689
+      ],
+      "documents": 65,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 65,
+      "tp": 0
+    },
+    "safety_policies": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        1.734723475976807e-18,
+        0.027275057024116055
+      ],
+      "documents": 137,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 137,
+      "tp": 0
+    },
+    "support_documentation": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.016934553501221267
+      ],
+      "documents": 223,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 223,
+      "tp": 0
+    },
+    "technical_documentation": {
+      "benign_fp_rate": 0.0223463687150838,
+      "benign_fp_rate_ci95": [
+        0.008723574404384326,
+        0.056039958423838215
+      ],
+      "documents": 179,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 4,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 175,
+      "tp": 0
+    },
+    "unsafe_non_injection": {
+      "benign_fp_rate": 0.4,
+      "benign_fp_rate_ci95": [
+        0.11762077423264783,
+        0.769275718723987
+      ],
+      "documents": 5,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 2,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 3,
+      "tp": 0
+    }
+  },
+  "by_language": {
+    "en": {
+      "benign_fp_rate": 0.006259780907668232,
+      "benign_fp_rate_ci95": [
+        0.0024369200740174957,
+        0.01598357639243245
+      ],
+      "documents": 639,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 4,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 635,
+      "tp": 0
+    },
+    "ru": {
+      "benign_fp_rate": 0.003073140749846343,
+      "benign_fp_rate_ci95": [
+        0.0013133545023453967,
+        0.007173956600662288
+      ],
+      "documents": 1627,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 5,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 1622,
+      "tp": 0
+    }
+  },
+  "by_window_count_bucket": {
+    "1": {
+      "benign_fp_rate": 0.002840909090909091,
+      "benign_fp_rate_ci95": [
+        0.0012140582642004177,
+        0.006633279007227898
+      ],
+      "documents": 1760,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 5,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 1755,
+      "tp": 0
+    },
+    "2-4": {
+      "benign_fp_rate": 0.007905138339920948,
+      "benign_fp_rate_ci95": [
+        0.003078324487124551,
+        0.020147442299445553
+      ],
+      "documents": 506,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 4,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 502,
+      "tp": 0
+    }
+  },
+  "corpus_path": ".\\v16-proper-validation-suite\\proper-benign-windows.jsonl",
+  "documents": 2266,
+  "exclusion": {
+    "mode": "eval_only"
+  },
+  "labels": {
+    "not_prompt_injection": 2266,
+    "prompt_injection": 0
+  },
+  "malicious_by_semantic_family": {},
+  "model_id": ".\\mdeberta-ru-prompt-injection-v16-critical-recall-restoration-ft",
+  "primary_metrics": {
+    "benign_fp_rate": 0.003971756398940865,
+    "benign_fp_rate_ci95": [
+      0.0020909758588302553,
+      0.007531484219082828
+    ],
+    "documents": 2266,
+    "f1": 0.0,
+    "fn": 0,
+    "fp": 9,
+    "malicious_recall_ci95": [
+      0.0,
+      0.0
+    ],
+    "precision": 0.0,
+    "recall": 0.0,
+    "threshold": 0.95,
+    "tn": 2257,
+    "tp": 0
+  },
+  "primary_threshold": 0.95,
+  "threshold_metrics": {
+    "0.82": {
+      "benign_fp_rate": 0.005736981465136805,
+      "benign_fp_rate_ci95": [
+        0.0033558253098574355,
+        0.009791109999095104
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 13,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.82,
+      "tn": 2253,
+      "tp": 0
+    },
+    "0.9": {
+      "benign_fp_rate": 0.0048543689320388345,
+      "benign_fp_rate_ci95": [
+        0.0027127819854631807,
+        0.008671915707969631
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 11,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.9,
+      "tn": 2255,
+      "tp": 0
+    },
+    "0.95": {
+      "benign_fp_rate": 0.003971756398940865,
+      "benign_fp_rate_ci95": [
+        0.0020909758588302553,
+        0.007531484219082828
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 9,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.95,
+      "tn": 2257,
+      "tp": 0
+    },
+    "0.99": {
+      "benign_fp_rate": 0.002206531332744925,
+      "benign_fp_rate_ci95": [
+        0.0009428551640938677,
+        0.005155129682779761
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 5,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.99,
+      "tn": 2261,
+      "tp": 0
+    },
+    "0.999": {
+      "benign_fp_rate": 0.000441306266548985,
+      "benign_fp_rate_ci95": [
+        7.790564032898782e-05,
+        0.0024956039755051865
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 1,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.999,
+      "tn": 2265,
+      "tp": 0
+    },
+    "0.9995": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0016923908080743102
+      ],
+      "documents": 2266,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.0,
+        0.0
+      ],
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.9995,
+      "tn": 2266,
+      "tp": 0
+    }
+  },
+  "windows": 2772
+}

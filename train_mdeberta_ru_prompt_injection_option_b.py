@@ -7,8 +7,9 @@ Train a Russian prompt-injection detector with option B:
     Main signal: Russian hard labels
     Auxiliary signal: conservative benign-only teacher distillation, default weight = 0.02
 
-The script is designed for local CPU training. It freezes most of mDeBERTa by
-default and trains the classification head plus the last N encoder layers.
+The script supports both local CPU training and CUDA training. It freezes most
+of mDeBERTa by default and trains the classification head plus the last N
+encoder layers.
 
 Install:
     pip install -U torch transformers datasets accelerate scikit-learn sentencepiece protobuf huggingface-hub zstandard
@@ -36,6 +37,7 @@ Restart behavior:
 
 Example CPU run:
     python train_mdeberta_ru_prompt_injection_option_b.py \
+        --device cpu \
         --output-dir ./mdeberta-ru-prompt-injection-35-65 \
         --max-attacks 12000 \
         --max-benign-oasst 8000 \
@@ -45,6 +47,19 @@ Example CPU run:
         --teacher-distill-mode benign_only \
         --last-n-layers 2 \
         --epochs 3
+
+Example CUDA BF16 run:
+    python train_mdeberta_ru_prompt_injection_option_b.py \
+        --device cuda \
+        --bf16 \
+        --prepared-dataset-dir ./training-dataset-v10-benign-coverage \
+        --student-model ./mdeberta-ru-prompt-injection-v9-coverage-ft \
+        --output-dir ./mdeberta-ru-prompt-injection-v10-benign-ft \
+        --train-batch-size 32 \
+        --eval-batch-size 64 \
+        --gradient-accumulation-steps 1 \
+        --epochs 1 \
+        --learning-rate 3e-6
 
 For a faster smoke test:
     python train_mdeberta_ru_prompt_injection_option_b.py \
@@ -76,6 +91,7 @@ import random
 import re
 import shutil
 import warnings
+from contextlib import nullcontext
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
@@ -134,12 +150,18 @@ class RunConfig:
     warmup_ratio: float
     optim: str
     checkpoint_steps: int
+    save_total_limit: int
     preflight_steps: int
     preflight_only: bool
     train_batch_size: int
     eval_batch_size: int
     gradient_accumulation_steps: int
     teacher_batch_size: int
+    device: str
+    teacher_device: str
+    fp16: bool
+    bf16: bool
+    tf32: Optional[bool]
     skip_teacher: bool
     skip_alpaca: bool
     add_manual_attacks: bool
@@ -208,7 +230,7 @@ def parse_args() -> RunConfig:
         "--last-n-layers",
         type=int,
         default=2,
-        help="CPU-friendly. 0 = classifier only; 2 = classifier + last 2 layers; 12 = full encoder fine-tune.",
+        help="0 = classifier only; 2 = classifier + last 2 layers; 12 = full encoder fine-tune.",
     )
     parser.add_argument("--epochs", type=float, default=3.0)
     parser.add_argument("--learning-rate", type=float, default=2e-5)
@@ -224,6 +246,15 @@ def parse_args() -> RunConfig:
         type=int,
         default=100,
         help="Save and evaluate every N optimizer steps.",
+    )
+    parser.add_argument(
+        "--save-total-limit",
+        type=int,
+        default=2,
+        help=(
+            "Maximum retained Trainer checkpoints. Increase for external document-level "
+            "checkpoint selection; e.g. 15 for V11 corrective runs."
+        ),
     )
     parser.add_argument(
         "--preflight-steps",
@@ -243,6 +274,34 @@ def parse_args() -> RunConfig:
     parser.add_argument("--eval-batch-size", type=int, default=32)
     parser.add_argument("--gradient-accumulation-steps", type=int, default=4)
     parser.add_argument("--teacher-batch-size", type=int, default=16)
+    parser.add_argument(
+        "--device",
+        choices=["auto", "cpu", "cuda"],
+        default="auto",
+        help="Training device. auto uses CUDA when available, otherwise CPU.",
+    )
+    parser.add_argument(
+        "--teacher-device",
+        choices=["auto", "cpu", "cuda"],
+        default="auto",
+        help="Teacher scoring device. auto follows the resolved training device.",
+    )
+    parser.add_argument(
+        "--fp16",
+        action="store_true",
+        help="Use CUDA AMP FP16 training/inference. Model weights are still loaded and saved as FP32.",
+    )
+    parser.add_argument(
+        "--bf16",
+        action="store_true",
+        help="Use CUDA AMP BF16 training/inference. Prefer this over FP16 on GPUs with BF16 support.",
+    )
+    parser.add_argument(
+        "--tf32",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Enable or disable NVIDIA TF32 matmul for FP32 CUDA runs. Default leaves PyTorch unchanged.",
+    )
     parser.add_argument("--skip-alpaca", action="store_true")
     parser.add_argument(
         "--add-manual-attacks",
@@ -361,6 +420,94 @@ def teacher_is_enabled(cfg: RunConfig) -> bool:
     return not cfg.skip_teacher and cfg.distill_weight > 0.0
 
 
+def resolve_training_device(cfg: RunConfig) -> torch.device:
+    if cfg.device == "cpu":
+        return torch.device("cpu")
+    if cfg.device == "cuda":
+        if not torch.cuda.is_available():
+            raise RuntimeError("--device cuda was requested, but torch.cuda.is_available() is false.")
+        return torch.device("cuda")
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    return torch.device("cpu")
+
+
+def resolve_teacher_device(cfg: RunConfig, training_device: Optional[torch.device] = None) -> torch.device:
+    training_device = training_device or resolve_training_device(cfg)
+    if cfg.teacher_device == "cpu":
+        return torch.device("cpu")
+    if cfg.teacher_device == "cuda":
+        if not torch.cuda.is_available():
+            raise RuntimeError("--teacher-device cuda was requested, but torch.cuda.is_available() is false.")
+        return torch.device("cuda")
+    return training_device if training_device.type == "cuda" else torch.device("cpu")
+
+
+def mixed_precision_dtype(cfg: RunConfig, device: torch.device) -> Optional[torch.dtype]:
+    if device.type != "cuda":
+        return None
+    if cfg.bf16:
+        return torch.bfloat16
+    if cfg.fp16:
+        return torch.float16
+    return None
+
+
+def autocast_context(cfg: RunConfig, device: torch.device) -> Any:
+    dtype = mixed_precision_dtype(cfg, device)
+    if dtype is None:
+        return nullcontext()
+    return torch.autocast(device_type=device.type, dtype=dtype)
+
+
+def precision_label(cfg: RunConfig, device: torch.device) -> str:
+    if device.type != "cuda":
+        return "fp32"
+    if cfg.bf16:
+        return "bf16_amp"
+    if cfg.fp16:
+        return "fp16_amp"
+    if cfg.tf32 is True:
+        return "fp32_tf32_matmul"
+    if cfg.tf32 is False:
+        return "fp32_no_tf32_matmul"
+    return "fp32"
+
+
+def validate_runtime_config(cfg: RunConfig) -> None:
+    if cfg.fp16 and cfg.bf16:
+        raise ValueError("Choose only one mixed precision mode: --fp16 or --bf16.")
+
+    training_device = resolve_training_device(cfg)
+    resolve_teacher_device(cfg, training_device)
+
+    if training_device.type == "cpu" and (cfg.fp16 or cfg.bf16):
+        raise ValueError("--fp16/--bf16 require CUDA training. Use --device cuda or remove mixed precision.")
+
+    if cfg.bf16 and not torch.cuda.is_bf16_supported():
+        raise ValueError(
+            "--bf16 was requested, but this CUDA device does not report BF16 support. "
+            "Use --fp16 or FP32 instead."
+        )
+
+
+def configure_accelerator(cfg: RunConfig) -> None:
+    training_device = resolve_training_device(cfg)
+    teacher_device = resolve_teacher_device(cfg, training_device)
+
+    if torch.cuda.is_available() and cfg.tf32 is not None:
+        torch.backends.cuda.matmul.allow_tf32 = bool(cfg.tf32)
+        torch.backends.cudnn.allow_tf32 = bool(cfg.tf32)
+
+    print("Accelerator:")
+    print(f"  training device           : {training_device}")
+    if training_device.type == "cuda":
+        print(f"  CUDA device               : {torch.cuda.get_device_name(training_device)}")
+    print(f"  training precision        : {precision_label(cfg, training_device)}")
+    print(f"  teacher scoring device    : {teacher_device}")
+    print(f"  teacher precision         : {precision_label(cfg, teacher_device)}")
+
+
 def download_alpaca_data_file(cfg: RunConfig) -> str:
     """Download or resolve the raw ru_turbo_alpaca JSONL/Zstandard data file."""
     return hf_hub_download(
@@ -393,7 +540,7 @@ def assert_model_parameters_float32(model: torch.nn.Module, context: str) -> Non
     dtypes = sorted({str(param.dtype) for param in model.parameters()})
     if dtypes != ["torch.float32"]:
         raise TypeError(
-            f"{context} must be loaded in torch.float32 for CPU training/inference stability; "
+            f"{context} must be loaded in torch.float32 for optimizer and checkpoint stability; "
             f"found parameter dtypes: {dtypes}"
         )
     print(f"{context} parameter dtype: torch.float32")
@@ -434,6 +581,10 @@ def stage_cache_payload(stage: str, cfg: RunConfig) -> Dict[str, Any]:
             "enabled": teacher_is_enabled(cfg),
             "teacher_model": cfg.teacher_model,
             "max_len": cfg.max_len,
+            "teacher_device": cfg.teacher_device,
+            "fp16": cfg.fp16,
+            "bf16": cfg.bf16,
+            "tf32": cfg.tf32,
         }
 
     if stage == "tokenized":
@@ -1078,12 +1229,14 @@ def add_teacher_scores(ds: Dataset, cfg: RunConfig, split_name: str) -> Dataset:
     if not teacher_is_enabled(cfg):
         return ds.map(lambda _: {"teacher_p1": 0.5})
 
-    print(f"Scoring ProtectAI teacher for {split_name} split on CPU...")
+    training_device = resolve_training_device(cfg)
+    teacher_device = resolve_teacher_device(cfg, training_device)
+    print(f"Scoring ProtectAI teacher for {split_name} split on {teacher_device}...")
     tokenizer = AutoTokenizer.from_pretrained(cfg.teacher_model)
     teacher = AutoModelForSequenceClassification.from_pretrained(cfg.teacher_model, dtype=torch.float32)
     assert_model_parameters_float32(teacher, "Teacher model")
     teacher.eval()
-    teacher.to("cpu")
+    teacher.to(teacher_device)
 
     injection_idx = get_injection_class_index(teacher)
 
@@ -1095,9 +1248,11 @@ def add_teacher_scores(ds: Dataset, cfg: RunConfig, split_name: str) -> Dataset:
             max_length=cfg.max_len,
             return_tensors="pt",
         )
+        enc = {key: tensor.to(teacher_device) for key, tensor in enc.items()}
         with torch.no_grad():
-            logits = teacher(**enc).logits
-            probs = torch.softmax(logits, dim=-1)[:, injection_idx].cpu().numpy()
+            with autocast_context(cfg, teacher_device):
+                logits = teacher(**enc).logits
+            probs = torch.softmax(logits.float(), dim=-1)[:, injection_idx].cpu().numpy()
         return {"teacher_p1": probs.astype(float).tolist()}
 
     scored = ds.map(score_batch, batched=True, batch_size=cfg.teacher_batch_size)
@@ -1278,14 +1433,14 @@ class DistillationTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-def freeze_for_cpu(model: AutoModelForSequenceClassification, last_n_layers: int) -> None:
+def freeze_trainable_layers(model: AutoModelForSequenceClassification, last_n_layers: int) -> None:
     """
-    Freeze most of mDeBERTa for CPU-friendly training.
+    Freeze most of mDeBERTa for parameter-efficient training.
 
     last_n_layers:
         0  -> classifier/pooler only
         2  -> classifier/pooler + last two encoder layers, good CPU default
-        12 -> full encoder, much slower on CPU
+        12 -> full encoder fine-tune
     """
     last_n_layers = max(0, int(last_n_layers))
 
@@ -1301,7 +1456,8 @@ def freeze_for_cpu(model: AutoModelForSequenceClassification, last_n_layers: int
             layers = model.deberta.encoder.layer
         except AttributeError as exc:
             raise AttributeError(
-                "Could not find model.deberta.encoder.layer. Inspect the model architecture and update freeze_for_cpu()."
+                "Could not find model.deberta.encoder.layer. Inspect the model architecture and update "
+                "freeze_trainable_layers()."
             ) from exc
 
         for layer in layers[-last_n_layers:]:
@@ -1390,6 +1546,7 @@ def make_training_arguments(
     sig = inspect.signature(TrainingArguments.__init__)
     params = set(sig.parameters.keys())
     checkpoint_steps = max(1, int(cfg.checkpoint_steps))
+    training_device = resolve_training_device(cfg)
 
     kwargs: Dict[str, Any] = {
         "output_dir": output_dir or cfg.output_dir,
@@ -1406,16 +1563,21 @@ def make_training_arguments(
         "save_steps": checkpoint_steps,
         "eval_steps": checkpoint_steps,
         "logging_steps": logging_steps if logging_steps is not None else min(50, checkpoint_steps),
-        "save_total_limit": 2,
+        "save_total_limit": max(1, int(cfg.save_total_limit)),
         "load_best_model_at_end": load_best_model_at_end,
         "metric_for_best_model": "f1",
         "greater_is_better": True,
         "report_to": "none",
         "dataloader_num_workers": cfg.num_workers,
         "remove_unused_columns": False,
-        "fp16": False,
-        "bf16": False,
+        "fp16": cfg.fp16,
+        "bf16": cfg.bf16,
     }
+
+    if "tf32" in params and cfg.tf32 is not None:
+        kwargs["tf32"] = cfg.tf32
+    if "dataloader_pin_memory" in params:
+        kwargs["dataloader_pin_memory"] = training_device.type == "cuda"
 
     if "train_sampling_strategy" in params:
         kwargs["train_sampling_strategy"] = "random" if cfg.no_group_by_length else "group_by_length"
@@ -1430,9 +1592,9 @@ def make_training_arguments(
         kwargs["evaluation_strategy"] = "steps" if eval_enabled else "no"
 
     if "use_cpu" in params:
-        kwargs["use_cpu"] = True
+        kwargs["use_cpu"] = training_device.type == "cpu"
     else:
-        kwargs["no_cuda"] = True
+        kwargs["no_cuda"] = training_device.type == "cpu"
 
     if max_steps is not None and "max_steps" in params:
         kwargs["max_steps"] = int(max_steps)
@@ -1457,7 +1619,7 @@ def run_training_preflight(cfg: RunConfig, out_dir: Path, train_tok: Dataset, to
         use_safetensors=True,
     )
     assert_model_parameters_float32(model, "Preflight student model")
-    freeze_for_cpu(model, cfg.last_n_layers)
+    freeze_trainable_layers(model, cfg.last_n_layers)
 
     training_args = make_training_arguments(
         cfg,
@@ -1665,6 +1827,9 @@ for text in texts:
 
 def main() -> None:
     cfg = parse_args()
+    validate_runtime_config(cfg)
+    configure_accelerator(cfg)
+
     out_dir = Path(cfg.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1683,6 +1848,8 @@ def main() -> None:
     random.seed(cfg.seed)
     np.random.seed(cfg.seed)
     torch.manual_seed(cfg.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(cfg.seed)
 
     print("Run configuration:")
     print(json.dumps(asdict(cfg), ensure_ascii=False, indent=2))
@@ -1741,7 +1908,7 @@ def main() -> None:
     )
     assert_model_parameters_float32(model, "Student model")
 
-    freeze_for_cpu(model, cfg.last_n_layers)
+    freeze_trainable_layers(model, cfg.last_n_layers)
 
     training_args = make_training_arguments(cfg)
 

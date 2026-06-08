@@ -6,6 +6,9 @@ Examples:
   .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection"
   powershell -NoProfile -ExecutionPolicy Bypass -File .\publish_to_hf.ps1 -RepoId "YOUR_HF_USERNAME/mdeberta-ru-prompt-injection" -SkipUpload
 
+Defaults publish the v16 critical recall restoration fine-tune:
+  .\mdeberta-ru-prompt-injection-v16-critical-recall-restoration-ft
+
 Before uploading:
   hf auth login
 #>
@@ -20,6 +23,24 @@ param(
     [string]$StagingDir,
 
     [string]$ReadmePath,
+
+    [string]$StressResultPath,
+
+    [string]$DatasetValidatorReportPath,
+
+    [string]$DatasetBuildReportPath,
+
+    [string]$CriticalValidationSummaryPath,
+
+    [string]$FalseNegativeReportPath,
+
+    [string]$ValidationComparisonSummaryPath,
+
+    [string]$ValidationGateSummaryPath,
+
+    [string]$ValidationCorpusReportPath,
+
+    [double]$RecommendedThreshold = 0.99,
 
     [switch]$SkipUpload,
 
@@ -37,7 +58,9 @@ $OutputEncoding = [System.Text.UTF8Encoding]::new()
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
 
-$DefaultModelVersion = "v9-coverage-ft"
+$DefaultModelVersion = "v16-critical-recall-restoration-ft"
+$DefaultValidationName = "v13-critical-ru-validation"
+$ThresholdLabel = $RecommendedThreshold.ToString("0.######", [System.Globalization.CultureInfo]::InvariantCulture)
 
 if ([string]::IsNullOrWhiteSpace($SourceDir)) {
     $SourceDir = Join-Path $PSScriptRoot "mdeberta-ru-prompt-injection-$DefaultModelVersion"
@@ -46,7 +69,39 @@ if ([string]::IsNullOrWhiteSpace($StagingDir)) {
     $StagingDir = Join-Path $PSScriptRoot "hf-upload-$DefaultModelVersion"
 }
 if ([string]::IsNullOrWhiteSpace($ReadmePath)) {
-    $ReadmePath = Join-Path $PSScriptRoot "MODEL_CARD_V9.md"
+    $ReadmePath = Join-Path $PSScriptRoot "MODEL_CARD_V16.md"
+}
+if ([string]::IsNullOrWhiteSpace($StressResultPath)) {
+    $preferredStressResult = Join-Path $PSScriptRoot "stress-$DefaultModelVersion-on-$DefaultValidationName-threshold-$ThresholdLabel.json"
+    $legacyStressResult = Join-Path $PSScriptRoot "stress-$DefaultModelVersion-on-$DefaultValidationName-threshold-0.5.json"
+    if (Test-Path -LiteralPath $preferredStressResult) {
+        $StressResultPath = $preferredStressResult
+    }
+    elseif (Test-Path -LiteralPath $legacyStressResult) {
+        # Keep compatibility with older locally named stress artifacts.
+        $StressResultPath = $legacyStressResult
+    }
+}
+if ([string]::IsNullOrWhiteSpace($DatasetValidatorReportPath)) {
+    $DatasetValidatorReportPath = Join-Path $PSScriptRoot "training-dataset-v16-critical-recall-restoration-windowed-analysis.json"
+}
+if ([string]::IsNullOrWhiteSpace($DatasetBuildReportPath)) {
+    $DatasetBuildReportPath = Join-Path $PSScriptRoot "training-dataset-v16-critical-recall-restoration-windowed-report.json"
+}
+if ([string]::IsNullOrWhiteSpace($CriticalValidationSummaryPath)) {
+    $CriticalValidationSummaryPath = Join-Path $PSScriptRoot "validation-comparison-v13-v16-core\v16\v13_critical_ru-summary.json"
+}
+if ([string]::IsNullOrWhiteSpace($FalseNegativeReportPath)) {
+    $FalseNegativeReportPath = ""
+}
+if ([string]::IsNullOrWhiteSpace($ValidationComparisonSummaryPath)) {
+    $ValidationComparisonSummaryPath = Join-Path $PSScriptRoot "validation-comparison-v13-v16-core\comparison-summary.json"
+}
+if ([string]::IsNullOrWhiteSpace($ValidationGateSummaryPath)) {
+    $ValidationGateSummaryPath = ""
+}
+if ([string]::IsNullOrWhiteSpace($ValidationCorpusReportPath)) {
+    $ValidationCorpusReportPath = Join-Path $PSScriptRoot "validation-comparison-v13-v16-core\validation-suite-manifest.json"
 }
 
 if ($RepoId -match "YOUR(_HF)?_USERNAME") {
@@ -87,6 +142,23 @@ function Copy-ProjectFileIfExists([string]$FileName, [string]$ToDir) {
     $filePath = Join-Path $PSScriptRoot $FileName
     if (Test-Path -LiteralPath $filePath) {
         Copy-Item -LiteralPath $filePath -Destination (Join-Path $ToDir $FileName) -Force
+        return 1
+    }
+    return 0
+}
+
+function Copy-ArtifactIfExists([string]$Path, [string]$ToDir, [string]$StagedName) {
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return 0
+    }
+    if (Test-Path -LiteralPath $Path) {
+        $destinationName = if ([string]::IsNullOrWhiteSpace($StagedName)) {
+            Split-Path -Leaf $Path
+        }
+        else {
+            $StagedName
+        }
+        Copy-Item -LiteralPath $Path -Destination (Join-Path $ToDir $destinationName) -Force
         return 1
     }
     return 0
@@ -144,7 +216,6 @@ $patterns = @(
     "tokenizer.model",
     "vocab.*",
     "merges.txt",
-    "threshold_recommendations.json",
     "student_eval_metrics.json",
     "teacher_baseline_metrics.json",
     "run_config.json",
@@ -171,11 +242,81 @@ if (Test-Path -LiteralPath $sampleScript) {
     Copy-Item -LiteralPath $sampleScript -Destination (Join-Path $StagePath "sample.py") -Force
 }
 
-$evaluationArtifacts = @(
-    "training-dataset-v9-coverage-validator-report.json",
-    "stress-v9-coverage-ft-on-v9-coverage-validation-threshold-0.5.json",
-    "stress-v9-coverage-ft-on-v9-coverage-validation-threshold-0.839796.json"
-)
+$stressStagedName = "stress-$DefaultModelVersion-on-$DefaultValidationName-threshold-$ThresholdLabel.json"
+$stressMetrics = $null
+if ((Copy-ArtifactIfExists $StressResultPath $StagePath $stressStagedName) -gt 0) {
+    try {
+        $stressMetrics = Get-Content -LiteralPath $StressResultPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ([Math]::Abs([double]$stressMetrics.threshold - $RecommendedThreshold) -gt 0.000001) {
+            Write-Warning "StressResultPath threshold is $($stressMetrics.threshold), but RecommendedThreshold is $RecommendedThreshold."
+        }
+    }
+    catch {
+        Write-Warning "Could not parse stress result JSON at ${StressResultPath}: $($_.Exception.Message)"
+    }
+}
+
+$criticalMetrics = $null
+if ((Copy-ArtifactIfExists $CriticalValidationSummaryPath $StagePath "v16-v13-critical-ru-validation-summary.json") -gt 0) {
+    try {
+        $criticalSummary = Get-Content -LiteralPath $CriticalValidationSummaryPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $thresholdMetrics = $criticalSummary.threshold_metrics
+        $metricProperty = $thresholdMetrics.PSObject.Properties[$ThresholdLabel]
+        if ($null -ne $metricProperty) {
+            $criticalMetrics = $metricProperty.Value
+        }
+        else {
+            Write-Warning "Critical validation summary has no metrics for threshold $ThresholdLabel."
+        }
+    }
+    catch {
+        Write-Warning "Could not parse critical validation summary at ${CriticalValidationSummaryPath}: $($_.Exception.Message)"
+    }
+}
+
+[void](Copy-ArtifactIfExists $DatasetValidatorReportPath $StagePath "")
+[void](Copy-ArtifactIfExists $DatasetBuildReportPath $StagePath "")
+[void](Copy-ArtifactIfExists $FalseNegativeReportPath $StagePath "")
+[void](Copy-ArtifactIfExists $ValidationComparisonSummaryPath $StagePath "v16-validation-comparison-summary.json")
+[void](Copy-ArtifactIfExists $ValidationGateSummaryPath $StagePath "v16-gate-summary.json")
+[void](Copy-ArtifactIfExists $ValidationCorpusReportPath $StagePath "")
+
+$thresholdPayload = [ordered]@{
+    recommended_threshold = $RecommendedThreshold
+    source = "v16-v13-critical-ru-validation-summary.json"
+    note = "V16 diagnostic candidate threshold is 0.99. It improves V13 on the core diagnostic suite but still requires production calibration before deployment."
+}
+if ($null -ne $criticalMetrics) {
+    $thresholdPayload["validation_at_recommended_threshold"] = [ordered]@{
+        corpus = "v13_critical_ru"
+        documents = $criticalMetrics.documents
+        threshold = $criticalMetrics.threshold
+        precision = $criticalMetrics.precision
+        recall = $criticalMetrics.recall
+        f1 = $criticalMetrics.f1
+        true_positives = $criticalMetrics.tp
+        false_positives = $criticalMetrics.fp
+        false_negatives = $criticalMetrics.fn
+        benign_false_positive_rate = $criticalMetrics.benign_fp_rate
+    }
+}
+elseif ($null -ne $stressMetrics) {
+    $thresholdPayload["validation_at_recommended_threshold"] = [ordered]@{
+        rows = $stressMetrics.rows
+        threshold = $stressMetrics.threshold
+        accuracy = $stressMetrics.accuracy
+        precision = $stressMetrics.precision
+        recall = $stressMetrics.recall
+        f1 = $stressMetrics.f1
+        false_positives = $stressMetrics.false_positives
+        false_negatives = $stressMetrics.false_negatives
+        false_positive_rate = $stressMetrics.false_positive_rate
+        false_negative_rate = $stressMetrics.false_negative_rate
+    }
+}
+($thresholdPayload | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath (Join-Path $StagePath "threshold_recommendations.json") -Encoding UTF8
+
+$evaluationArtifacts = @()
 foreach ($artifact in $evaluationArtifacts) {
     [void](Copy-ProjectFileIfExists $artifact $StagePath)
 }

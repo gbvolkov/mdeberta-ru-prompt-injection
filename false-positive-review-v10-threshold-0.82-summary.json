@@ -1,0 +1,68 @@
+{
+  "model_id": ".\\mdeberta-ru-prompt-injection-v10-benign-scratch",
+  "threshold": 0.82,
+  "model_max_length": 256,
+  "window_token_length": 254,
+  "window_token_stride": 128,
+  "documents": 21000,
+  "windows": 385616,
+  "flagged_documents": 5590,
+  "false_positive_documents": 5590,
+  "by_category": {
+    "admin_instructions": {
+      "documents": 2422,
+      "flagged_documents": 546,
+      "windows": 28745
+    },
+    "corporate_procedures": {
+      "documents": 1342,
+      "flagged_documents": 356,
+      "windows": 36270
+    },
+    "hr_policies": {
+      "documents": 684,
+      "flagged_documents": 242,
+      "windows": 12266
+    },
+    "job_descriptions": {
+      "documents": 6632,
+      "flagged_documents": 2180,
+      "windows": 192371
+    },
+    "knowledge_base": {
+      "documents": 1000,
+      "flagged_documents": 273,
+      "windows": 9063
+    },
+    "legal_templates": {
+      "documents": 2000,
+      "flagged_documents": 297,
+      "windows": 20582
+    },
+    "meeting_minutes": {
+      "documents": 1000,
+      "flagged_documents": 158,
+      "windows": 10618
+    },
+    "safety_policies": {
+      "documents": 1048,
+      "flagged_documents": 193,
+      "windows": 21162
+    },
+    "support_documentation": {
+      "documents": 1872,
+      "flagged_documents": 736,
+      "windows": 32655
+    },
+    "technical_documentation": {
+      "documents": 2000,
+      "flagged_documents": 411,
+      "windows": 20396
+    },
+    "unsafe_non_injection": {
+      "documents": 1000,
+      "flagged_documents": 198,
+      "windows": 1488
+    }
+  }
+}

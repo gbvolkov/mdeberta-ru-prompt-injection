@@ -1,0 +1,524 @@
+{
+  "by_category": {
+    "admin_instructions": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 127,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9706403547062367,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 127
+    },
+    "corporate_procedures": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 78,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9530621902878059,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 78
+    },
+    "hr_policies": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 37,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9059421741627975,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 37
+    },
+    "job_descriptions": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 397,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9904165132219707,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 397
+    },
+    "knowledge_base": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 54,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9335864119091037,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 54
+    },
+    "legal_templates": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 119,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9687283197580606,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 119
+    },
+    "meeting_minutes": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 54,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9335864119091037,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 54
+    },
+    "safety_policies": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 48,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9258998703338824,
+        0.9999999999999999
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 48
+    },
+    "support_documentation": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 98,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9622800098783192,
+        0.9999999999999999
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 98
+    },
+    "technical_documentation": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 104,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9643786456275479,
+        0.9999999999999999
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 104
+    },
+    "unsafe_non_injection": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 45,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9213484012671117,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 45
+    }
+  },
+  "by_language": {
+    "en": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 330,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9884931642874307,
+        0.9999999999999999
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 330
+    },
+    "ru": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 831,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9953985768434157,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 831
+    }
+  },
+  "by_window_count_bucket": {
+    "1": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 31,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.889744604539564,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 31
+    },
+    "2-4": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 209,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9819515481524193,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 209
+    },
+    "21-50": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 327,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9883888227479495,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 327
+    },
+    "5-20": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 594,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9935744522832664,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 594
+    }
+  },
+  "corpus_path": ".\\v16-proper-validation-suite\\proper-malicious-dev-documents.jsonl",
+  "documents": 1161,
+  "exclusion": {
+    "mode": "eval_only"
+  },
+  "labels": {
+    "not_prompt_injection": 0,
+    "prompt_injection": 1161
+  },
+  "malicious_by_semantic_family": {
+    "unknown": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 1161
+    }
+  },
+  "model_id": ".\\mdeberta-ru-prompt-injection-v16-critical-recall-restoration-ft",
+  "primary_metrics": {
+    "benign_fp_rate": 0.0,
+    "benign_fp_rate_ci95": [
+      0.0,
+      0.0
+    ],
+    "documents": 1161,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "malicious_recall_ci95": [
+      0.9967021616619112,
+      1.0
+    ],
+    "precision": 1.0,
+    "recall": 1.0,
+    "threshold": 0.95,
+    "tn": 0,
+    "tp": 1161
+  },
+  "primary_threshold": 0.95,
+  "threshold_metrics": {
+    "0.82": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.82,
+      "tn": 0,
+      "tp": 1161
+    },
+    "0.9": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.9,
+      "tn": 0,
+      "tp": 1161
+    },
+    "0.95": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.95,
+      "tn": 0,
+      "tp": 1161
+    },
+    "0.99": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.99,
+      "tn": 0,
+      "tp": 1161
+    },
+    "0.999": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9967021616619112,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.999,
+      "tn": 0,
+      "tp": 1161
+    },
+    "0.9995": {
+      "benign_fp_rate": 0.0,
+      "benign_fp_rate_ci95": [
+        0.0,
+        0.0
+      ],
+      "documents": 1161,
+      "f1": 0.999569151227919,
+      "fn": 1,
+      "fp": 0,
+      "malicious_recall_ci95": [
+        0.9951372512582836,
+        0.9998479385489129
+      ],
+      "precision": 1.0,
+      "recall": 0.9991386735572783,
+      "threshold": 0.9995,
+      "tn": 0,
+      "tp": 1160
+    }
+  },
+  "windows": 16784
+}

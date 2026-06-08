@@ -1,0 +1,11 @@
+{
+  "benign_labels": {
+    "not_prompt_injection": 1166
+  },
+  "benign_rows": 1166,
+  "critical_labels": {
+    "prompt_injection": 2459
+  },
+  "critical_ru_rows": 2459,
+  "full_rows": 4000
+}
