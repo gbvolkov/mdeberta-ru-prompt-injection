@@ -1834,12 +1834,12 @@ def cap_rows(args: argparse.Namespace, rows: list[dict[str, Any]], targets: dict
         "mixed_language_attack_windows",
         "benign_general_ru_en_mixed",
         "critical_ru_visible_attack_windows",
+        "embedded_visible_attack_windows",
         "general_prompt_injection_ru",
         "general_prompt_injection_en",
         "wrapper_redaction_url_attack_windows",
         "short_standalone_attack_windows",
         "hard_fn_visible_windows",
-        "embedded_visible_attack_windows",
     ]
     component_order = [name for name in component_priority if name in targets]
     component_order.extend([name for name in DEFAULT_COMPONENT_TARGETS if name in targets and name not in set(component_order)])

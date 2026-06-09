@@ -289,7 +289,7 @@ Run remotely:
 
 ```bash
 cd /workspace/mdeberta-run
-tmux attach -t mdeberta-v17
+tmux new -s mdeberta-v17
 ```
 
 Inside `tmux`:
