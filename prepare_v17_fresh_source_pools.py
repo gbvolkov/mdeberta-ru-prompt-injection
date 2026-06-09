@@ -389,6 +389,19 @@ def source_doc_id(source_name: str, index: int, text: str) -> str:
     return f"v17fresh_{source_name}_{index}_{text_hash(text)}"
 
 
+def canonical_language(value: Any, text: str = "") -> str:
+    raw = str(value or "").strip().lower()
+    if raw in {"ru", "rus", "ru_ru", "russian", "russian_cyrillic", "rus_cyrl"}:
+        return "ru"
+    if raw in {"en", "eng", "en_us", "en_gb", "english"}:
+        return "en"
+    if raw in {"mixed", "multi", "multilingual", "ru_en", "en_ru"}:
+        return "mixed"
+    if raw and raw != "unknown":
+        return raw
+    return infer_language(text) if text else "unknown"
+
+
 def output_row(
     *,
     row: dict[str, Any],
@@ -410,7 +423,7 @@ def output_row(
         "source_path": source_path,
         "source_origin": source_origin,
         "category": category,
-        "language": row.get("language") or language or infer_language(text),
+        "language": canonical_language(row.get("language") or language, text),
         "text": normalize_text(text),
         "text_hash": text_hash(text),
         "window_count": windows,

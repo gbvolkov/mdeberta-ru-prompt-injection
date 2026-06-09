@@ -483,6 +483,19 @@ def normalized_compact(text: str) -> str:
     return re.sub(r"\s+", " ", normalize_text(text).lower()).strip()
 
 
+def canonical_language(value: Any, text: str = "") -> str:
+    raw = str(value or "").strip().lower()
+    if raw in {"ru", "rus", "ru_ru", "russian", "russian_cyrillic", "rus_cyrl"}:
+        return "ru"
+    if raw in {"en", "eng", "en_us", "en_gb", "english"}:
+        return "en"
+    if raw in {"mixed", "multi", "multilingual", "ru_en", "en_ru"}:
+        return "mixed"
+    if raw and raw != "unknown":
+        return raw
+    return infer_language(text) if text else "unknown"
+
+
 def make_row(**kwargs: Any) -> dict[str, Any]:
     text = normalize_text(kwargs.get("text", ""))
     label_value = kwargs.get("label", LABEL_BENIGN)
@@ -496,7 +509,7 @@ def make_row(**kwargs: Any) -> dict[str, Any]:
         "source_name": kwargs.get("source_name") or "v17_unknown",
         "component": kwargs.get("component") or "unknown",
         "category": kwargs.get("category") or "unknown",
-        "language": kwargs.get("language") or infer_language(text),
+        "language": canonical_language(kwargs.get("language"), text),
         "text_hash": kwargs.get("text_hash") or text_hash(text),
         "document_id": kwargs.get("document_id") or f"v17_row_{text_hash(text)}",
         "source_origin": kwargs.get("source_origin") or "v17_generated",
@@ -715,7 +728,7 @@ def iter_local_source_rows(paths: Sequence[str | Path], *, allow_risky: bool) ->
                 "source_name": source_name,
                 "source_origin": "raw_jsonl",
                 "category": row.get("category") or infer_category(text),
-                "language": row.get("language") or infer_language(text),
+                "language": canonical_language(row.get("language"), text),
                 "document_id": row.get("document_id") or row.get("id") or source_doc_id(source_name, idx, text),
             }
 
@@ -749,7 +762,7 @@ def collect_source_documents(args: argparse.Namespace, tokenizer: Any, exclusion
                 "source_name": row.get("source_name") or source_name,
                 "source_origin": origin,
                 "category": category,
-                "language": row.get("language") or language or infer_language(text),
+                "language": canonical_language(row.get("language") or language, text),
                 "text": text,
                 "text_hash": h,
                 "token_count": token_count,
@@ -760,7 +773,7 @@ def collect_source_documents(args: argparse.Namespace, tokenizer: Any, exclusion
         per_source[source_name] += 1
 
     for idx, row in enumerate(iter_local_source_rows(args.input_jsonl, allow_risky=args.allow_risky_inputs)):
-        accept_doc(row, row["source_name"], idx, row.get("language") or infer_language(row["text"]), row.get("category") or "knowledge_base", "raw_jsonl")
+        accept_doc(row, row["source_name"], idx, canonical_language(row.get("language"), row["text"]), row.get("category") or "knowledge_base", "raw_jsonl")
         if len(docs) >= args.source_document_target:
             break
 
@@ -992,7 +1005,7 @@ def generate_attack_bank(args: argparse.Namespace) -> list[dict[str, Any]]:
                     "generated_instance_id": row.get("generated_instance_id") or f"external_v17_instance_{idx}_{text_hash(text)}",
                     "semantic_family": row.get("semantic_family") or "external_v17_attack_family",
                     "semantic_subfamily": row.get("semantic_subfamily") or row.get("semantic_family") or "external_v17_attack_subfamily",
-                    "language": row.get("language") or infer_language(text),
+                    "language": canonical_language(row.get("language"), text),
                     "source_origin": "v17_attack_bank_jsonl",
                 }
             )
@@ -1178,7 +1191,7 @@ def attack_bank_row(text: str, family: str, subfamily: str, language: str, idx: 
         "generated_instance_id": f"v17_attack_{idx}_{h[:16]}",
         "semantic_family": family,
         "semantic_subfamily": subfamily,
-        "language": language,
+        "language": canonical_language(language, text),
         "source_origin": "v17_generated_attack_bank",
     }
 
@@ -1703,6 +1716,7 @@ def dedupe_rows(rows: Iterable[dict[str, Any]], exclusion: dict[str, set[str]]) 
         row = dict(row)
         row["text"] = text
         row["text_hash"] = text_hash(text)
+        row["language"] = canonical_language(row.get("language"), text)
         exclusion_reason = row_matches_exclusion(row, exclusion)
         if exclusion_reason:
             stats[exclusion_reason] += 1
@@ -1759,7 +1773,8 @@ def cap_rows(args: argparse.Namespace, rows: list[dict[str, Any]], targets: dict
     def try_select(row: dict[str, Any], *, enforce_language_cap: bool = True) -> bool:
         label = int(row["label"])
         source = str(row.get("source_name", "unknown"))
-        language = str(row.get("language") or "unknown")
+        language = canonical_language(row.get("language"), str(row.get("text") or ""))
+        row["language"] = language
         component = str(row.get("component", "unknown"))
         row_hash = str(row.get("text_hash") or text_hash(str(row.get("text", ""))))
         if row_hash in selected_hashes:
@@ -1788,7 +1803,7 @@ def cap_rows(args: argparse.Namespace, rows: list[dict[str, Any]], targets: dict
             rejected["template_cap"] += 1
             return False
         family_cap = args.max_rows_per_critical_family if family in critical_families else args.max_rows_per_semantic_family
-        if family and per_family[family] >= family_cap:
+        if label == 1 and family and per_family[family] >= family_cap:
             rejected["semantic_family_cap"] += 1
             return False
         selected.append(row)
@@ -1846,7 +1861,8 @@ def cap_rows(args: argparse.Namespace, rows: list[dict[str, Any]], targets: dict
         for row in leftovers:
             if len(selected) >= args.target_total_rows:
                 break
-            language = str(row.get("language") or "unknown")
+            language = canonical_language(row.get("language"), str(row.get("text") or ""))
+            row["language"] = language
             if language not in language_mins or per_language[language] >= language_mins[language]:
                 continue
             try_select(row)
@@ -2053,7 +2069,7 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "rows": len(rows),
         "labels": dict(Counter(LABEL_ATTACK if int(row["label"]) == 1 else LABEL_BENIGN for row in rows)),
         "components": dict(Counter(row.get("component", "unknown") for row in rows).most_common()),
-        "languages": dict(Counter(row.get("language", "unknown") for row in rows).most_common()),
+        "languages": dict(Counter(canonical_language(row.get("language"), str(row.get("text") or "")) for row in rows).most_common()),
         "categories": dict(Counter(row.get("category", "unknown") for row in rows).most_common(50)),
         "sources": dict(Counter(row.get("source_name", "unknown") for row in rows).most_common(50)),
         "semantic_families": dict(Counter(row.get("semantic_family", "") for row in rows if row.get("semantic_family")).most_common(50)),
@@ -2064,7 +2080,7 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def enforce_targets(args: argparse.Namespace, rows: list[dict[str, Any]], targets: dict[str, int]) -> dict[str, Any]:
     counts = Counter(row.get("component", "unknown") for row in rows)
-    language_counts = Counter(str(row.get("language") or "unknown") for row in rows)
+    language_counts = Counter(canonical_language(row.get("language"), str(row.get("text") or "")) for row in rows)
     benign_category_counts = Counter(
         str(row.get("category") or "unknown")
         for row in rows
