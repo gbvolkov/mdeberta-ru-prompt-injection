@@ -1,0 +1,17 @@
+# Install PyTorch with the CUDA wheel that matches the pod image before this file.
+# Example for CUDA 12.8 images:
+#   python -m pip install --index-url https://download.pytorch.org/whl/cu128 torch
+
+accelerate
+datasets
+hf>=1.14.0
+huggingface-hub
+nltk
+numpy
+protobuf
+safetensors
+scikit-learn
+sentencepiece
+tqdm
+transformers
+zstandard

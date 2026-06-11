@@ -871,7 +871,7 @@ def hard_fn_acceptance_reason(row: dict[str, Any], text: str) -> str | None:
     anchor_visible = attack_anchor_visible(text, attack_anchor_text)
     valid_anchor = valid_attack_anchor_text(text, attack_anchor_text)
     if truthy_value(row.get("manual_reviewed_visible_attack")):
-        if manual_reviewed_exact_window(row, text):
+        if manual_reviewed_exact_window(row, text) and valid_anchor:
             return "accepted_by_manual_reviewed_exact_window"
         if valid_anchor:
             return "accepted_by_manual_reviewed_anchor"

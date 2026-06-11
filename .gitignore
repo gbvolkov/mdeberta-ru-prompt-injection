@@ -33,6 +33,7 @@ arc/*
 #secrets
 .env
 
+arc/
 arc/*.tgz
 *.zip
 arc/*.exe
