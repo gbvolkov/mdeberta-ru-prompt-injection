@@ -186,6 +186,13 @@ def iter_jsonl_documents(path: Path, args: argparse.Namespace) -> Iterable[dict[
                 "category": str(row.get(args.category_column) or args.default_category),
                 "source_name": str(row.get(args.source_column) or path.name),
                 "source_path": str(path),
+                "source_origin": str(row.get("source_origin") or row.get("source_path") or path),
+                "source_pool": str(row.get("source_pool") or row.get("source_pool_assignment") or ""),
+                "source_document_id": str(row.get("source_document_id") or row.get("document_id") or f"{path.stem}:{idx}"),
+                "original_document_id": str(row.get("original_document_id") or row.get("source_document_id") or row.get("document_id") or f"{path.stem}:{idx}"),
+                "text_hash": str(row.get("text_hash") or ""),
+                "normalized_text_hash": str(row.get("normalized_text_hash") or ""),
+                "dedupe_cluster_id": str(row.get("dedupe_cluster_id") or ""),
                 "text": text,
             }
 
@@ -211,6 +218,13 @@ def iter_dataset_documents(path: Path, args: argparse.Namespace) -> Iterable[dic
             "category": str(row.get(args.category_column) or row.get("bucket") or args.default_category),
             "source_name": str(row.get(args.source_column) or row.get("source_name") or path.name),
             "source_path": str(path),
+            "source_origin": str(row.get("source_origin") or row.get("source_path") or path),
+            "source_pool": str(row.get("source_pool") or row.get("source_pool_assignment") or ""),
+            "source_document_id": str(row.get("source_document_id") or row.get("document_id") or row.get("source_doc_id") or row.get("parent_id") or idx),
+            "original_document_id": str(row.get("original_document_id") or row.get("source_document_id") or row.get("document_id") or row.get("source_doc_id") or row.get("parent_id") or idx),
+            "text_hash": str(row.get("text_hash") or ""),
+            "normalized_text_hash": str(row.get("normalized_text_hash") or ""),
+            "dedupe_cluster_id": str(row.get("dedupe_cluster_id") or ""),
             "text": text,
         }
 
@@ -271,6 +285,19 @@ def score_document(
         "document_best_window_index": best_index,
         "document_false_flagged": document_false_flagged,
     }
+    for key in (
+        "source_origin",
+        "source_pool",
+        "source_pool_assignment",
+        "source_document_id",
+        "original_document_id",
+        "text_hash",
+        "normalized_text_hash",
+        "dedupe_cluster_id",
+    ):
+        value = doc.get(key)
+        if value is not None and value != "":
+            base[key] = value
 
     windows = []
     for idx, entry in enumerate(window_entries):

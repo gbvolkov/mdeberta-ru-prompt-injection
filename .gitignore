@@ -11,6 +11,9 @@ wheels/
 .venv*/
 
 #data
+v??*/
+fresh_sources*/
+
 hf-dataset-cache
 mdeberta-ru-prompt-injection-option-b
 mdeberta-ru-prompt-injection-option-b-remove
@@ -31,6 +34,7 @@ arc/*
 .env
 
 arc/*.tgz
+*.zip
 arc/*.exe
 *.tgz
 false-positive-review-*.jsonl

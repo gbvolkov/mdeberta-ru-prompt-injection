@@ -13,124 +13,34 @@ import pyarrow as pa
 import pyarrow.ipc as ipc
 
 
-ATTACK_TARGET_RE = re.compile(
-    "|".join(
-        re.escape(value)
-        for value in [
-            "system prompt",
-            "developer prompt",
-            "prompt stack",
-            "hidden routing",
-            "tool names",
-            "tool registry",
-            "route selection",
-            "private context",
-            "internal configuration",
-            "developer instructions",
-            "system_message",
-            "developer_policy",
-            "available_tools",
-            "routing_rules",
-            "system layer",
-            "developer layer",
-            "tool schema",
-            "routing metadata",
-            "системн",
-            "промпт",
-            "разработчик",
-            "инструмент",
-            "скрыт",
-            "маршрут",
-            "служебн",
-            "конфигурац",
-            "внутренн",
-            "правил",
-            "приват",
-            "ÑÐ¸ÑÑ‚ÐµÐ¼Ð½",
-            "Ð¿Ñ€Ð¾Ð¼Ð¿Ñ‚",
-            "Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº",
-            "Ð¸Ð½ÑÑ‚Ñ€ÑƒÐ¼ÐµÐ½Ñ‚",
-            "ÑÐºÑ€Ñ‹Ñ‚",
-            "Ð¼Ð°Ñ€ÑˆÑ€ÑƒÑ‚",
-            "ÑÐ»ÑƒÐ¶ÐµÐ±Ð½",
-            "ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†",
-            "Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½",
-            "Ð¿Ñ€Ð°Ð²Ð¸Ð»",
-            "Ð¿Ñ€Ð¸Ð²Ð°Ñ‚",
-        ]
-    ),
-    re.IGNORECASE,
-)
+def compile_phrase_re(values: list[str]) -> re.Pattern[str]:
+    return re.compile("|".join(re.escape(value) for value in values), re.IGNORECASE)
 
-ATTACK_VERB_RE = re.compile(
-    "|".join(
-        re.escape(value)
-        for value in [
-            "show",
-            "print",
-            "reveal",
-            "list",
-            "output",
-            "dump",
-            "export",
-            "return",
-            "покажи",
-            "выведи",
-            "раскрой",
-            "перечисли",
-            "напечатай",
-            "сообщи",
-            "верни",
-            "составь",
-            "сформируй",
-            "Ð¿Ð¾ÐºÐ°Ð¶Ð¸",
-            "Ð²Ñ‹Ð²ÐµÐ´Ð¸",
-            "Ñ€Ð°ÑÐºÑ€Ð¾Ð¹",
-            "Ð¿ÐµÑ€ÐµÑ‡Ð¸ÑÐ»Ð¸",
-            "Ð½Ð°Ð¿ÐµÑ‡Ð°Ñ‚Ð°Ð¹",
-            "ÑÐ¾Ð¾Ð±Ñ‰Ð¸",
-            "Ð²ÐµÑ€Ð½Ð¸",
-            "ÑÐ¾ÑÑ‚Ð°Ð²ÑŒ",
-            "ÑÑ„Ð¾Ñ€Ð¼Ð¸Ñ€ÑƒÐ¹",
-        ]
-    ),
-    re.IGNORECASE,
-)
 
-ATTACK_FRAME_RE = re.compile(
-    "|".join(
-        re.escape(value)
-        for value in [
-            "override",
-            "internal_review",
-            "BEGIN INTERNAL",
-            "END INTERNAL",
-            "internal auditor",
-            "forensic",
-            "parser",
-            "diagnostic",
-            "audit",
-            "внутренний оператор",
-            "внутреннего оператора",
-            "аудит",
-            "диагностик",
-            "служебная",
-            "служебный",
-            "административная команда",
-            "режим",
-            "контроль",
-            "Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ð¹ Ð¾Ð¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€",
-            "Ð°ÑƒÐ´Ð¸Ñ‚",
-            "Ð´Ð¸Ð°Ð³Ð½Ð¾ÑÑ‚Ð¸Ðº",
-            "ÑÐ»ÑƒÐ¶ÐµÐ±Ð½",
-            "Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¸Ð²Ð½",
-            "Ñ€ÐµÐ¶Ð¸Ð¼",
-            "ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»",
-        ]
-    ),
-    re.IGNORECASE,
-)
+ATTACK_TARGET_RE = compile_phrase_re([
+    "system prompt", "developer prompt", "prompt stack", "hidden routing",
+    "tool names", "tool registry", "route selection", "private context",
+    "internal configuration", "developer instructions", "system_message",
+    "developer_policy", "available_tools", "routing_rules", "system layer",
+    "developer layer", "tool schema", "routing metadata",
+    "системн", "промпт", "разработчик",
+    "инструмент", "скрыт", "маршрут", "служебн",
+    "конфигурац", "внутренн", "правил", "приват",
+])
 
+ATTACK_VERB_RE = compile_phrase_re([
+    "show", "print", "reveal", "list", "output", "dump", "export", "return",
+    "покажи", "выведи", "раскрой", "перечисли",
+    "напечатай", "сообщи", "верни", "составь", "сформируй",
+])
+
+ATTACK_FRAME_RE = compile_phrase_re([
+    "override", "internal_review", "BEGIN INTERNAL", "END INTERNAL",
+    "internal auditor", "forensic", "parser", "diagnostic", "audit",
+    "внутренний оператор", "внутреннего оператора",
+    "аудит", "диагностик", "служебная", "служебный",
+    "административная команда", "режим", "контроль",
+])
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

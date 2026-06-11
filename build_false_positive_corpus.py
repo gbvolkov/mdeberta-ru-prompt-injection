@@ -340,6 +340,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--candidate-oversample-factor", type=float, default=2.0)
     parser.add_argument("--max-scan-per-source", type=int, default=350_000)
+    parser.add_argument("--source-pool", default="external_mining_only", choices=("external_mining_only", "train", "internal_validation"))
     parser.add_argument("--allow-source-errors", action="store_true")
     parser.add_argument("--allow-underfilled", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -480,6 +481,7 @@ def collect_from_source(
             keyword_hits=keyword_hits,
             source_row=row,
             text_hash=text_hash,
+            source_pool=args.source_pool,
         )
         candidates[category][length_bucket].append(row_out)
         seen_hashes.add(text_hash)
@@ -531,6 +533,7 @@ def collect_unsafe_from_source(
                 keyword_hits=[],
                 source_row=row,
                 text_hash=text_hash,
+                source_pool=args.source_pool,
             )
         )
         seen_hashes.add(text_hash)
@@ -607,16 +610,16 @@ def keyword_matches(text: str, keyword: str) -> bool:
     text = text.lower()
     escaped = re.escape(keyword)
     escaped = re.sub(r"\\\s+", r"\\s+", escaped)
-    pattern = rf"(?<![\w-]){escaped}(?![\w-])"
+    pattern = rf"(^|[^\w-]){escaped}($|[^\w-])"
     return re.search(pattern, text, flags=re.IGNORECASE | re.UNICODE) is not None
 
 
 def looks_like_encoding_corrupted(text: str) -> bool:
-    artifacts = text.count("â") + text.count("�") + text.count("Ð") + text.count("Ñ")
+    artifacts = sum(text.count(marker) for marker in (chr(0x00E2), chr(0xFFFD), chr(0x00D0), chr(0x00D1)))
     if artifacts >= 4:
         return True
-    return bool(re.search(r"â[€™€œ€“]", text))
-
+    quote_markers = (chr(0x20AC), chr(0x2122), chr(0x201C), chr(0x201D), chr(0x2013))
+    return any(chr(0x00E2) + marker in text for marker in quote_markers)
 
 def combined_keywords(language: str) -> dict[str, tuple[str, ...]]:
     if language == "ru":
@@ -646,6 +649,7 @@ def make_document_row(
     keyword_hits: list[str],
     source_row: Any,
     text_hash: str,
+    source_pool: str,
 ) -> dict[str, Any]:
     source_row_id = extract_source_row_id(source_row)
     document_id = f"{category}:{source.name}:{source_row_id or text_hash}"
@@ -657,6 +661,8 @@ def make_document_row(
         "source_dataset": source.repo_id,
         "source_config": source.config or "",
         "source_split": source.split,
+        "source_pool": source_pool,
+        "source_pool_assignment": source_pool,
         "source_row_id": source_row_id,
         "language": language,
         "text_length": len(text),

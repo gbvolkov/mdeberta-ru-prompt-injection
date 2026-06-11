@@ -10,15 +10,15 @@ from typing import Any
 
 
 MOJIBAKE_MARKERS = (
-    "\u00d0",  # UTF-8 Cyrillic decoded as Latin-1, e.g. "Ð"
-    "\u00d1",  # UTF-8 Cyrillic decoded as Latin-1, e.g. "Ñ"
-    "\u00c2",
-    "\u00e2",
-    "\ufffd",
-    "\u00c3\u0090",
-    "\u00c3\u0091",
-    "\u00c3\u0082",
-    "\u00c3\u00a2\u00e2\u0082\u00ac",
+    chr(0x00D0),
+    chr(0x00D1),
+    chr(0x00C2),
+    chr(0x00E2),
+    chr(0xFFFD),
+    chr(0x00C3) + chr(0x0090),
+    chr(0x00C3) + chr(0x0091),
+    chr(0x00C3) + chr(0x0082),
+    chr(0x00C3) + chr(0x00A2) + chr(0x00E2) + chr(0x0082) + chr(0x00AC),
 )
 WRAPPER_MARKERS = (
     "END OF DOCUMENT",
@@ -109,8 +109,14 @@ def contains_any(text: str, markers: tuple[str, ...]) -> bool:
 
 def looks_mojibake(text: str) -> bool:
     marker_hits = sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
-    return marker_hits >= 2 or bool(re.search(r"[\u00d0\u00d1][A-Za-z0-9\u00d0-\u00ff]", text))
-
+    if marker_hits >= 2:
+        return True
+    prefixes = {chr(0x00D0), chr(0x00D1)}
+    latin1_cyrillic = {chr(code) for code in range(0x00D0, 0x0100)}
+    for idx, char in enumerate(text[:-1]):
+        if char in prefixes and (text[idx + 1].isalnum() or text[idx + 1] in latin1_cyrillic):
+            return True
+    return False
 
 def classify_critical(row: dict[str, Any], source: dict[str, Any], old_v13_ids: set[str], training_ids: set[str]) -> list[str]:
     source_name = str(row.get("source_name", ""))
@@ -145,7 +151,7 @@ def classify_benign_fp(row: dict[str, Any], source: dict[str, Any], best_window_
     tags: list[str] = []
     if contains_any(text, WRAPPER_MARKERS):
         tags.append("wrapper_or_redaction_marker")
-    if re.search(r"https?://|www\.", text, flags=re.I):
+    if re.search(r"http[s]{0,1}://|www\.", text, flags=re.I):
         tags.append("url_or_link_heavy")
     if any(word in lowered for word in ("secret", "confidential", "undisclosed", "classified", "hidden", "internal")):
         tags.append("secret_confidential_language")
