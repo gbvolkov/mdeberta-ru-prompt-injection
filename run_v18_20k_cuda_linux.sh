@@ -14,6 +14,7 @@ VALIDATION_ROWS="${VALIDATION_ROWS:-2000}"
 SOURCE_DOCUMENT_TARGET="${SOURCE_DOCUMENT_TARGET:-8000}"
 MAX_SCAN_PER_SOURCE="${MAX_SCAN_PER_SOURCE:-200000}"
 FP_TARGET_DOCUMENTS="${FP_TARGET_DOCUMENTS:-20000}"
+FP_SOURCE_WORKERS="${FP_SOURCE_WORKERS:-2}"
 ATTACK_BANK_ROWS="${ATTACK_BANK_ROWS:-40000}"
 SEED="${SEED:-47}"
 
@@ -24,6 +25,7 @@ REVIEWED_ATTACK_BANK_JSONL="${REVIEWED_ATTACK_BANK_JSONL:-./v18-reviewed-attack-
 
 FP_CANDIDATE_JSONL="$OUTPUT_ROOT/v18-fp-candidate-corpus.jsonl"
 FP_CANDIDATE_REPORT="$OUTPUT_ROOT/v18-fp-candidate-corpus-report.json"
+FP_CHECKPOINT_DIR="$OUTPUT_ROOT/v18-fp-candidate-checkpoints"
 FP_REVIEW_JSONL="$OUTPUT_ROOT/v18-fp-review-threshold-0.82.jsonl"
 FP_REVIEW_SUMMARY="$OUTPUT_ROOT/v18-fp-review-threshold-0.82-summary.json"
 EXTERNAL_INPUTS_DIR="$OUTPUT_ROOT/v18-external-inputs"
@@ -62,6 +64,9 @@ PY
   --target-documents "$FP_TARGET_DOCUMENTS" \
   --tokenizer-id "$TOKENIZER_ID" \
   --source-pool external_mining_only \
+  --source-workers "$FP_SOURCE_WORKERS" \
+  --checkpoint-dir "$FP_CHECKPOINT_DIR" \
+  --resume \
   --allow-source-errors
 
 "$PYTHON_BIN" run_false_positive_review.py \

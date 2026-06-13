@@ -21,6 +21,12 @@ WINDOW_TOKEN_LENGTH = MODEL_MAX_LENGTH - 2
 WINDOW_TOKEN_STRIDE = 128
 DEFAULT_EXTENSIONS = (".txt", ".md", ".rst", ".html", ".htm", ".csv", ".json")
 BENIGN_LABELS = {"benign", "not_prompt_injection", "not_pi", "safe", "0", 0}
+WINDOW_COUNT_HINT_FIELDS = (
+    "production_window_count",
+    "window_count",
+    "document_window_count",
+    "windows",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -51,6 +57,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit-documents", type=int, default=None)
     parser.add_argument("--window-batch-size", type=int, default=64)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
+    parser.add_argument(
+        "--progress-unit",
+        choices=["documents", "windows"],
+        default="documents",
+        help="Show tqdm progress by documents or by scored windows.",
+    )
+    parser.add_argument(
+        "--progress-total-windows",
+        type=int,
+        default=None,
+        help="Override total windows for --progress-unit windows. Useful when the input has no window-count metadata.",
+    )
     parser.add_argument("--only-flagged-documents", action="store_true")
     parser.add_argument("--include-newlines", action="store_true")
     return parser.parse_args()
@@ -83,23 +101,29 @@ def main() -> None:
 
     output_path = Path(args.output_jsonl)
     with output_path.open("w", encoding="utf-8") as f:
-        for doc in tqdm(docs, desc="Reviewing documents", unit="doc"):
-            review = score_document(
-                doc=doc,
-                tokenizer=tokenizer,
-                model=model,
-                device=device,
-                threshold=args.threshold,
-                benign_id=benign_id,
-                injection_id=injection_id,
-                window_batch_size=args.window_batch_size,
-                include_newlines=args.include_newlines,
-            )
-            update_summary(summary, review)
-            if args.only_flagged_documents and not review["document_false_flagged"]:
-                continue
-            for window in review["windows"]:
-                f.write(json.dumps(window, ensure_ascii=False) + "\n")
+        progress_bar = build_progress_bar(args, docs)
+        try:
+            iterable = docs if args.progress_unit == "windows" else progress_bar
+            for doc in iterable:
+                review = score_document(
+                    doc=doc,
+                    tokenizer=tokenizer,
+                    model=model,
+                    device=device,
+                    threshold=args.threshold,
+                    benign_id=benign_id,
+                    injection_id=injection_id,
+                    window_batch_size=args.window_batch_size,
+                    include_newlines=args.include_newlines,
+                    progress_bar=progress_bar if args.progress_unit == "windows" else None,
+                )
+                update_summary(summary, review)
+                if args.only_flagged_documents and not review["document_false_flagged"]:
+                    continue
+                for window in review["windows"]:
+                    f.write(json.dumps(window, ensure_ascii=False) + "\n")
+        finally:
+            progress_bar.close()
 
     summary["by_category"] = dict(sorted(summary["by_category"].items()))
     Path(args.summary_json).write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -134,6 +158,47 @@ def resolve_label_ids(model: AutoModelForSequenceClassification) -> tuple[int, i
     if injection_id == benign_id and len(label2id) >= 2:
         injection_id = 1 if benign_id == 0 else 0
     return benign_id, injection_id
+
+
+def build_progress_bar(args: argparse.Namespace, docs: list[dict[str, Any]]) -> tqdm:
+    if args.progress_unit == "documents":
+        return tqdm(docs, desc="Reviewing documents", unit="doc")
+
+    total_windows = args.progress_total_windows
+    if total_windows is None:
+        total_windows = infer_total_window_count(docs)
+    return tqdm(total=total_windows, desc="Reviewing windows", unit="win")
+
+
+def infer_total_window_count(docs: list[dict[str, Any]]) -> int | None:
+    total = 0
+    for doc in docs:
+        count = window_count_hint(doc)
+        if count is None:
+            return None
+        total += count
+    return total
+
+
+def window_count_hint(row: dict[str, Any]) -> int | None:
+    for key in WINDOW_COUNT_HINT_FIELDS:
+        value = row.get(key)
+        if value is None or value == "":
+            continue
+        try:
+            count = int(value)
+        except (TypeError, ValueError):
+            continue
+        if count > 0:
+            return count
+    return None
+
+
+def add_window_count_hints(document: dict[str, Any], row: dict[str, Any]) -> None:
+    for key in WINDOW_COUNT_HINT_FIELDS:
+        value = row.get(key)
+        if value is not None and value != "":
+            document[key] = value
 
 
 def iter_documents(args: argparse.Namespace) -> Iterable[dict[str, Any]]:
@@ -180,7 +245,7 @@ def iter_jsonl_documents(path: Path, args: argparse.Namespace) -> Iterable[dict[
             text = normalize_text(row.get(args.text_column))
             if not text:
                 continue
-            yield {
+            document = {
                 "document_id": str(row.get(args.id_column) or f"{path.stem}:{idx}"),
                 "document_label": str(row.get(args.label_column) or args.default_label),
                 "category": str(row.get(args.category_column) or args.default_category),
@@ -195,6 +260,8 @@ def iter_jsonl_documents(path: Path, args: argparse.Namespace) -> Iterable[dict[
                 "dedupe_cluster_id": str(row.get("dedupe_cluster_id") or ""),
                 "text": text,
             }
+            add_window_count_hints(document, row)
+            yield document
 
 
 def iter_dataset_documents(path: Path, args: argparse.Namespace) -> Iterable[dict[str, Any]]:
@@ -212,7 +279,7 @@ def iter_dataset_documents(path: Path, args: argparse.Namespace) -> Iterable[dic
         text = normalize_text(row.get(args.text_column))
         if not text:
             continue
-        yield {
+        document = {
             "document_id": str(row.get(args.id_column) or row.get("source_doc_id") or row.get("parent_id") or idx),
             "document_label": normalize_label(row.get(args.label_column, row.get("label", args.default_label))),
             "category": str(row.get(args.category_column) or row.get("bucket") or args.default_category),
@@ -227,6 +294,8 @@ def iter_dataset_documents(path: Path, args: argparse.Namespace) -> Iterable[dic
             "dedupe_cluster_id": str(row.get("dedupe_cluster_id") or ""),
             "text": text,
         }
+        add_window_count_hints(document, row)
+        yield document
 
 
 def read_text_file(path: Path) -> str:
@@ -247,6 +316,7 @@ def score_document(
     injection_id: int,
     window_batch_size: int,
     include_newlines: bool,
+    progress_bar: Any | None = None,
 ) -> dict[str, Any]:
     text = str(doc["text"])
     input_ids = tokenizer(text, add_special_tokens=False)["input_ids"]
@@ -264,6 +334,8 @@ def score_document(
             probabilities = torch.softmax(logits, dim=-1)
         benign_scores.extend(probabilities[:, benign_id].detach().cpu().tolist())
         injection_scores.extend(probabilities[:, injection_id].detach().cpu().tolist())
+        if progress_bar is not None:
+            progress_bar.update(len(batch))
 
     best_index = max(range(len(injection_scores)), key=lambda idx: injection_scores[idx])
     best_score = float(injection_scores[best_index])

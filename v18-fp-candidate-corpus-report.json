@@ -1,0 +1,288 @@
+{
+  "config": {
+    "output_jsonl": ".\\v18-fp-candidate-corpus.jsonl",
+    "report_json": ".\\v18-fp-candidate-corpus-report.json",
+    "target_documents": 300000,
+    "unsafe_documents": 0,
+    "tokenizer_id": "microsoft/mdeberta-v3-base",
+    "min_document_chars": 80,
+    "max_document_chars": 80000,
+    "candidate_oversample_factor": 2.0,
+    "max_scan_per_source": 1000000,
+    "source_pool": "external_mining_only",
+    "source_workers": 5,
+    "checkpoint_dir": ".\\v18-fp-candidate-corpus-checkpoints",
+    "resume": true,
+    "no_checkpoint": false,
+    "checkpoint_scan_interval": 1000,
+    "no_progress": true,
+    "allow_source_errors": true,
+    "allow_underfilled": true,
+    "dry_run": false
+  },
+  "checkpoint_dir": "v18-fp-candidate-corpus-checkpoints",
+  "targets": {
+    "categories": {
+      "job_descriptions": 45000,
+      "corporate_procedures": 45000,
+      "hr_policies": 30000,
+      "admin_instructions": 30000,
+      "legal_templates": 30000,
+      "support_documentation": 30000,
+      "technical_documentation": 30000,
+      "safety_policies": 30000,
+      "meeting_minutes": 15000,
+      "knowledge_base": 15000
+    },
+    "length_buckets": {
+      "job_descriptions": {
+        "short": 11250,
+        "medium": 13500,
+        "long": 15750,
+        "very_long": 4500
+      },
+      "corporate_procedures": {
+        "short": 11250,
+        "medium": 13500,
+        "long": 15750,
+        "very_long": 4500
+      },
+      "hr_policies": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "admin_instructions": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "legal_templates": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "support_documentation": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "technical_documentation": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "safety_policies": {
+        "short": 7500,
+        "medium": 9000,
+        "long": 10500,
+        "very_long": 3000
+      },
+      "meeting_minutes": {
+        "short": 3750,
+        "medium": 4500,
+        "long": 5250,
+        "very_long": 1500
+      },
+      "knowledge_base": {
+        "short": 3750,
+        "medium": 4500,
+        "long": 5250,
+        "very_long": 1500
+      }
+    },
+    "unsafe_documents": 0
+  },
+  "selected": {
+    "documents": 300000,
+    "categories": {
+      "job_descriptions": 71316,
+      "technical_documentation": 68515,
+      "legal_templates": 49448,
+      "admin_instructions": 37337,
+      "support_documentation": 21361,
+      "knowledge_base": 15000,
+      "meeting_minutes": 15000,
+      "corporate_procedures": 11770,
+      "safety_policies": 7553,
+      "hr_policies": 2700
+    },
+    "sources": {
+      "fineweb2_ru": 68774,
+      "wikipedia_ru": 65703,
+      "c4_ru": 53878,
+      "stackexchange": 48819,
+      "fineweb_en": 28510,
+      "c4_en": 25359,
+      "wikipedia_en": 8692,
+      "legal_case_summaries": 265
+    },
+    "languages": {
+      "ru": 188355,
+      "en": 111559,
+      "mixed": 86
+    },
+    "length_buckets": {
+      "long": 133675,
+      "very_long": 70227,
+      "medium": 62110,
+      "short": 33988
+    },
+    "window_count": {
+      "total": 5123025,
+      "avg": 17.08,
+      "max": 224
+    }
+  },
+  "candidate_counts": {
+    "job_descriptions": {
+      "short": 14947,
+      "medium": 9388,
+      "long": 27001,
+      "very_long": 19980
+    },
+    "corporate_procedures": {
+      "short": 574,
+      "medium": 2239,
+      "long": 5636,
+      "very_long": 3321
+    },
+    "hr_policies": {
+      "short": 130,
+      "medium": 446,
+      "long": 1414,
+      "very_long": 710
+    },
+    "admin_instructions": {
+      "short": 1722,
+      "medium": 5559,
+      "long": 16988,
+      "very_long": 13068
+    },
+    "legal_templates": {
+      "short": 2741,
+      "medium": 8844,
+      "long": 24213,
+      "very_long": 13650
+    },
+    "support_documentation": {
+      "short": 1568,
+      "medium": 4483,
+      "long": 10226,
+      "very_long": 5084
+    },
+    "technical_documentation": {
+      "short": 5599,
+      "medium": 19891,
+      "long": 33752,
+      "very_long": 9846
+    },
+    "safety_policies": {
+      "short": 509,
+      "medium": 1546,
+      "long": 3357,
+      "very_long": 2141
+    },
+    "meeting_minutes": {
+      "short": 4345,
+      "medium": 16522,
+      "long": 41392,
+      "very_long": 26738
+    },
+    "knowledge_base": {
+      "short": 2448,
+      "medium": 5214,
+      "long": 9469,
+      "very_long": 6074
+    }
+  },
+  "unsafe_candidate_count": 0,
+  "source_reports": [
+    {
+      "source_name": "c4_en",
+      "unsafe": false,
+      "rows": 25359,
+      "scanned": 1000001,
+      "accepted": 25359,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "wikipedia_ru",
+      "unsafe": false,
+      "rows": 73606,
+      "scanned": 1000001,
+      "accepted": 73606,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "fineweb_en",
+      "unsafe": false,
+      "rows": 31962,
+      "scanned": 1000001,
+      "accepted": 31962,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "legal_case_summaries",
+      "unsafe": false,
+      "rows": 273,
+      "scanned": 7773,
+      "accepted": 273,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "c4_ru",
+      "unsafe": false,
+      "rows": 78713,
+      "scanned": 1000001,
+      "accepted": 78713,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "fineweb2_ru",
+      "unsafe": false,
+      "rows": 108228,
+      "scanned": 1000001,
+      "accepted": 108228,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "stackexchange",
+      "unsafe": false,
+      "rows": 52801,
+      "scanned": 489429,
+      "accepted": 52801,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    },
+    {
+      "source_name": "wikipedia_en",
+      "unsafe": false,
+      "rows": 11833,
+      "scanned": 1000001,
+      "accepted": 11833,
+      "complete": true,
+      "from_checkpoint": false,
+      "error": null
+    }
+  ],
+  "errors": []
+}

@@ -43,6 +43,7 @@ REVIEWED_MINED_BENIGN_JSONL=./v18-reviewed-near-boundary-benign-source.jsonl
 HARD_FN_SOURCE_JSONL=./v18-hard-fn-reviewed-source.jsonl
 REVIEWED_ATTACK_BANK_JSONL=./v18-reviewed-attack-bank-source.jsonl
 FP_TARGET_DOCUMENTS=20000
+FP_SOURCE_WORKERS=2
 TARGET_TOTAL_ROWS=20000
 VALIDATION_ROWS=2000
 ```
@@ -56,3 +57,5 @@ prepare_v18_external_inputs.py
 validate_v18_external_inputs.py
 build_v18_clean_500k_dataset.py --dry-run
 ```
+
+`build_false_positive_corpus.py` writes per-source checkpoints under the output root and runs source collection in parallel. If the pod stops, rerun the same command; the script uses `--resume`.

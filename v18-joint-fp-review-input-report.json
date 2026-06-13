@@ -1,0 +1,81 @@
+{
+  "output_jsonl": "v18-joint-fp-review-input.jsonl",
+  "inputs": {
+    "direct_target": {
+      "path": "v18-direct-source-documents-target-proof\\v18-direct-source-documents.jsonl",
+      "read_rows": 732,
+      "written_rows": 732,
+      "skipped_duplicate_rows": 0,
+      "windows_written": 150809
+    },
+    "fp_candidate": {
+      "path": "v18-fp-candidate-corpus.jsonl",
+      "read_rows": 300000,
+      "written_rows": 300000,
+      "skipped_duplicate_rows": 0,
+      "windows_written": 5123025
+    }
+  },
+  "selected": {
+    "documents": 300732,
+    "windows": 5273834,
+    "categories_documents": {
+      "job_descriptions": 71316,
+      "technical_documentation": 68515,
+      "legal_templates": 49448,
+      "admin_instructions": 37337,
+      "support_documentation": 21796,
+      "knowledge_base": 15000,
+      "meeting_minutes": 15000,
+      "corporate_procedures": 11877,
+      "safety_policies": 7661,
+      "hr_policies": 2782
+    },
+    "categories_windows": {
+      "job_descriptions": 1398311,
+      "legal_templates": 924492,
+      "admin_instructions": 874728,
+      "technical_documentation": 803939,
+      "support_documentation": 421691,
+      "corporate_procedures": 272667,
+      "safety_policies": 195537,
+      "meeting_minutes": 166918,
+      "knowledge_base": 136324,
+      "hr_policies": 79227
+    },
+    "sources_documents": {
+      "fineweb2_ru": 68774,
+      "wikipedia_ru": 65703,
+      "c4_ru": 53878,
+      "stackexchange": 48819,
+      "fineweb_en": 28510,
+      "c4_en": 25359,
+      "wikipedia_en": 8692,
+      "microsoft_learn_ru": 434,
+      "russian_legislative_corpus_ruslawod": 297,
+      "legal_case_summaries": 265,
+      "bitrix24_helpdesk": 1
+    },
+    "languages_documents": {
+      "ru": 188355,
+      "en": 111559,
+      "mixed": 818
+    },
+    "length_buckets_documents": {
+      "long": 133675,
+      "very_long": 70959,
+      "medium": 62110,
+      "short": 33988
+    }
+  },
+  "dedup": {
+    "dedup_key": "normalized_text_hash_or_text_hash",
+    "skipped_duplicate_rows": 0
+  },
+  "quality": {
+    "missing_required_rows": 0,
+    "mojibake_or_replacement_count": 329,
+    "normalized_rows_with_added_source_path": 300000,
+    "normalized_rows_with_added_source_origin": 300000
+  }
+}

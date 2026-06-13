@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,6 +52,18 @@ class SourceSpec:
     language: str
     target_share: float
     streaming: bool = True
+
+
+@dataclass
+class SourceResult:
+    source_name: str
+    unsafe: bool
+    rows: list[dict[str, Any]]
+    scanned: int
+    accepted: int
+    complete: bool
+    from_checkpoint: bool
+    error: str | None = None
 
 
 REAL_BENIGN_SOURCES = (
@@ -341,6 +354,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--candidate-oversample-factor", type=float, default=2.0)
     parser.add_argument("--max-scan-per-source", type=int, default=350_000)
     parser.add_argument("--source-pool", default="external_mining_only", choices=("external_mining_only", "train", "internal_validation"))
+    parser.add_argument("--source-workers", type=int, default=1, help="Number of source datasets to collect in parallel.")
+    parser.add_argument("--checkpoint-dir", default=None, help="Directory for per-source checkpoint JSONL/state files.")
+    parser.add_argument("--resume", action="store_true", help="Reuse per-source checkpoint files and continue partial sources.")
+    parser.add_argument("--no-checkpoint", action="store_true", help="Disable per-source checkpoint writes.")
+    parser.add_argument("--checkpoint-scan-interval", type=int, default=5000)
+    parser.add_argument("--no-progress", action="store_true", help="Disable tqdm progress bars.")
     parser.add_argument("--allow-source-errors", action="store_true")
     parser.add_argument("--allow-underfilled", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -361,6 +380,8 @@ def main() -> None:
                     "unsafe_targets": unsafe_targets,
                     "sources": [spec.__dict__ for spec in REAL_BENIGN_SOURCES],
                     "optional_unsafe_sources": [spec.__dict__ for spec in OPTIONAL_UNSAFE_SOURCES],
+                    "checkpoint_dir": str(checkpoint_dir_for_args(args)) if not args.no_checkpoint else "",
+                    "source_workers": args.source_workers,
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -368,50 +389,49 @@ def main() -> None:
         )
         return
 
-    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_id)
     candidates: dict[str, dict[str, list[dict[str, Any]]]] = {
         category: {bucket: [] for bucket in DEFAULT_LENGTH_BUCKET_WEIGHTS}
         for category in category_targets
     }
     unsafe_candidates: list[dict[str, Any]] = []
-    seen_hashes: set[str] = set()
     errors: list[str] = []
+    source_reports: list[dict[str, Any]] = []
 
-    for spec in REAL_BENIGN_SOURCES:
-        needed = source_candidate_target(spec, args.target_documents)
-        try:
-            collect_from_source(
-                spec=spec,
-                args=args,
-                tokenizer=tokenizer,
-                candidates=candidates,
-                seen_hashes=seen_hashes,
-                target_candidates=needed,
-            )
-        except Exception as exc:
-            handle_source_error(spec, exc, args, errors)
-
+    jobs: list[tuple[SourceSpec, int, bool]] = [
+        (spec, source_candidate_target(spec, args.target_documents), False)
+        for spec in REAL_BENIGN_SOURCES
+    ]
     if args.unsafe_documents:
-        for spec in OPTIONAL_UNSAFE_SOURCES:
-            needed = max(100, int(math.ceil(args.unsafe_documents * spec.target_share * args.candidate_oversample_factor)))
-            try:
-                collect_unsafe_from_source(
-                    spec=spec,
-                    args=args,
-                    tokenizer=tokenizer,
-                    unsafe_candidates=unsafe_candidates,
-                    seen_hashes=seen_hashes,
-                    target_candidates=needed,
-                )
-            except Exception as exc:
-                handle_source_error(spec, exc, args, errors)
+        jobs.extend(
+            (
+                spec,
+                max(100, int(math.ceil(args.unsafe_documents * spec.target_share * args.candidate_oversample_factor))),
+                True,
+            )
+            for spec in OPTIONAL_UNSAFE_SOURCES
+        )
+
+    for result in collect_source_jobs(args, jobs):
+        source_reports.append(source_result_report(result))
+        if result.error:
+            errors.append(result.error)
+            continue
+        if result.unsafe:
+            unsafe_candidates.extend(result.rows)
+            continue
+        for row in result.rows:
+            category = row["category"]
+            length_bucket = row["length_bucket"]
+            if category in candidates and length_bucket in candidates[category]:
+                candidates[category][length_bucket].append(row)
 
     selected = select_documents(candidates, category_targets, length_targets, args.allow_underfilled)
-    selected.extend(select_unsafe_documents(unsafe_candidates, args.unsafe_documents, args.allow_underfilled))
+    selected_hashes = {row["text_hash"] for row in selected}
+    selected.extend(select_unsafe_documents(unsafe_candidates, args.unsafe_documents, args.allow_underfilled, selected_hashes))
     selected = sorted(selected, key=lambda row: row["document_id"])
 
     write_jsonl(Path(args.output_jsonl), selected)
-    report = make_report(args, selected, candidates, unsafe_candidates, errors, category_targets, length_targets)
+    report = make_report(args, selected, candidates, unsafe_candidates, errors, category_targets, length_targets, source_reports)
     Path(args.report_json).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print_summary(report, args.output_jsonl, args.report_json)
 
@@ -436,6 +456,284 @@ def source_candidate_target(spec: SourceSpec, total_documents: int) -> int:
     return max(500, int(math.ceil(total_documents * spec.target_share * 2.2)))
 
 
+def collect_source_jobs(args: argparse.Namespace, jobs: list[tuple[SourceSpec, int, bool]]) -> Iterable[SourceResult]:
+    workers = max(1, int(args.source_workers or 1))
+    if workers == 1:
+        for spec, target_candidates, unsafe in jobs:
+            try:
+                yield collect_source_job(args, spec, target_candidates, unsafe)
+            except Exception as exc:
+                if not args.allow_source_errors:
+                    raise
+                yield SourceResult(
+                    source_name=spec.name,
+                    unsafe=unsafe,
+                    rows=[],
+                    scanned=0,
+                    accepted=0,
+                    complete=False,
+                    from_checkpoint=False,
+                    error=source_error_message(spec, exc),
+                )
+        return
+
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        future_to_job = {
+            executor.submit(collect_source_job, args, spec, target_candidates, unsafe): (spec, unsafe)
+            for spec, target_candidates, unsafe in jobs
+        }
+        for future in as_completed(future_to_job):
+            spec, unsafe = future_to_job[future]
+            try:
+                yield future.result()
+            except Exception as exc:
+                if not args.allow_source_errors:
+                    raise
+                yield SourceResult(
+                    source_name=spec.name,
+                    unsafe=unsafe,
+                    rows=[],
+                    scanned=0,
+                    accepted=0,
+                    complete=False,
+                    from_checkpoint=False,
+                    error=source_error_message(spec, exc),
+                )
+
+
+def collect_source_job(args: argparse.Namespace, spec: SourceSpec, target_candidates: int, unsafe: bool) -> SourceResult:
+    row_path, state_path = checkpoint_paths(args, spec, unsafe)
+    existing_rows: list[dict[str, Any]] = []
+    state: dict[str, Any] = {}
+    compatible_checkpoint = False
+    if args.resume and row_path and state_path and row_path.exists() and state_path.exists():
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        compatible_checkpoint = checkpoint_state_compatible(state, args, spec, unsafe)
+        if compatible_checkpoint:
+            existing_rows = read_jsonl(row_path)
+            if state.get("complete") and checkpoint_satisfies_request(state, args, target_candidates, len(existing_rows)):
+                return SourceResult(
+                    source_name=spec.name,
+                    unsafe=unsafe,
+                    rows=existing_rows[:target_candidates],
+                    scanned=int(state.get("scanned", 0) or 0),
+                    accepted=len(existing_rows),
+                    complete=True,
+                    from_checkpoint=True,
+                )
+
+    if row_path and not compatible_checkpoint:
+        row_path.parent.mkdir(parents=True, exist_ok=True)
+        row_path.write_text("", encoding="utf-8")
+        existing_rows = []
+
+    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_id)
+    rows = list(existing_rows)
+    local_seen_hashes = {row["text_hash"] for row in rows if row.get("text_hash")}
+    resume_scanned = int(state.get("scanned", 0) or 0) if compatible_checkpoint else 0
+    scanned = resume_scanned
+    stop_reason = "unknown"
+    raw = open_dataset(spec)
+    mode = "a" if compatible_checkpoint else "a"
+    handle = row_path.open(mode, encoding="utf-8") if row_path else None
+    last_state_scan = resume_scanned
+    write_checkpoint_state(state_path, args, spec, unsafe, scanned, len(rows), target_candidates, False, "started")
+    try:
+        progress = tqdm(raw, desc=f"Collecting {spec.name}", unit="row", total=args.max_scan_per_source, disable=args.no_progress)
+        for source_index, source_row in enumerate(progress, start=1):
+            if source_index <= resume_scanned:
+                continue
+            scanned = source_index
+            if scanned > args.max_scan_per_source:
+                stop_reason = "max_scan"
+                break
+            row_out = build_candidate_row(
+                spec=spec,
+                args=args,
+                tokenizer=tokenizer,
+                source_row=source_row,
+                unsafe=unsafe,
+                local_seen_hashes=local_seen_hashes,
+            )
+            if row_out:
+                rows.append(row_out)
+                local_seen_hashes.add(row_out["text_hash"])
+                if handle:
+                    handle.write(json.dumps(row_out, ensure_ascii=False) + "\n")
+                    handle.flush()
+                progress.set_postfix(accepted=len(rows))
+                if len(rows) >= target_candidates:
+                    stop_reason = "target"
+                    break
+            if scanned - last_state_scan >= max(1, args.checkpoint_scan_interval):
+                write_checkpoint_state(state_path, args, spec, unsafe, scanned, len(rows), target_candidates, False, "scan")
+                last_state_scan = scanned
+        else:
+            stop_reason = "source_exhausted"
+    finally:
+        if handle:
+            handle.close()
+
+    complete = stop_reason in {"target", "max_scan", "source_exhausted"}
+    write_checkpoint_state(state_path, args, spec, unsafe, scanned, len(rows), target_candidates, complete, stop_reason)
+    return SourceResult(
+        source_name=spec.name,
+        unsafe=unsafe,
+        rows=rows[:target_candidates],
+        scanned=scanned,
+        accepted=len(rows),
+        complete=complete,
+        from_checkpoint=bool(existing_rows),
+    )
+
+
+def build_candidate_row(
+    *,
+    spec: SourceSpec,
+    args: argparse.Namespace,
+    tokenizer: AutoTokenizer,
+    source_row: Any,
+    unsafe: bool,
+    local_seen_hashes: set[str],
+) -> dict[str, Any] | None:
+    text = extract_text(source_row)
+    prepared = prepare_document_text(text, args)
+    if not prepared or looks_like_prompt_injection(prepared):
+        return None
+    text_hash = stable_hash(prepared)
+    if text_hash in local_seen_hashes:
+        return None
+    token_count = token_length(prepared, tokenizer)
+    window_count = production_window_count(token_count)
+    if unsafe:
+        category = "unsafe_non_injection"
+        keyword_hits: list[str] = []
+    else:
+        category, keyword_hits = classify_category(prepared, spec.language)
+        if not category:
+            return None
+    return make_document_row(
+        text=prepared,
+        source=spec,
+        category=category,
+        language=spec.language if spec.language != "mixed" else infer_language(prepared),
+        token_count=token_count,
+        window_count=window_count,
+        length_bucket=length_bucket_for_window_count(window_count),
+        keyword_hits=keyword_hits,
+        source_row=source_row,
+        text_hash=text_hash,
+        source_pool=args.source_pool,
+    )
+
+
+def checkpoint_dir_for_args(args: argparse.Namespace) -> Path:
+    if args.checkpoint_dir:
+        return Path(args.checkpoint_dir)
+    output = Path(args.output_jsonl)
+    return output.with_suffix("").parent / f"{output.with_suffix('').name}-checkpoints"
+
+
+def checkpoint_paths(args: argparse.Namespace, spec: SourceSpec, unsafe: bool) -> tuple[Path | None, Path | None]:
+    if args.no_checkpoint:
+        return None, None
+    directory = checkpoint_dir_for_args(args)
+    name = f"{'unsafe' if unsafe else 'source'}-{safe_filename(spec.name)}"
+    return directory / f"{name}.jsonl", directory / f"{name}.state.json"
+
+
+def safe_filename(value: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "-", value).strip("-")
+    return cleaned or "source"
+
+
+def checkpoint_state_compatible(state: dict[str, Any], args: argparse.Namespace, spec: SourceSpec, unsafe: bool) -> bool:
+    return (
+        state.get("source_name") == spec.name
+        and state.get("repo_id") == spec.repo_id
+        and state.get("config") == (spec.config or "")
+        and state.get("split") == spec.split
+        and bool(state.get("unsafe")) == unsafe
+        and state.get("tokenizer_id") == args.tokenizer_id
+        and int(state.get("min_document_chars", -1)) == args.min_document_chars
+        and int(state.get("max_document_chars", -1)) == args.max_document_chars
+        and state.get("source_pool") == args.source_pool
+    )
+
+
+def checkpoint_satisfies_request(state: dict[str, Any], args: argparse.Namespace, target_candidates: int, row_count: int) -> bool:
+    stop_reason = str(state.get("stop_reason") or "")
+    previous_max_scan = int(state.get("max_scan_per_source", 0) or 0)
+    if row_count >= target_candidates:
+        return True
+    if stop_reason in {"max_scan", "source_exhausted"} and previous_max_scan >= args.max_scan_per_source:
+        return True
+    return False
+
+
+def write_checkpoint_state(
+    path: Path | None,
+    args: argparse.Namespace,
+    spec: SourceSpec,
+    unsafe: bool,
+    scanned: int,
+    accepted: int,
+    target_candidates: int,
+    complete: bool,
+    stop_reason: str,
+) -> None:
+    if not path:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    state = {
+        "source_name": spec.name,
+        "repo_id": spec.repo_id,
+        "config": spec.config or "",
+        "split": spec.split,
+        "unsafe": unsafe,
+        "tokenizer_id": args.tokenizer_id,
+        "min_document_chars": args.min_document_chars,
+        "max_document_chars": args.max_document_chars,
+        "source_pool": args.source_pool,
+        "max_scan_per_source": args.max_scan_per_source,
+        "target_candidates": target_candidates,
+        "scanned": scanned,
+        "accepted": accepted,
+        "complete": complete,
+        "stop_reason": stop_reason,
+    }
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp.replace(path)
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
+
+
+def source_result_report(result: SourceResult) -> dict[str, Any]:
+    return {
+        "source_name": result.source_name,
+        "unsafe": result.unsafe,
+        "rows": len(result.rows),
+        "scanned": result.scanned,
+        "accepted": result.accepted,
+        "complete": result.complete,
+        "from_checkpoint": result.from_checkpoint,
+        "error": result.error,
+    }
+
+
+def source_error_message(spec: SourceSpec, exc: Exception) -> str:
+    return f"{spec.name}: {type(exc).__name__}: {exc}"
+
+
 def collect_from_source(
     *,
     spec: SourceSpec,
@@ -448,7 +746,7 @@ def collect_from_source(
     raw = open_dataset(spec)
     accepted = 0
     scanned = 0
-    progress = tqdm(raw, desc=f"Collecting {spec.name}", unit="row", total=args.max_scan_per_source)
+    progress = tqdm(raw, desc=f"Collecting {spec.name}", unit="row", total=args.max_scan_per_source, disable=args.no_progress)
     for row in progress:
         scanned += 1
         text = extract_text(row)
@@ -505,7 +803,7 @@ def collect_unsafe_from_source(
     raw = open_dataset(spec)
     accepted = 0
     scanned = 0
-    progress = tqdm(raw, desc=f"Collecting {spec.name}", unit="row", total=args.max_scan_per_source)
+    progress = tqdm(raw, desc=f"Collecting {spec.name}", unit="row", total=args.max_scan_per_source, disable=args.no_progress)
     for row in progress:
         scanned += 1
         text = extract_text(row)
@@ -698,31 +996,48 @@ def select_documents(
         used_hashes: set[str] = set()
         for length_bucket, quota in length_targets[category].items():
             bucket_rows = candidates[category][length_bucket]
-            chosen = [row for row in bucket_rows if row["text_hash"] not in selected_hashes][:quota]
+            chosen: list[dict[str, Any]] = []
+            for row in bucket_rows:
+                row_hash = row["text_hash"]
+                if row_hash in selected_hashes or row_hash in used_hashes:
+                    continue
+                chosen.append(row)
+                used_hashes.add(row_hash)
+                if len(chosen) >= quota:
+                    break
             category_selected.extend(chosen)
-            used_hashes.update(row["text_hash"] for row in chosen)
         if len(category_selected) < target:
-            remaining = [
-                row
-                for bucket_rows in candidates[category].values()
-                for row in bucket_rows
-                if row["text_hash"] not in used_hashes and row["text_hash"] not in selected_hashes
-            ]
-            category_selected.extend(remaining[: target - len(category_selected)])
+            for bucket_rows in candidates[category].values():
+                for row in bucket_rows:
+                    row_hash = row["text_hash"]
+                    if row_hash in used_hashes or row_hash in selected_hashes:
+                        continue
+                    category_selected.append(row)
+                    used_hashes.add(row_hash)
+                    if len(category_selected) >= target:
+                        break
+                if len(category_selected) >= target:
+                    break
         chosen_final = category_selected[:target]
         selected.extend(chosen_final)
         selected_hashes.update(row["text_hash"] for row in chosen_final)
 
     total_target = sum(category_targets.values())
     if len(selected) < total_target:
-        remaining = [
-            row
-            for category in category_targets
-            for bucket_rows in candidates[category].values()
-            for row in bucket_rows
-            if row["text_hash"] not in selected_hashes
-        ]
-        selected.extend(remaining[: total_target - len(selected)])
+        for category in category_targets:
+            for bucket_rows in candidates[category].values():
+                for row in bucket_rows:
+                    row_hash = row["text_hash"]
+                    if row_hash in selected_hashes:
+                        continue
+                    selected.append(row)
+                    selected_hashes.add(row_hash)
+                    if len(selected) >= total_target:
+                        break
+                if len(selected) >= total_target:
+                    break
+            if len(selected) >= total_target:
+                break
     if len(selected) < total_target and not allow_underfilled:
         raise ValueError(f"Corpus only has {len(selected):,}/{total_target:,} documents after category redistribution.")
     return selected[:total_target]
@@ -732,6 +1047,7 @@ def select_unsafe_documents(
     unsafe_candidates: list[dict[str, Any]],
     target: int,
     allow_underfilled: bool,
+    exclude_hashes: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if target <= 0:
         return []
@@ -739,7 +1055,7 @@ def select_unsafe_documents(
     for row in unsafe_candidates:
         by_source[row["source_name"]].append(row)
     selected: list[dict[str, Any]] = []
-    used_hashes: set[str] = set()
+    used_hashes: set[str] = set(exclude_hashes or set())
     per_source = math.ceil(target / max(1, len(by_source)))
     for source_name in sorted(by_source):
         for row in by_source[source_name][:per_source]:
@@ -778,9 +1094,11 @@ def make_report(
     errors: list[str],
     category_targets: dict[str, int],
     length_targets: dict[str, dict[str, int]],
+    source_reports: list[dict[str, Any]],
 ) -> dict[str, Any]:
     return {
         "config": vars(args),
+        "checkpoint_dir": "" if args.no_checkpoint else str(checkpoint_dir_for_args(args)),
         "targets": {
             "categories": category_targets,
             "length_buckets": length_targets,
@@ -792,6 +1110,7 @@ def make_report(
             for category, buckets in candidates.items()
         },
         "unsafe_candidate_count": len(unsafe_candidates),
+        "source_reports": source_reports,
         "errors": errors,
     }
 
