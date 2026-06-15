@@ -1147,7 +1147,10 @@ def load_prepared_dataset(path: str) -> DatasetDict:
     if set(ds.keys()) != {"train", "validation"}:
         raise ValueError(f"Prepared dataset must contain train and validation splits. Got: {list(ds.keys())}")
 
-    required_columns = {"text", "label", "source_name"}
+    # New clean prepared datasets intentionally keep only model-visible fields.
+    # Older prepared datasets may still include source_name, but it is not used
+    # by hard-label training and is stripped before Trainer consumption.
+    required_columns = {"text", "label"}
     for split_name in ["train", "validation"]:
         missing = required_columns.difference(ds[split_name].column_names)
         if missing:

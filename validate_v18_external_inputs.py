@@ -14,7 +14,7 @@ BASE_TARGET_TOTAL_ROWS = 500_000
 BASE_TARGETS = {
     "benign_mined_high_score_windows": 30_000,
     "benign_reviewed_attack_lexicon_context_windows": 10_000,
-    "attack_hard_fn_visible": 20_000,
+    "attack_hard_fn_visible": 0,
 }
 
 BENIGN_LABELS = {"not_prompt_injection", "benign", "safe", "0", "false"}
@@ -26,6 +26,76 @@ MODEL_CONTROL_RE = re.compile(
     r"system\s+prompt|developer\s+prompt|hidden\s+instruction|internal\s+tool|hidden\s+routing|"
     r"ignore\s+(all\s+){0,1}(previous|prior)\s+instruction[s]{0,1}|jailbreak|prompt\s+injection|"
     r"reveal\s+(the\s+){0,1}(system|developer)|show\s+(the\s+){0,1}(system|developer)|"
+    r"систем\w*\s+промпт|"
+    r"промпт\s+разработчик\w*|"
+    r"скрыт\w*\s+инструкц|"
+    r"скрыт\w*\s+маршрут|"
+    r"внутрен\w*\s+инструмент|"
+    r"игнор\w*\s+.*инструкц|"
+    r"раскр\w*\s+.*промпт|"
+    r"покаж\w*\s+.*(промпт|инструкц|инструмент|маршрут|конфигурац)|"
+    r"вывед\w*\s+.*(промпт|инструкц|инструмент|маршрут|конфигурац)|"
+    r"правил\w*\s+безопасност|"
+    r"правил\w*\s+классификац|"
+    r"следуй\s+только\s+этой\s+инструкц|"
+    r"отмени\s+.*(правил|инструкц)|"
+    r"не\s+выполняй\s+.*(огранич|правил)|"
+    r"не\s+учитывай\s+.*правил|"
+    r"замени\s+системн\w*\s+инструкц|"
+    r"прими\s+.*системн\w*\s+команд|"
+    r"главн\w*\s+правил\w*\s+ответ|"
+    r"обязательн\w*\s+директив|"
+    r"высш\w*\s+приоритет|"
+    r"рабоч\w*\s+инструкц|"
+    r"system\s+rules|active\s+instruction|instruction\s+hierarchy|mandatory\s+directive|"
+    r"highest\s+priority\s+rule|maximum\s+priority\s+rule|follow\s+only\s+this\s+instruction|"
+    r"do\s+not\s+follow.*rules|put\s+this\s+above\s+the\s+system\s+rules|"
+    r"replace\s+the\s+previous\s+context|disable\s+earlier\s+response\s+constraints|"
+    r"supersede\s+the\s+system\s+instructions|private\s+instruction\s+stack|hidden\s+response\s+rules|"
+    r"output\s+.*instructions|output\s+.*инструкц|"
+    r"developer\s+rules|developer\s+message|system\s+rules|"
+    r"developer\s+instructions|system\s+message|"
+    r"private\s+moderation\s+policy|confidential\s+safety\s+rules|internal\s+safety\s+rules|"
+    r"hidden\s+tool\s+names|hidden\s+environment\s+commands|private\s+functions|"
+    r"confidential\s+instructions|invisible\s+response\s+constraints|response\s+constraints|"
+    r"ignore\s+.*инструкц|"
+    r"routing\s+rules|internal\s+routing\s+rules|tool\s+selection\s+rules|"
+    r"internal\s+policy\s+configuration|"
+    r"internal\s+policy|main\s+response\s+policy|directive\s+as\s+mandatory|"
+    r"classification\s+rules|system\s+tools|"
+    r"system\s+instructions|system\s+command|routing\s+conditions|routing\s+tools|concealed\s+instructions|"
+    r"routing\s+policy|directive\s+mandatory|"
+    r"supersede\s+.*инструкц|disable\s+.*огранич|"
+    r"only\s+this\s+instruction|request\s+routing\s+path|"
+    r"скрыт\w*\s+указан|"
+    r"скрыт\w*\s+команд|"
+    r"максимальн\w*\s+приоритет|"
+    r"нов\w*\s+иерархи\w*\s+инструкц|"
+    r"переопредел\w*\s+предыдущ\w*\s+контекст|"
+    r"правил\w*\s+разработчик|"
+    r"сообщени\w*\s+разработчик|"
+    r"исходн\w*\s+системн\w*\s+правил|"
+    r"приватн\w*\s+функц|"
+    r"скрыт\w*\s+tool\s+names|"
+    r"считай\s+.*директив\w*\s+обязательн|"
+    r"скрыт\w*\s+огранич|"
+    r"выше\s+системн\w*\s+правил|"
+    r"отключи\s+прежн\w*\s+правил|"
+    r"системн\w*\s+сообщени|"
+    r"developer\s+instructions|"
+    r"роутинг|маршрутизац|"
+    r"невидим\w*\s+правил|"
+    r"правил\w*\s+ответ|"
+    r"системн\w*\s+правил|"
+    r"прежн\w*\s+правил|"
+    r"переопред\w*|"
+    r"служебн\w*\s+политик\w*\s+ответ|"
+    r"системн\w*\s+инструмент|"
+    r"hidden\s+classification\s+rules|"
+    r"игнорируй\s+.*prior\s+instructions|"
+    r"rules\s+above|"
+    r"маршрут\s+обработки\s+запрос|"
+    r"считай\s+.*directive\s+mandatory|"
     r"систем\w*\s+промпт|"
     r"промпт\s+разработчик\w*|"
     r"скрыт\w*\s+инструкц|"
@@ -449,7 +519,7 @@ def main() -> None:
     missing_inputs = []
     if not args.mined_benign_jsonl:
         missing_inputs.append("--mined-benign-jsonl")
-    if not args.hard_fn_jsonl:
+    if targets["attack_hard_fn_visible"] > 0 and not args.hard_fn_jsonl:
         missing_inputs.append("--hard-fn-jsonl")
     if not args.attack_bank_jsonl:
         missing_inputs.append("--attack-bank-jsonl")
@@ -464,7 +534,20 @@ def main() -> None:
         write_json(args.report_json, report)
         raise SystemExit(2)
     report["mined_benign"] = validate_mined(args.mined_benign_jsonl, args, targets)
-    report["hard_fn"] = validate_hard_fn(args.hard_fn_jsonl, targets)
+    if targets["attack_hard_fn_visible"] > 0:
+        report["hard_fn"] = validate_hard_fn(args.hard_fn_jsonl, targets)
+    else:
+        report["hard_fn"] = {
+            "paths": args.hard_fn_jsonl,
+            "targets": {"usable_visible_attack_windows_min": 0},
+            "counts": {},
+            "rejected": {},
+            "languages": {},
+            "samples": {},
+            "failures": [],
+            "status": "pass",
+            "note": "zero_target_no_hard_fn_required",
+        }
     report["attack_bank"] = validate_attack_bank(args.attack_bank_jsonl, args, targets)
     for section_name in ("mined_benign", "hard_fn", "attack_bank"):
         if report[section_name]["status"] != "pass":

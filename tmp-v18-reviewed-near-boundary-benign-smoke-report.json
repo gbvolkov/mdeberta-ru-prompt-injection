@@ -1,0 +1,22 @@
+{
+  "bank_type": "trusted_controlled_template_generated_reviewed_near_boundary_benign",
+  "categories": {
+    "corporate_procedures": 249,
+    "knowledge_base": 251,
+    "legal_templates": 250,
+    "support_documentation": 250
+  },
+  "confirmed_benign_rows": 1000,
+  "failures": [],
+  "languages": {
+    "en": 250,
+    "mixed": 130,
+    "ru": 620
+  },
+  "manual_reviewed_benign_rows": 1000,
+  "output_jsonl": ".\\tmp-v18-reviewed-near-boundary-benign-smoke.jsonl",
+  "reviewed_benign_rows": 1000,
+  "rows": 1000,
+  "status": "pass",
+  "unique_text_hashes": 1000
+}

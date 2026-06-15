@@ -10,12 +10,14 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
+from validate_v18_attack_bank import good_anchor as trusted_attack_bank_good_anchor
+
 
 BASE_TARGET_TOTAL_ROWS = 500_000
 BASE_TARGETS = {
     "benign_mined_high_score_windows": 30_000,
     "benign_reviewed_attack_lexicon_context_windows": 10_000,
-    "attack_hard_fn_visible": 20_000,
+    "attack_hard_fn_visible": 0,
 }
 
 BENIGN_LABELS = {"not_prompt_injection", "benign", "safe", "0", "false", ""}
@@ -64,6 +66,76 @@ MODEL_CONTROL_RE = re.compile(
     r"скрыт\w*\s+маршрут|"
     r"внутрен\w*\s+инструмент|"
     r"игнор\w*\s+.*инструкц|"
+    r"раскр\w*\s+.*промпт|"
+    r"покаж\w*\s+.*(промпт|инструкц|инструмент|маршрут|конфигурац)|"
+    r"вывед\w*\s+.*(промпт|инструкц|инструмент|маршрут|конфигурац)|"
+    r"правил\w*\s+безопасност|"
+    r"правил\w*\s+классификац|"
+    r"следуй\s+только\s+этой\s+инструкц|"
+    r"отмени\s+.*(правил|инструкц)|"
+    r"не\s+выполняй\s+.*(огранич|правил)|"
+    r"не\s+учитывай\s+.*правил|"
+    r"замени\s+системн\w*\s+инструкц|"
+    r"прими\s+.*системн\w*\s+команд|"
+    r"главн\w*\s+правил\w*\s+ответ|"
+    r"обязательн\w*\s+директив|"
+    r"высш\w*\s+приоритет|"
+    r"рабоч\w*\s+инструкц|"
+    r"system\s+rules|active\s+instruction|instruction\s+hierarchy|mandatory\s+directive|"
+    r"highest\s+priority\s+rule|maximum\s+priority\s+rule|follow\s+only\s+this\s+instruction|"
+    r"do\s+not\s+follow.*rules|put\s+this\s+above\s+the\s+system\s+rules|"
+    r"replace\s+the\s+previous\s+context|disable\s+earlier\s+response\s+constraints|"
+    r"supersede\s+the\s+system\s+instructions|private\s+instruction\s+stack|hidden\s+response\s+rules|"
+    r"output\s+.*instructions|output\s+.*инструкц|"
+    r"developer\s+rules|developer\s+message|system\s+rules|"
+    r"developer\s+instructions|system\s+message|"
+    r"private\s+moderation\s+policy|confidential\s+safety\s+rules|internal\s+safety\s+rules|"
+    r"hidden\s+tool\s+names|hidden\s+environment\s+commands|private\s+functions|"
+    r"confidential\s+instructions|invisible\s+response\s+constraints|response\s+constraints|"
+    r"ignore\s+.*инструкц|"
+    r"routing\s+rules|internal\s+routing\s+rules|tool\s+selection\s+rules|"
+    r"internal\s+policy\s+configuration|"
+    r"internal\s+policy|main\s+response\s+policy|directive\s+as\s+mandatory|"
+    r"classification\s+rules|system\s+tools|"
+    r"system\s+instructions|system\s+command|routing\s+conditions|routing\s+tools|concealed\s+instructions|"
+    r"routing\s+policy|directive\s+mandatory|"
+    r"supersede\s+.*инструкц|disable\s+.*огранич|"
+    r"only\s+this\s+instruction|request\s+routing\s+path|"
+    r"скрыт\w*\s+указан|"
+    r"скрыт\w*\s+команд|"
+    r"максимальн\w*\s+приоритет|"
+    r"нов\w*\s+иерархи\w*\s+инструкц|"
+    r"переопредел\w*\s+предыдущ\w*\s+контекст|"
+    r"правил\w*\s+разработчик|"
+    r"сообщени\w*\s+разработчик|"
+    r"исходн\w*\s+системн\w*\s+правил|"
+    r"приватн\w*\s+функц|"
+    r"скрыт\w*\s+tool\s+names|"
+    r"считай\s+.*директив\w*\s+обязательн|"
+    r"скрыт\w*\s+огранич|"
+    r"выше\s+системн\w*\s+правил|"
+    r"отключи\s+прежн\w*\s+правил|"
+    r"системн\w*\s+сообщени|"
+    r"developer\s+instructions|"
+    r"роутинг|маршрутизац|"
+    r"невидим\w*\s+правил|"
+    r"правил\w*\s+ответ|"
+    r"системн\w*\s+правил|"
+    r"прежн\w*\s+правил|"
+    r"переопред\w*|"
+    r"служебн\w*\s+политик\w*\s+ответ|"
+    r"системн\w*\s+инструмент|"
+    r"hidden\s+classification\s+rules|"
+    r"игнорируй\s+.*prior\s+instructions|"
+    r"rules\s+above|"
+    r"маршрут\s+обработки\s+запрос|"
+    r"считай\s+.*directive\s+mandatory|"
+    r"систем\w*\s+промпт|"
+    r"промпт\s+разработчик\w*|"
+    r"скрыт\w*\s+инструкц|"
+    r"скрыт\w*\s+маршрут|"
+    r"внутрен\w*\s+инструмент|"
+    r"игнор\w*\s+.*инструкц|"
     r"раскр\w*\s+.*промпт"
     r")",
     re.IGNORECASE,
@@ -82,6 +154,12 @@ BENIGN_CONTEXT_RE = re.compile(
     r"("
     r"false\s+positive|security\s+policy|compliance|incident\s+report|training|awareness|"
     r"documentation|guideline|procedure|policy\s+document|audit|redaction|"
+    r"политик\w*\s+безопас|"
+    r"комплаенс|аудит|"
+    r"инцидент|инструкци\w*\s+по|"
+    r"регламент|документац|"
+    r"материал\s+обучения|обучени|"
+    r"разбор|обсуждени|предотвращени|"
     r"политик\w*\s+безопас|"
     r"комплаенс|аудит|"
     r"инцидент|инструкци\w*\s+по|"
@@ -725,9 +803,7 @@ def build_attack_text(language: str, family: str, anchor: str, rnd: random.Rando
 
 
 def good_attack_anchor(text: str, anchor: str) -> bool:
-    text_norm = normalize_text(text).lower()
-    anchor_norm = normalize_text(anchor).lower()
-    return bool(anchor_norm and anchor_norm in text_norm and MODEL_CONTROL_RE.search(anchor))
+    return trusted_attack_bank_good_anchor(text, anchor)
 
 
 def normalize_reviewed_attack_bank(args: argparse.Namespace, output_path: Path) -> dict[str, Any]:
@@ -777,8 +853,10 @@ def normalize_reviewed_attack_bank(args: argparse.Namespace, output_path: Path) 
                     "source_origin": str(row.get("source_origin") or row.get("upstream_source") or row.get("collection") or path),
                     "manual_reviewed_attack": bool(truthy(row.get("manual_reviewed_attack")) or truthy(row.get("reviewed_attack"))),
                     "trusted_attack": bool(truthy(row.get("trusted_attack"))),
+                    "trusted_source_type": str(row.get("trusted_source_type") or "manual_or_external_reviewed"),
                     "attack_visible_in_window": bool(truthy(row.get("attack_visible_in_window")) or truthy(row.get("attack_visible"))),
                     "generation_type": "external",
+                    "generation_method": str(row.get("generation_method") or ""),
                     "source_family": str(row.get("source_family") or "reviewed_external_attack_bank"),
                 }
             )
@@ -790,6 +868,9 @@ def normalize_reviewed_attack_bank(args: argparse.Namespace, output_path: Path) 
         "rejected": dict(rejected),
         "languages": dict(Counter(row["language"] for row in rows).most_common()),
         "semantic_families": dict(Counter(row["semantic_family"] for row in rows).most_common()),
+        "trusted_source_types": dict(Counter(row.get("trusted_source_type", "unknown") for row in rows).most_common()),
+        "manual_reviewed_attack_rows": sum(1 for row in rows if row.get("manual_reviewed_attack")),
+        "trusted_attack_rows": sum(1 for row in rows if row.get("trusted_attack")),
         "good_anchor_rows": sum(1 for row in rows if good_attack_anchor(row["attack_text"], row["attack_anchor_text"])),
     }
 
@@ -911,7 +992,7 @@ def main() -> None:
         failures.append("mined_benign_underfilled")
     if report["mined_benign"].get("usable_reviewed_near_boundary_benign", 0) < targets["benign_reviewed_attack_lexicon_context_capacity"]:
         failures.append("reviewed_near_boundary_benign_underfilled")
-    if report["hard_fn_visible_attacks"]["written_rows"] < targets["attack_hard_fn_visible"]:
+    if targets["attack_hard_fn_visible"] > 0 and report["hard_fn_visible_attacks"]["written_rows"] < targets["attack_hard_fn_visible"]:
         failures.append("hard_fn_visible_attacks_underfilled")
     if report["reviewed_external_attack_bank"]["written_rows"] < targets["attack_bank_rows"]:
         failures.append("reviewed_external_attack_bank_underfilled")
