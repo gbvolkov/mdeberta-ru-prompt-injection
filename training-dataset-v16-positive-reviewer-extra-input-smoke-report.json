@@ -1,0 +1,104 @@
+{
+  "audit_jsonl": ".\\v16-positive-reviewer-extra-input-smoke\\audit-rows.jsonl",
+  "categories_all": {
+    "admin_instructions": 18,
+    "benign_biographical_note": 3,
+    "corporate_procedures": 26,
+    "critical_ru_override_hidden_prompt_exfiltration": 14,
+    "embedded_admin_instructions": 2,
+    "embedded_hr_policies": 5,
+    "embedded_job_descriptions": 1,
+    "embedded_legal_templates": 1,
+    "embedded_security_compliance_redaction_wrappers": 2,
+    "embedded_support_documentation": 7,
+    "embedded_technical_documentation": 4,
+    "hr_policies": 9,
+    "job_descriptions": 27,
+    "knowledge_base": 1,
+    "legal_templates": 12,
+    "meeting_minutes": 6,
+    "safety_policies": 2,
+    "security_compliance_redaction_wrappers": 24,
+    "support_documentation": 20,
+    "technical_documentation": 13,
+    "unsafe_non_injection": 3
+  },
+  "components_all": {
+    "benign_false_positive_v16_positive_benign_stress_windows": 3,
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 82,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 13,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 2,
+    "real_attack_v16_positive_blind_acceptance_critical_ru_windows": 4,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 22,
+    "real_attack_v16_positive_proper_critical_attack_windows": 55,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 19
+  },
+  "components_train": {
+    "benign_false_positive_v16_positive_benign_stress_windows": 1,
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 67,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 5,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 1,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 15,
+    "real_attack_v16_positive_proper_critical_attack_windows": 34,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 16
+  },
+  "components_validation": {
+    "benign_false_positive_v16_positive_benign_stress_windows": 2,
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 15,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 8,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 1,
+    "real_attack_v16_positive_blind_acceptance_critical_ru_windows": 4,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 7,
+    "real_attack_v16_positive_proper_critical_attack_windows": 21,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 3
+  },
+  "dropped_by_reason": {},
+  "dropped_jsonl": ".\\v16-positive-reviewer-extra-input-smoke\\dropped.jsonl",
+  "dropped_rows": 0,
+  "extra_window_jsonl": [
+    ".\\v16-positive-reviewer-research-smoke\\audit-rows.jsonl"
+  ],
+  "failures": [],
+  "final_conflicting_duplicate_labels": 0,
+  "input_rows_after_v16_positive_and_visibility_gates": 2000,
+  "label_counts_all": {
+    "benign_false_positive": 100,
+    "real_attack": 100
+  },
+  "label_counts_train": {
+    "benign_false_positive": 74,
+    "real_attack": 65
+  },
+  "label_counts_validation": {
+    "benign_false_positive": 26,
+    "real_attack": 35
+  },
+  "languages_all": {
+    "en": 32,
+    "mixed": 33,
+    "ru": 135
+  },
+  "output_dir": ".\\training-dataset-v16-positive-reviewer-extra-input-smoke",
+  "protected_overlap": {
+    "attack_generation_recipe_id": 0,
+    "benign_generation_recipe_id": 0,
+    "document_id": 0,
+    "eval_derived_cluster_id": 0,
+    "source_pattern_id": 0,
+    "template_family_id": 0
+  },
+  "quarantined_conflicting_duplicate_text_hashes": 0,
+  "research_only": false,
+  "selected_rows": 200,
+  "stage1_score_bands_all": {
+    "0.82-0.95": 17,
+    "0.95-0.99": 20,
+    "0.99-0.999": 24,
+    ">=0.999": 139
+  },
+  "stage1_threshold": 0.82,
+  "status": "pass",
+  "train_rows": 139,
+  "validation_output_dir": ".\\training-dataset-v16-positive-reviewer-extra-input-smoke-validation",
+  "validation_rows": 61
+}

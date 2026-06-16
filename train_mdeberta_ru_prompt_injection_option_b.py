@@ -397,9 +397,9 @@ def parse_args() -> RunConfig:
 def normalize_text(x: Any) -> str:
     if x is None:
         return ""
-    x = str(x).replace("\x00", " ")
-    x = x.replace("\u200b", " ")
-    x = x.replace("\ufeff", " ")
+    x = str(x).replace(chr(0), " ")
+    x = x.replace(chr(0x200B), " ")
+    x = x.replace(chr(0xFEFF), " ")
     x = re.sub(r"\s+", " ", x).strip()
     return x
 
