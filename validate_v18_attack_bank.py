@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import re
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -146,6 +147,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mixed-max", type=float, default=0.15)
     parser.add_argument("--max-family-share", type=float, default=0.35)
     parser.add_argument("--max-source-name-share", type=float, default=0.35)
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -161,6 +164,24 @@ def iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
                 raise ValueError(f"{path}:{line_number}: invalid JSON: {exc}") from exc
             if isinstance(value, dict):
                 yield value
+
+
+def progress_iter(iterable: Iterable[dict[str, Any]], *, args: argparse.Namespace, label: str) -> Iterable[dict[str, Any]]:
+    if args.no_progress:
+        yield from iterable
+        return
+    every = int(args.progress_every_rows or 0)
+    started = time.time()
+    count = 0
+    for row in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield row
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m done", flush=True)
 
 
 def normalize_text(value: Any) -> str:
@@ -236,7 +257,7 @@ def main() -> None:
     trusted_or_reviewed = 0
     good_anchor_rows = 0
 
-    for row in iter_jsonl(path):
+    for row in progress_iter(iter_jsonl(path), args=args, label=f"Validate attack bank {path.name}"):
         rows += 1
         attack_text = normalize_text(row.get("attack_text") or row.get("text") or row.get("window_text"))
         anchor = normalize_text(row.get("attack_anchor_text") or row.get("anchor_text") or row.get("attack_span_text"))

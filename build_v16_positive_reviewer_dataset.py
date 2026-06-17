@@ -5,6 +5,7 @@ import hashlib
 import json
 import random
 import re
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -83,6 +84,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=47)
     parser.add_argument("--research-only", action="store_true")
     parser.add_argument("--allow-underfilled", action="store_true")
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -124,8 +127,29 @@ def label_name(value: Any) -> str:
     return text or LABEL_BENIGN
 
 
-def read_jsonl(path: Path) -> list[dict[str, Any]]:
+def maybe_report_progress(
+    *,
+    label: str,
+    count: int,
+    started: float,
+    every: int,
+    total: int | None = None,
+    force: bool = False,
+) -> None:
+    if not every:
+        return
+    if not force and count != 1 and count % every != 0 and (total is None or count != total):
+        return
+    elapsed = max(0.001, time.time() - started)
+    total_text = f"/{total:,}" if total is not None else ""
+    print(f"[progress] {label}: {count:,}{total_text} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+
+
+def read_jsonl(path: Path, args: argparse.Namespace | None = None, label: str | None = None) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
+    started = time.time()
+    every = int(getattr(args, "progress_every_rows", 50_000) or 0) if args is not None else 0
+    no_progress = bool(getattr(args, "no_progress", False)) if args is not None else True
     with path.open("r", encoding="utf-8") as f:
         for line_no, line in enumerate(f, 1):
             line = line.strip()
@@ -137,6 +161,15 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
                 raise ValueError(f"{path}:{line_no}: invalid JSONL row") from exc
             if isinstance(row, dict):
                 rows.append(row)
+                if not no_progress:
+                    maybe_report_progress(
+                        label=label or f"Read {path.name}",
+                        count=len(rows),
+                        started=started,
+                        every=every,
+                    )
+    if rows and not no_progress:
+        maybe_report_progress(label=label or f"Read {path.name}", count=len(rows), started=started, every=every, force=True)
     return rows
 
 
@@ -146,12 +179,24 @@ def write_json(path: str | Path, payload: Any) -> None:
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def write_jsonl(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
+def write_jsonl(path: str | Path, rows: Iterable[dict[str, Any]], args: argparse.Namespace | None = None) -> None:
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
+    row_list = list(rows) if not isinstance(rows, list) else rows
+    started = time.time()
+    every = int(getattr(args, "progress_every_rows", 50_000) or 0) if args is not None else 0
+    no_progress = bool(getattr(args, "no_progress", False)) if args is not None else True
     with target.open("w", encoding="utf-8") as f:
-        for row in rows:
+        for idx, row in enumerate(row_list, start=1):
             f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            if not no_progress:
+                maybe_report_progress(
+                    label=f"Write {target.name}",
+                    count=idx,
+                    total=len(row_list),
+                    started=started,
+                    every=every,
+                )
 
 
 def resolve_results_dir(path: str | Path) -> Path:
@@ -345,7 +390,7 @@ def build_candidate_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]]
             if not window_path.exists():
                 continue
             corpus = corpus_dir.name
-            for row in read_jsonl(window_path):
+            for row in read_jsonl(window_path, args=args, label=f"Read reviewer windows {corpus}"):
                 candidate = candidate_from_raw_row(
                     args,
                     row,
@@ -365,7 +410,7 @@ def build_candidate_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]]
         if not extra_path.exists():
             raise FileNotFoundError(extra_path)
         corpus = extra_path.stem
-        for row in read_jsonl(extra_path):
+        for row in read_jsonl(extra_path, args=args, label=f"Read extra reviewer windows {extra_path.name}"):
             candidate = candidate_from_raw_row(
                 args,
                 row,
@@ -641,8 +686,8 @@ def main() -> None:
     )
     report = build_report(args, deduped_rows, selected, train, validation, dropped, conflicts, overlap_report)
 
-    write_jsonl(args.audit_jsonl, train + validation)
-    write_jsonl(args.dropped_jsonl, dropped)
+    write_jsonl(args.audit_jsonl, train + validation, args=args)
+    write_jsonl(args.dropped_jsonl, dropped, args=args)
     write_json(args.report_json, report)
 
     if report["failures"]:

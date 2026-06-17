@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import random
+import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -244,12 +245,31 @@ def iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
                 yield json.loads(line)
 
 
+def progress_iter(iterable: Iterable[dict[str, Any]], *, args: argparse.Namespace, label: str) -> Iterable[dict[str, Any]]:
+    if args.no_progress:
+        yield from iterable
+        return
+    every = int(args.progress_every_rows or 0)
+    started = time.time()
+    count = 0
+    for row in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield row
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m done", flush=True)
+
+
 def collect_candidates(
     *,
     path: Path,
     source_kind: str,
     targets: dict[str, int],
     seed: int,
+    args: argparse.Namespace,
 ) -> tuple[dict[str, list[CandidateRow]], dict[str, Any]]:
     rnd = random.Random(seed)
     caps = {component: max(target * 3, target + 500) for component, target in targets.items()}
@@ -257,7 +277,7 @@ def collect_candidates(
     seen = Counter()
     rejected = Counter()
 
-    for row in iter_jsonl(path):
+    for row in progress_iter(iter_jsonl(path), args=args, label=f"Collect {source_kind} candidates {path.name}"):
         seen["rows"] += 1
         if source_kind == "v18_1" and str(row.get("split") or "train") != "train":
             rejected["v18_1_non_train_split"] += 1
@@ -456,17 +476,24 @@ def dataset_rows(rows: list[CandidateRow]) -> list[dict[str, Any]]:
     return [{"text": row.text, "label": row.label} for row in rows]
 
 
-def write_audit(path: Path, rows: list[CandidateRow], split: str) -> None:
+def write_audit(path: Path, rows: list[CandidateRow], split: str, args: argparse.Namespace) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     mode = "a" if path.exists() else "w"
+    started = time.time()
     with path.open(mode, encoding="utf-8") as f:
-        for row in rows:
+        for idx, row in enumerate(rows, start=1):
             audit = dict(row.audit)
             audit["v16_parent_split"] = split
             audit["v16_parent_component"] = row.component
             audit["v16_parent_text_hash"] = row.text_hash
             audit["v16_parent_normalized_text_hash"] = row.normalized_text_hash
             f.write(json.dumps(audit, ensure_ascii=False, sort_keys=True) + "\n")
+            if not args.no_progress and args.progress_every_rows and (idx == 1 or idx % args.progress_every_rows == 0 or idx == len(rows)):
+                elapsed = max(0.001, time.time() - started)
+                print(
+                    f"[progress] Write {split} audit {path.name}: {idx:,}/{len(rows):,} rows elapsed={elapsed/60:.1f}m rate={idx/elapsed:.1f}/s",
+                    flush=True,
+                )
 
 
 def parse_args() -> argparse.Namespace:
@@ -482,6 +509,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validation-rows", type=int, default=10_000)
     parser.add_argument("--seed", type=int, default=47)
     parser.add_argument("--allow-underfilled", action="store_true")
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -500,8 +529,8 @@ def main() -> None:
     if not diagnostic_path.exists():
         raise FileNotFoundError(diagnostic_path)
 
-    v18_candidates, v18_report = collect_candidates(path=v18_path, source_kind="v18", targets=targets, seed=args.seed)
-    v18_1_candidates, v18_1_report = collect_candidates(path=v18_1_path, source_kind="v18_1", targets=targets, seed=args.seed + 1)
+    v18_candidates, v18_report = collect_candidates(path=v18_path, source_kind="v18", targets=targets, seed=args.seed, args=args)
+    v18_1_candidates, v18_1_report = collect_candidates(path=v18_1_path, source_kind="v18_1", targets=targets, seed=args.seed + 1, args=args)
     candidates = merge_candidate_maps(v18_candidates, v18_1_candidates)
     rows, selection_report = select_rows(candidates, targets, args.seed + 2)
     train_rows, validation_rows, split_report = split_rows(rows, args.validation_rows, args.seed + 3)
@@ -565,8 +594,8 @@ def main() -> None:
     audit_path = Path(args.audit_jsonl)
     if audit_path.exists():
         audit_path.unlink()
-    write_audit(audit_path, train_rows, "train")
-    write_audit(audit_path, validation_rows, "validation")
+    write_audit(audit_path, train_rows, "train", args)
+    write_audit(audit_path, validation_rows, "validation", args)
 
     Path(args.report_json).write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
 

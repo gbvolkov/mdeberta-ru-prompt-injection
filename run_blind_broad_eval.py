@@ -11,6 +11,11 @@ from typing import Any, Iterable
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+try:
+    from tqdm.auto import tqdm
+except Exception:  # pragma: no cover - tqdm is optional for portability.
+    tqdm = None
+
 from v12_pipeline_utils import (
     LABEL_ATTACK,
     LABEL_BENIGN,
@@ -57,6 +62,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--id-column", default="document_id")
     parser.add_argument("--progress-every-docs", type=int, default=25)
     parser.add_argument("--progress-every-windows", type=int, default=1000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -196,7 +202,12 @@ def evaluate_documents(
     processed_windows = 0
     next_window_report = int(getattr(args, "progress_every_windows", 1000) or 0)
     progress_every_docs = int(getattr(args, "progress_every_docs", 25) or 0)
-    for doc_idx, doc in enumerate(docs, 1):
+    progress_bar = None
+    doc_iterable: Iterable[dict[str, Any]] = docs
+    if not getattr(args, "no_progress", False) and tqdm is not None:
+        progress_bar = tqdm(docs, desc="Blind broad eval documents", unit="doc", dynamic_ncols=True, ascii=True)
+        doc_iterable = progress_bar
+    for doc_idx, doc in enumerate(doc_iterable, 1):
         windows = build_production_windows(doc["text"], tokenizer)
         if not windows:
             continue
@@ -244,7 +255,14 @@ def evaluate_documents(
 
         should_report_docs = progress_every_docs and (doc_idx == 1 or doc_idx % progress_every_docs == 0 or doc_idx == len(docs))
         should_report_windows = next_window_report and processed_windows >= next_window_report
-        if should_report_docs or should_report_windows:
+        if progress_bar is not None:
+            progress_bar.set_postfix(
+                windows=processed_windows,
+                window_rows=len(window_rows),
+                last_score=f"{best_score:.6f}",
+                refresh=False,
+            )
+        elif should_report_docs or should_report_windows:
             elapsed = max(0.001, time.time() - started)
             print(
                 f"[eval] progress docs={doc_idx:,}/{len(docs):,} "
@@ -255,6 +273,8 @@ def evaluate_documents(
             )
             while next_window_report and processed_windows >= next_window_report:
                 next_window_report += int(getattr(args, "progress_every_windows", 1000) or 1000)
+    if progress_bar is not None:
+        progress_bar.close()
 
     write_jsonl(document_results_path, doc_results)
     if window_results_path:

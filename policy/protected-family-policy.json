@@ -1,0 +1,9 @@
+{
+  "direct_model_control_or_exfiltration": "BLOCK",
+  "hidden_prompt_exfiltration": "BLOCK",
+  "instruction_override": "BLOCK",
+  "tool_routing_private_context_exfiltration": "BLOCK",
+  "credential_or_secret_exfiltration": "BLOCK",
+  "weak_policy_like_model_control": "REVIEW",
+  "embedded_technical_documentation": "REVIEW"
+}

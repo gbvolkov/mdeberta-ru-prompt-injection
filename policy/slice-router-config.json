@@ -1,0 +1,28 @@
+{
+  "router_version": "router_v1",
+  "candidate_slices": [
+    "security_compliance_redaction_wrappers"
+  ],
+  "trusted_metadata_fields": [
+    "trusted_source_metadata",
+    "source_metadata_trusted"
+  ],
+  "ignored_untrusted_fields": [
+    "category",
+    "semantic_family",
+    "source_declared_category"
+  ],
+  "first_certification_slice": "security_compliance_redaction_wrappers",
+  "forbidden_auto_allow_candidate_slices": [
+    "hr_policies",
+    "job_descriptions",
+    "support_documentation",
+    "technical_documentation"
+  ],
+  "notes": [
+    "Router v1 is deterministic and narrow.",
+    "Eval category and semantic_family metadata are diagnostic only unless trusted_source_metadata is true.",
+    "Keyword-only routing must remain low confidence.",
+    "Low-confidence router output cannot produce effective ALLOW."
+  ]
+}

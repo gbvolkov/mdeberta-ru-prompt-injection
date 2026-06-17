@@ -6,6 +6,7 @@ import hashlib
 import json
 import random
 import re
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -117,6 +118,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report-json", required=True)
     parser.add_argument("--target-rows", type=int, default=8000)
     parser.add_argument("--seed", type=int, default=47)
+    parser.add_argument("--progress-every-rows", type=int, default=10_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -180,12 +183,33 @@ def build_text(language: str, rnd: random.Random, idx: int) -> tuple[str, str]:
     return text, category
 
 
-def build_rows(target_rows: int, seed: int) -> list[dict[str, Any]]:
+def maybe_report_progress(
+    *,
+    label: str,
+    count: int,
+    total: int,
+    started: float,
+    every: int,
+    force: bool = False,
+) -> None:
+    if not every:
+        return
+    if not force and count != 1 and count % every != 0 and count != total:
+        return
+    elapsed = max(0.001, time.time() - started)
+    print(
+        f"[progress] {label}: {count:,}/{total:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s",
+        flush=True,
+    )
+
+
+def build_rows(target_rows: int, seed: int, *, progress_every_rows: int = 10_000, no_progress: bool = False) -> list[dict[str, Any]]:
     rnd = random.Random(seed)
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
     language_targets = allocate(target_rows, LANGUAGE_WEIGHTS)
     idx = 0
+    started = time.time()
     for language, count in language_targets.items():
         built = 0
         attempts = 0
@@ -223,17 +247,43 @@ def build_rows(target_rows: int, seed: int) -> list[dict[str, Any]]:
             )
             built += 1
             idx += 1
+            if not no_progress:
+                maybe_report_progress(
+                    label="Build reviewed near-boundary benign",
+                    count=len(rows),
+                    total=target_rows,
+                    started=started,
+                    every=progress_every_rows,
+                )
         if built < count:
             raise RuntimeError(f"Could only build {built}/{count} rows for {language}")
+    if not no_progress:
+        maybe_report_progress(
+            label="Build reviewed near-boundary benign",
+            count=len(rows),
+            total=target_rows,
+            started=started,
+            every=progress_every_rows,
+            force=True,
+        )
     rnd.shuffle(rows)
     return rows
 
 
-def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+def write_jsonl(path: Path, rows: list[dict[str, Any]], *, progress_every_rows: int = 10_000, no_progress: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    started = time.time()
     with path.open("w", encoding="utf-8", newline="\n") as handle:
-        for row in rows:
+        for idx, row in enumerate(rows, start=1):
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            if not no_progress:
+                maybe_report_progress(
+                    label=f"Write {path.name}",
+                    count=idx,
+                    total=len(rows),
+                    started=started,
+                    every=progress_every_rows,
+                )
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:
@@ -243,7 +293,12 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
 
 def main() -> None:
     args = parse_args()
-    rows = build_rows(args.target_rows, args.seed)
+    rows = build_rows(
+        args.target_rows,
+        args.seed,
+        progress_every_rows=args.progress_every_rows,
+        no_progress=args.no_progress,
+    )
     hashes = {text_hash(row["window_text"]) for row in rows}
     report = {
         "output_jsonl": args.output_jsonl,
@@ -264,7 +319,12 @@ def main() -> None:
         report["failures"].append("duplicate_text_hash")
     if report["failures"]:
         report["status"] = "fail"
-    write_jsonl(Path(args.output_jsonl), rows)
+    write_jsonl(
+        Path(args.output_jsonl),
+        rows,
+        progress_every_rows=args.progress_every_rows,
+        no_progress=args.no_progress,
+    )
     write_json(Path(args.report_json), report)
     print(json.dumps({"output_jsonl": args.output_jsonl, "report_json": args.report_json, "status": report["status"], "failures": report["failures"]}, ensure_ascii=False, indent=2))
     if report["failures"]:

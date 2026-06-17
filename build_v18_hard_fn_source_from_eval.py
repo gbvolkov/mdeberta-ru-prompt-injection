@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
@@ -28,6 +29,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-rows", type=int, default=None)
     parser.add_argument("--source-name", default="fresh_external_attack_bank_hard_fn")
     parser.add_argument("--source-origin", default="fresh_external_attack_bank_previous_model_misses")
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -37,6 +40,24 @@ def iter_jsonl(path: str | Path) -> Iterable[dict[str, Any]]:
             line = line.strip()
             if line:
                 yield json.loads(line)
+
+
+def progress_iter(iterable: Iterable[dict[str, Any]], *, args: argparse.Namespace, label: str) -> Iterable[dict[str, Any]]:
+    if args.no_progress:
+        yield from iterable
+        return
+    every = int(args.progress_every_rows or 0)
+    started = time.time()
+    count = 0
+    for row in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield row
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m done", flush=True)
 
 
 def normalize_text(value: Any) -> str:
@@ -63,17 +84,17 @@ def short_hash(text: str) -> str:
     return text_hash(text)[:20]
 
 
-def load_attack_bank(path: str | Path, id_column: str) -> dict[str, dict[str, Any]]:
+def load_attack_bank(path: str | Path, id_column: str, args: argparse.Namespace) -> dict[str, dict[str, Any]]:
     rows: dict[str, dict[str, Any]] = {}
-    for idx, row in enumerate(iter_jsonl(path)):
+    for idx, row in enumerate(progress_iter(iter_jsonl(path), args=args, label=f"Load attack bank {Path(path).name}")):
         doc_id = str(row.get(id_column) or row.get("document_id") or row.get("id") or f"doc_{idx}")
         rows[doc_id] = row
     return rows
 
 
-def missed_documents(path: str | Path, threshold: float) -> set[str]:
+def missed_documents(path: str | Path, threshold: float, args: argparse.Namespace) -> set[str]:
     missed: set[str] = set()
-    for row in iter_jsonl(path):
+    for row in progress_iter(iter_jsonl(path), args=args, label=f"Scan missed documents {Path(path).name}"):
         if label_value(row) not in ATTACK_LABELS:
             continue
         score = float(row.get("document_max_prompt_injection_score", 0.0) or 0.0)
@@ -90,15 +111,15 @@ def anchor_visible(anchor: str, window_text: str) -> bool:
 
 
 def build_rows(args: argparse.Namespace) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    attack_bank = load_attack_bank(args.attack_bank_jsonl, args.id_column)
-    missed = missed_documents(args.eval_document_jsonl, args.threshold)
+    attack_bank = load_attack_bank(args.attack_bank_jsonl, args.id_column, args)
+    missed = missed_documents(args.eval_document_jsonl, args.threshold, args)
     rows: list[dict[str, Any]] = []
     rejected: Counter[str] = Counter()
     accepted_by_family: Counter[str] = Counter()
     accepted_by_language: Counter[str] = Counter()
     seen_text_hashes: set[str] = set()
 
-    for window in iter_jsonl(args.eval_window_jsonl):
+    for window in progress_iter(iter_jsonl(args.eval_window_jsonl), args=args, label=f"Scan eval windows {Path(args.eval_window_jsonl).name}"):
         doc_id = str(window.get("document_id") or "")
         if doc_id not in missed:
             continue
@@ -181,9 +202,16 @@ def main() -> None:
     rows, report = build_rows(args)
     output_path = Path(args.output_jsonl)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    write_started = time.time()
     with output_path.open("w", encoding="utf-8", newline="\n") as f:
-        for row in rows:
+        for idx, row in enumerate(rows, start=1):
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
+            if not args.no_progress and args.progress_every_rows and (idx == 1 or idx % args.progress_every_rows == 0 or idx == len(rows)):
+                elapsed = max(0.001, time.time() - write_started)
+                print(
+                    f"[progress] Write {output_path.name}: {idx:,}/{len(rows):,} rows elapsed={elapsed/60:.1f}m rate={idx/elapsed:.1f}/s",
+                    flush=True,
+                )
     report["output_jsonl"] = str(output_path)
     print(json.dumps(report, ensure_ascii=False, indent=2))
 

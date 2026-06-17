@@ -12,6 +12,11 @@ from typing import Any, Iterable
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+try:
+    from tqdm.auto import tqdm
+except Exception:  # pragma: no cover - tqdm is optional for portability.
+    tqdm = None
+
 
 LABEL_BENIGN = "not_prompt_injection"
 LABEL_ATTACK = "prompt_injection"
@@ -55,6 +60,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit-documents", type=int)
     parser.add_argument("--disable-hard-attack-anchor-veto", action="store_true")
     parser.add_argument("--progress-every-docs", type=int, default=25)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -381,8 +387,15 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
 
     document_results: list[dict[str, Any]] = []
     window_results: list[dict[str, Any]] = []
+    processed_windows = 0
+    reviewer_scored_documents = 0
+    progress_bar = None
+    doc_iterable: Iterable[dict[str, Any]] = docs
+    if not args.no_progress and tqdm is not None:
+        progress_bar = tqdm(docs, desc="Cascade eval documents", unit="doc", dynamic_ncols=True, ascii=True)
+        doc_iterable = progress_bar
 
-    for doc_idx, doc in enumerate(docs, 1):
+    for doc_idx, doc in enumerate(doc_iterable, 1):
         windows = build_production_windows(doc["text"], stage1_tokenizer)
         if not windows:
             continue
@@ -508,13 +521,24 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 **{f"cascade_positive__{key}": value for key, value in grid_doc_decisions.items()},
             }
         )
+        processed_windows += len(windows)
+        if reviewer_scores_present:
+            reviewer_scored_documents += 1
 
-        if args.progress_every_docs and doc_idx % args.progress_every_docs == 0:
+        if progress_bar is not None:
+            progress_bar.set_postfix(
+                windows=processed_windows,
+                reviewer=reviewer_scored_documents,
+                refresh=False,
+            )
+        elif args.progress_every_docs and (doc_idx == 1 or doc_idx % args.progress_every_docs == 0 or doc_idx == len(docs)):
             elapsed = time.time() - started
             print(
-                f"[cascade] docs={doc_idx:,}/{len(docs):,} windows={sum(r['window_count'] for r in document_results):,} elapsed={elapsed:.1f}s",
+                f"[cascade] docs={doc_idx:,}/{len(docs):,} windows={processed_windows:,} elapsed={elapsed:.1f}s",
                 flush=True,
             )
+    if progress_bar is not None:
+        progress_bar.close()
 
     primary_key = f"cascade_positive__s1={args.primary_stage1_threshold}:reviewer={args.primary_reviewer_threshold}"
     threshold_grid_metrics = {

@@ -24,8 +24,11 @@ training-dataset-validation*/
 *.json*
 !*summary.json*
 !*report.json*
+!policy/
+!policy/*.json
 benign-stress-validation/
 mdeberta-ru-prompt-injection*/
+mdeberta-v16-positive-reviewer-oracle*/
 validation-comparison*/
 tmp*/
 arc/*

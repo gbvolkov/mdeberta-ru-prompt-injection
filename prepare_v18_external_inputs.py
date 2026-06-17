@@ -6,11 +6,17 @@ import hashlib
 import json
 import random
 import re
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
 from validate_v18_attack_bank import good_anchor as trusted_attack_bank_good_anchor
+
+try:
+    from tqdm.auto import tqdm
+except Exception:  # pragma: no cover - tqdm is optional for portability.
+    tqdm = None
 
 
 BASE_TARGET_TOTAL_ROWS = 500_000
@@ -363,6 +369,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-generated-attack-seed-jsonl", default=None)
     parser.add_argument("--report-json", default=None)
     parser.add_argument("--allow-underfilled", action="store_true")
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -438,10 +446,44 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> int:
+def progress_iter(
+    iterable: Iterable[Any],
+    *,
+    args: argparse.Namespace,
+    desc: str,
+    total: int | None = None,
+    unit: str = "row",
+) -> Iterable[Any]:
+    if getattr(args, "no_progress", False):
+        yield from iterable
+        return
+    if tqdm is not None:
+        yield from tqdm(iterable, desc=desc, total=total, unit=unit, dynamic_ncols=True, ascii=True)
+        return
+    every = int(getattr(args, "progress_every_rows", 50_000) or 0)
+    started = time.time()
     count = 0
+    for item in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            total_text = f"/{total:,}" if total is not None else ""
+            print(f"[progress] {desc}: {count:,}{total_text} {unit}s elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield item
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        total_text = f"/{total:,}" if total is not None else ""
+        print(f"[progress] {desc}: {count:,}{total_text} {unit}s elapsed={elapsed/60:.1f}m done", flush=True)
+
+
+def write_jsonl(path: Path, rows: Iterable[dict[str, Any]], args: argparse.Namespace | None = None, desc: str | None = None) -> int:
+    count = 0
+    iterator = rows
+    if args is not None:
+        total = len(rows) if hasattr(rows, "__len__") else None
+        iterator = progress_iter(rows, args=args, desc=desc or f"Write {path.name}", total=total, unit="row")
     with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
+        for row in iterator:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
             count += 1
     return count
@@ -517,7 +559,7 @@ def normalize_mined_benign(args: argparse.Namespace, output_path: Path) -> dict[
         assert_safe_external_input_path(path, args)
         if not path.exists():
             raise FileNotFoundError(path)
-        for idx, row in enumerate(iter_jsonl(path)):
+        for idx, row in enumerate(progress_iter(iter_jsonl(path), args=args, desc=f"Read mined benign {path.name}", unit="row")):
             risky_markers = risky_row_source_markers(row)
             if risky_markers and not args.allow_risky_input_paths:
                 rejected["risky_row_source_marker"] += 1
@@ -590,7 +632,7 @@ def normalize_mined_benign(args: argparse.Namespace, output_path: Path) -> dict[
                 out["confirmed_benign"] = True
             rows.append(out)
             by_source[out["source_name"]] += 1
-    written = write_jsonl(output_path, rows)
+    written = write_jsonl(output_path, rows, args=args, desc=f"Write mined benign {output_path.name}")
     usable_high_score = sum(1 for row in rows if not MODEL_CONTROL_RE.search(row["window_text"]))
     usable_reviewed_near_boundary = sum(
         1
@@ -642,7 +684,7 @@ def normalize_hard_fn(args: argparse.Namespace, output_path: Path) -> dict[str, 
         assert_safe_external_input_path(path, args)
         if not path.exists():
             raise FileNotFoundError(path)
-        for idx, row in enumerate(iter_jsonl(path)):
+        for idx, row in enumerate(progress_iter(iter_jsonl(path), args=args, desc=f"Read hard-FN {path.name}", unit="row")):
             risky_markers = risky_row_source_markers(row)
             if risky_markers and not args.allow_risky_input_paths:
                 rejected["risky_row_source_marker"] += 1
@@ -721,7 +763,7 @@ def normalize_hard_fn(args: argparse.Namespace, output_path: Path) -> dict[str, 
                     "dedupe_cluster_id": str(row.get("dedupe_cluster_id") or normalized_text_hash(text)[:24]),
                 }
             )
-    written = write_jsonl(output_path, rows)
+    written = write_jsonl(output_path, rows, args=args, desc=f"Write hard-FN {output_path.name}")
     return {
         "path": str(output_path),
         "written_rows": written,
@@ -815,7 +857,7 @@ def normalize_reviewed_attack_bank(args: argparse.Namespace, output_path: Path) 
         assert_safe_external_input_path(path, args)
         if not path.exists():
             raise FileNotFoundError(path)
-        for idx, row in enumerate(iter_jsonl(path)):
+        for idx, row in enumerate(progress_iter(iter_jsonl(path), args=args, desc=f"Read attack bank {path.name}", unit="row")):
             risky_markers = risky_row_source_markers(row)
             if risky_markers and not args.allow_risky_input_paths:
                 rejected["risky_row_source_marker"] += 1
@@ -860,7 +902,7 @@ def normalize_reviewed_attack_bank(args: argparse.Namespace, output_path: Path) 
                     "source_family": str(row.get("source_family") or "reviewed_external_attack_bank"),
                 }
             )
-    written = write_jsonl(output_path, rows)
+    written = write_jsonl(output_path, rows, args=args, desc=f"Write reviewed attack bank {output_path.name}")
     return {
         "path": str(output_path),
         "written_rows": written,
@@ -886,6 +928,11 @@ def build_generated_attack_seed_bank(args: argparse.Namespace, output_path: Path
     families = sorted({family for language_families in ANCHORS.values() for family in language_families})
     attempts = 0
     max_attempts = target * 50
+    progress_bar = None
+    if not getattr(args, "no_progress", False) and tqdm is not None:
+        progress_bar = tqdm(total=target, desc="Generate attack seed bank", unit="row", dynamic_ncols=True, ascii=True)
+    generated_started = time.time()
+    next_generated_report = int(getattr(args, "progress_every_rows", 50_000) or 0)
     while len(rows) < target and attempts < max_attempts:
         attempts += 1
         language = languages[len(rows) % len(languages)]
@@ -920,7 +967,28 @@ def build_generated_attack_seed_bank(args: argparse.Namespace, output_path: Path
                 "source_family": "generated_seed_attack_bank",
             }
         )
-    written = write_jsonl(output_path, rows)
+        if progress_bar is not None:
+            progress_bar.update(1)
+            if len(rows) == 1 or len(rows) % 1000 == 0:
+                progress_bar.set_postfix(attempts=attempts, unique=len(seen), refresh=False)
+        elif not getattr(args, "no_progress", False) and next_generated_report and len(rows) >= next_generated_report:
+            elapsed = max(0.001, time.time() - generated_started)
+            print(
+                f"[progress] Generate attack seed bank: {len(rows):,}/{target:,} rows "
+                f"attempts={attempts:,} elapsed={elapsed/60:.1f}m rate={len(rows)/elapsed:.1f}/s",
+                flush=True,
+            )
+            next_generated_report += int(getattr(args, "progress_every_rows", 50_000) or 50_000)
+    if progress_bar is not None:
+        progress_bar.close()
+    elif not getattr(args, "no_progress", False):
+        elapsed = max(0.001, time.time() - generated_started)
+        print(
+            f"[progress] Generate attack seed bank: {len(rows):,}/{target:,} rows "
+            f"attempts={attempts:,} elapsed={elapsed/60:.1f}m done",
+            flush=True,
+        )
+    written = write_jsonl(output_path, rows, args=args, desc=f"Write generated attack seed {output_path.name}")
     return {
         "path": str(output_path),
         "target_rows": target,

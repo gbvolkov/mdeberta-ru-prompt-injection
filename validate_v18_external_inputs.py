@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import re
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -142,6 +143,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-attack-bank-unique-hashes-20k", type=int, default=10_000)
     parser.add_argument("--min-attack-bank-anchor-share-20k", type=float, default=0.80)
     parser.add_argument("--min-attack-bank-anchor-share-full", type=float, default=0.90)
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -157,6 +160,24 @@ def iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
                 raise ValueError(f"{path}:{line_number}: invalid JSON: {exc}") from exc
             if isinstance(value, dict):
                 yield value
+
+
+def progress_iter(iterable: Iterable[dict[str, Any]], *, args: argparse.Namespace, label: str) -> Iterable[dict[str, Any]]:
+    if args.no_progress:
+        yield from iterable
+        return
+    every = int(args.progress_every_rows or 0)
+    started = time.time()
+    count = 0
+    for row in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield row
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m done", flush=True)
 
 
 def write_json(path: str | Path, data: dict[str, Any]) -> None:
@@ -290,7 +311,7 @@ def validate_mined(paths: list[str], args: argparse.Namespace, targets: dict[str
         path = Path(path_value)
         if not path.exists():
             raise FileNotFoundError(path)
-        for row in iter_jsonl(path):
+        for row in progress_iter(iter_jsonl(path), args=args, label=f"Validate mined benign {path.name}"):
             counters["rows"] += 1
             text = extract_text(row)
             label = label_value(row)
@@ -347,7 +368,7 @@ def validate_mined(paths: list[str], args: argparse.Namespace, targets: dict[str
     }
 
 
-def validate_hard_fn(paths: list[str], targets: dict[str, int]) -> dict[str, Any]:
+def validate_hard_fn(paths: list[str], args: argparse.Namespace, targets: dict[str, int]) -> dict[str, Any]:
     counters = Counter()
     rejected = Counter()
     samples: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -357,7 +378,7 @@ def validate_hard_fn(paths: list[str], targets: dict[str, int]) -> dict[str, Any
         path = Path(path_value)
         if not path.exists():
             raise FileNotFoundError(path)
-        for row in iter_jsonl(path):
+        for row in progress_iter(iter_jsonl(path), args=args, label=f"Validate hard-FN {path.name}"):
             counters["rows"] += 1
             text = extract_text(row)
             label = label_value(row)
@@ -427,7 +448,7 @@ def validate_attack_bank(paths: list[str], args: argparse.Namespace, targets: di
         path = Path(path_value)
         if not path.exists():
             raise FileNotFoundError(path)
-        for row in iter_jsonl(path):
+        for row in progress_iter(iter_jsonl(path), args=args, label=f"Validate attack bank {path.name}"):
             counters["rows"] += 1
             attack_text = extract_attack_text(row)
             if not attack_text:
@@ -535,7 +556,7 @@ def main() -> None:
         raise SystemExit(2)
     report["mined_benign"] = validate_mined(args.mined_benign_jsonl, args, targets)
     if targets["attack_hard_fn_visible"] > 0:
-        report["hard_fn"] = validate_hard_fn(args.hard_fn_jsonl, targets)
+        report["hard_fn"] = validate_hard_fn(args.hard_fn_jsonl, args, targets)
     else:
         report["hard_fn"] = {
             "paths": args.hard_fn_jsonl,

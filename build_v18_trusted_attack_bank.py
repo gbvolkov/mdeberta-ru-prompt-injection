@@ -6,6 +6,7 @@ import hashlib
 import json
 import random
 import re
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -456,6 +457,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-rows", type=int, default=200_000)
     parser.add_argument("--seed", type=int, default=47)
     parser.add_argument("--min-unique-texts", type=int, default=100_000)
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -506,11 +509,32 @@ def build_attack_text(language: str, family: str, anchor: str, rnd: random.Rando
     return f"{opener} [{boundary} {anchor}] {suffix}. Рабочий контекст: {context}. Требуемый формат: {fmt}."
 
 
-def build_rows(target_rows: int, seed: int) -> list[dict[str, Any]]:
+def maybe_report_progress(
+    *,
+    label: str,
+    count: int,
+    total: int,
+    started: float,
+    every: int,
+    force: bool = False,
+) -> None:
+    if not every:
+        return
+    if not force and count != 1 and count % every != 0 and count != total:
+        return
+    elapsed = max(0.001, time.time() - started)
+    print(
+        f"[progress] {label}: {count:,}/{total:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s",
+        flush=True,
+    )
+
+
+def build_rows(target_rows: int, seed: int, *, progress_every_rows: int = 50_000, no_progress: bool = False) -> list[dict[str, Any]]:
     rnd = random.Random(seed)
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
     language_targets = allocate(target_rows, LANGUAGE_WEIGHTS)
+    started = time.time()
     for language, language_target in language_targets.items():
         family_targets = split_evenly(language_target, FAMILIES)
         for family, family_target in family_targets.items():
@@ -548,17 +572,43 @@ def build_rows(target_rows: int, seed: int) -> list[dict[str, Any]]:
                     }
                 )
                 local_count += 1
+                if not no_progress:
+                    maybe_report_progress(
+                        label="Build trusted attack bank",
+                        count=len(rows),
+                        total=target_rows,
+                        started=started,
+                        every=progress_every_rows,
+                    )
             if local_count < family_target:
                 raise RuntimeError(f"Could only build {local_count}/{family_target} rows for {language}/{family}")
+    if not no_progress:
+        maybe_report_progress(
+            label="Build trusted attack bank",
+            count=len(rows),
+            total=target_rows,
+            started=started,
+            every=progress_every_rows,
+            force=True,
+        )
     rnd.shuffle(rows)
     return rows
 
 
-def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+def write_jsonl(path: Path, rows: list[dict[str, Any]], *, progress_every_rows: int = 50_000, no_progress: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    started = time.time()
     with path.open("w", encoding="utf-8", newline="\n") as handle:
-        for row in rows:
+        for idx, row in enumerate(rows, start=1):
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            if not no_progress:
+                maybe_report_progress(
+                    label=f"Write {path.name}",
+                    count=idx,
+                    total=len(rows),
+                    started=started,
+                    every=progress_every_rows,
+                )
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:
@@ -570,7 +620,12 @@ def main() -> None:
     args = parse_args()
     output_path = Path(args.output_jsonl)
     report_path = Path(args.report_json)
-    rows = build_rows(args.target_rows, args.seed)
+    rows = build_rows(
+        args.target_rows,
+        args.seed,
+        progress_every_rows=args.progress_every_rows,
+        no_progress=args.no_progress,
+    )
     hashes = {text_hash(row["attack_text"]) for row in rows}
     missing_anchor = [row for row in rows if row["attack_anchor_text"] not in row["attack_text"]]
     report = {
@@ -600,7 +655,12 @@ def main() -> None:
         report["failures"].append("trusted_attack_not_set_on_all_rows")
     if report["failures"]:
         report["status"] = "fail"
-    write_jsonl(output_path, rows)
+    write_jsonl(
+        output_path,
+        rows,
+        progress_every_rows=args.progress_every_rows,
+        no_progress=args.no_progress,
+    )
     write_json(report_path, report)
     print(json.dumps({"output_jsonl": str(output_path), "report_json": str(report_path), "status": report["status"], "failures": report["failures"]}, ensure_ascii=False, indent=2))
     if report["failures"]:

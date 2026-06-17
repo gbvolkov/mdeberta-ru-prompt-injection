@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import re
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -116,6 +117,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fp-threshold", type=float, default=0.99)
     parser.add_argument("--sample-per-cluster", type=int, default=5)
     parser.add_argument("--max-audit-rows", type=int, default=0, help="Debug limit; 0 means all audit rows.")
+    parser.add_argument("--progress-every-rows", type=int, default=50_000)
+    parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args()
 
 
@@ -131,6 +134,29 @@ def iter_jsonl(path: str | Path) -> Iterable[dict[str, Any]]:
                 raise ValueError(f"{path}:{line_no}: invalid JSONL row") from exc
             if isinstance(value, dict):
                 yield value
+
+
+def progress_iter(
+    iterable: Iterable[dict[str, Any]],
+    *,
+    args: argparse.Namespace,
+    label: str,
+) -> Iterable[dict[str, Any]]:
+    if args.no_progress:
+        yield from iterable
+        return
+    every = int(args.progress_every_rows or 0)
+    started = time.time()
+    count = 0
+    for row in iterable:
+        count += 1
+        if every and (count == 1 or count % every == 0):
+            elapsed = max(0.001, time.time() - started)
+            print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m rate={count/elapsed:.1f}/s", flush=True)
+        yield row
+    if count and every:
+        elapsed = max(0.001, time.time() - started)
+        print(f"[progress] {label}: {count:,} rows elapsed={elapsed/60:.1f}m done", flush=True)
 
 
 def write_json(path: str | Path, payload: Any) -> None:
@@ -306,22 +332,28 @@ def score_from_window(row: dict[str, Any]) -> float:
     return 0.0
 
 
-def read_eval_corpus(corpus_dir: Path) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]]]:
+def read_eval_corpus(corpus_dir: Path, args: argparse.Namespace | None = None) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]]]:
     docs_path = corpus_dir / "document-results.jsonl"
     windows_path = corpus_dir / "window-results.jsonl"
     if not docs_path.exists() or not windows_path.exists():
         return [], {}
-    docs = list(iter_jsonl(docs_path))
+    doc_iterable = iter_jsonl(docs_path)
+    if args is not None:
+        doc_iterable = progress_iter(doc_iterable, args=args, label=f"Read eval docs {corpus_dir.name}")
+    docs = list(doc_iterable)
     windows_by_doc: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for row in iter_jsonl(windows_path):
+    window_iterable = iter_jsonl(windows_path)
+    if args is not None:
+        window_iterable = progress_iter(window_iterable, args=args, label=f"Read eval windows {corpus_dir.name}")
+    for row in window_iterable:
         windows_by_doc[str(row.get("document_id") or "")].append(row)
     return docs, windows_by_doc
 
 
-def verify_eval_windowing(eval_results_dir: Path) -> dict[str, Any]:
+def verify_eval_windowing(eval_results_dir: Path, args: argparse.Namespace) -> dict[str, Any]:
     report: dict[str, Any] = {"status": "pass", "corpora": {}, "failures": []}
     for corpus_dir in sorted(p for p in eval_results_dir.iterdir() if p.is_dir()):
-        docs, windows_by_doc = read_eval_corpus(corpus_dir)
+        docs, windows_by_doc = read_eval_corpus(corpus_dir, args)
         if not docs:
             continue
         mismatches = []
@@ -395,7 +427,13 @@ def cluster_key(row: dict[str, Any]) -> str:
     return stable_hash("|".join(str(p) for p in parts), length=20)
 
 
-def collect_failures(eval_results_dir: Path, fn_threshold: float, fp_threshold: float, sample_per_cluster: int) -> dict[str, Any]:
+def collect_failures(
+    eval_results_dir: Path,
+    fn_threshold: float,
+    fp_threshold: float,
+    sample_per_cluster: int,
+    args: argparse.Namespace,
+) -> dict[str, Any]:
     failure_rows: list[dict[str, Any]] = []
     eval_identity = {
         "text_hashes": set(),
@@ -406,7 +444,7 @@ def collect_failures(eval_results_dir: Path, fn_threshold: float, fp_threshold: 
     }
     corpus_totals: dict[str, Any] = {}
     for corpus_dir in sorted(p for p in eval_results_dir.iterdir() if p.is_dir()):
-        docs, windows_by_doc = read_eval_corpus(corpus_dir)
+        docs, windows_by_doc = read_eval_corpus(corpus_dir, args)
         if not docs:
             continue
         totals = Counter()
@@ -529,6 +567,7 @@ def stream_training_coverage(
     train_audit_jsonl: Path,
     validation_audit_jsonl: Path,
     failure_clusters: dict[str, Any],
+    args: argparse.Namespace,
     max_audit_rows: int = 0,
 ) -> dict[str, Any]:
     counters: dict[str, Counter] = defaultdict(Counter)
@@ -537,7 +576,7 @@ def stream_training_coverage(
 
     def process(path: Path, split: str) -> int:
         count = 0
-        for row in iter_jsonl(path):
+        for row in progress_iter(iter_jsonl(path), args=args, label=f"Scan {split} audit {path.name}"):
             count += 1
             if max_audit_rows and count > max_audit_rows:
                 break
@@ -682,7 +721,7 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     eval_results_dir = Path(args.eval_results_dir)
-    consistency = verify_eval_windowing(eval_results_dir)
+    consistency = verify_eval_windowing(eval_results_dir, args)
     write_json(output_dir / "eval-windowing-consistency-report.json", consistency)
     if consistency["status"] != "pass":
         raise ValueError(f"Evaluation windowing consistency failed: {consistency['failures']}")
@@ -692,6 +731,7 @@ def main() -> None:
         fn_threshold=args.fn_threshold,
         fp_threshold=args.fp_threshold,
         sample_per_cluster=args.sample_per_cluster,
+        args=args,
     )
     taxonomy = {
         "config": {
@@ -707,6 +747,7 @@ def main() -> None:
         Path(args.train_audit_jsonl),
         Path(args.validation_audit_jsonl),
         failures["clusters"],
+        args,
         max_audit_rows=args.max_audit_rows,
     )
     with Path(args.component_report_json).open("r", encoding="utf-8") as f:
