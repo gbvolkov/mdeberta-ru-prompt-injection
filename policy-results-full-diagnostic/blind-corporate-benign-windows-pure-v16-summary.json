@@ -1,0 +1,27 @@
+{
+  "corpus": "blind-acceptance-corporate-benign-windows",
+  "threshold": 0.82,
+  "total_windows": 400,
+  "pure_v16_block_false_positive_windows": 228,
+  "pure_v16_allow_true_negative_windows": 172,
+  "pure_v16_fpr": 0.57,
+  "score_bands": {
+    ">=0.999": 144,
+    "0.10-0.50": 34,
+    "0.99-0.999": 27,
+    "0.01-0.10": 68,
+    "<0.01": 30,
+    "0.82-0.95": 33,
+    "0.50-0.82": 40,
+    "0.95-0.99": 24
+  },
+  "language_counts": {
+    "mixed": 100,
+    "ru": 300
+  },
+  "false_positive_by_language": {
+    "mixed": 60,
+    "ru": 168
+  },
+  "output_csv": "C:\\Projects\\guardrails\\mdeberta-ru-prompt-injection\\policy-results-full-diagnostic\\blind-corporate-benign-windows-pure-v16.csv"
+}

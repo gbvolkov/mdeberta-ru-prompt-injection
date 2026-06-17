@@ -1,0 +1,1172 @@
+{
+  "baseline_allow_count": 162,
+  "by_category": {
+    "direct_protected_attack_anchor": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 562,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 562
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      }
+    },
+    "security_compliance_redaction_wrappers": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 70,
+        "block_rate": 0.3125,
+        "null_count": 0,
+        "review_count": 154,
+        "review_rate": 0.6875,
+        "total": 224
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 0.47619047619047616,
+        "fn": 154,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.3125,
+        "tn": 0,
+        "tp": 70
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 224
+      }
+    },
+    "unknown": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 0,
+        "block_rate": 0.0,
+        "null_count": 0,
+        "review_count": 14,
+        "review_rate": 1.0,
+        "total": 14
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 0.0,
+        "fn": 14,
+        "fp": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tn": 0,
+        "tp": 0
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 14
+      }
+    }
+  },
+  "by_decision_reason": {
+    "document_block": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 632,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 632
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 632,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 632
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 632,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 632
+      }
+    },
+    "document_review": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 0,
+        "block_rate": 0.0,
+        "null_count": 0,
+        "review_count": 168,
+        "review_rate": 1.0,
+        "total": 168
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 168,
+        "f1": 0.0,
+        "fn": 168,
+        "fp": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tn": 0,
+        "tp": 0
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 168,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 168
+      }
+    }
+  },
+  "by_document_primary_category": {
+    "direct_protected_attack_anchor": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 562,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 562
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      }
+    },
+    "security_compliance_redaction_wrappers": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 70,
+        "block_rate": 0.3125,
+        "null_count": 0,
+        "review_count": 154,
+        "review_rate": 0.6875,
+        "total": 224
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 0.47619047619047616,
+        "fn": 154,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.3125,
+        "tn": 0,
+        "tp": 70
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 224
+      }
+    },
+    "unknown": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 0,
+        "block_rate": 0.0,
+        "null_count": 0,
+        "review_count": 14,
+        "review_rate": 1.0,
+        "total": 14
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 0.0,
+        "fn": 14,
+        "fp": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tn": 0,
+        "tp": 0
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 14
+      }
+    }
+  },
+  "by_document_primary_semantic_family": {
+    "direct_model_control_or_exfiltration": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 562,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 562
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      }
+    },
+    "security_compliance_redaction_wrapper": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 70,
+        "block_rate": 0.3125,
+        "null_count": 0,
+        "review_count": 154,
+        "review_rate": 0.6875,
+        "total": 224
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 0.47619047619047616,
+        "fn": 154,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.3125,
+        "tn": 0,
+        "tp": 70
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 224
+      }
+    },
+    "unknown": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 0,
+        "block_rate": 0.0,
+        "null_count": 0,
+        "review_count": 14,
+        "review_rate": 1.0,
+        "total": 14
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 0.0,
+        "fn": 14,
+        "fp": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tn": 0,
+        "tp": 0
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 14
+      }
+    }
+  },
+  "by_eval_category": {
+    "embedded_admin_instructions": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 48,
+        "block_rate": 0.75,
+        "null_count": 0,
+        "review_count": 16,
+        "review_rate": 0.25,
+        "total": 64
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 0.8571428571428571,
+        "fn": 16,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.75,
+        "tn": 0,
+        "tp": 48
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 64
+      }
+    },
+    "embedded_corporate_procedures": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 99,
+        "block_rate": 0.7734375,
+        "null_count": 0,
+        "review_count": 29,
+        "review_rate": 0.2265625,
+        "total": 128
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 128,
+        "f1": 0.8722466960352423,
+        "fn": 29,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7734375,
+        "tn": 0,
+        "tp": 99
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 128,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 128
+      }
+    },
+    "embedded_hr_policies": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 76,
+        "block_rate": 0.7916666666666666,
+        "null_count": 0,
+        "review_count": 20,
+        "review_rate": 0.20833333333333334,
+        "total": 96
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 96,
+        "f1": 0.8837209302325582,
+        "fn": 20,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7916666666666666,
+        "tn": 0,
+        "tp": 76
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 96,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 96
+      }
+    },
+    "embedded_job_descriptions": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 87,
+        "block_rate": 0.7767857142857143,
+        "null_count": 0,
+        "review_count": 25,
+        "review_rate": 0.22321428571428573,
+        "total": 112
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 112,
+        "f1": 0.8743718592964823,
+        "fn": 25,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7767857142857143,
+        "tn": 0,
+        "tp": 87
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 112,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 112
+      }
+    },
+    "embedded_legal_templates": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 52,
+        "block_rate": 0.8125,
+        "null_count": 0,
+        "review_count": 12,
+        "review_rate": 0.1875,
+        "total": 64
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 0.896551724137931,
+        "fn": 12,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8125,
+        "tn": 0,
+        "tp": 52
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 64
+      }
+    },
+    "embedded_security_compliance_redaction_wrappers": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 60,
+        "block_rate": 0.8333333333333334,
+        "null_count": 0,
+        "review_count": 12,
+        "review_rate": 0.16666666666666666,
+        "total": 72
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 72,
+        "f1": 0.9090909090909091,
+        "fn": 12,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "tn": 0,
+        "tp": 60
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 72,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 72
+      }
+    },
+    "embedded_support_documentation": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 79,
+        "block_rate": 0.7596153846153846,
+        "null_count": 0,
+        "review_count": 25,
+        "review_rate": 0.2403846153846154,
+        "total": 104
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 104,
+        "f1": 0.8633879781420765,
+        "fn": 25,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7596153846153846,
+        "tn": 0,
+        "tp": 79
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 104,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 104
+      }
+    },
+    "embedded_technical_documentation": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 84,
+        "block_rate": 0.875,
+        "null_count": 0,
+        "review_count": 12,
+        "review_rate": 0.125,
+        "total": 96
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 96,
+        "f1": 0.9333333333333333,
+        "fn": 12,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.875,
+        "tn": 0,
+        "tp": 84
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 96,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 96
+      }
+    },
+    "standalone_attack": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 47,
+        "block_rate": 0.734375,
+        "null_count": 0,
+        "review_count": 17,
+        "review_rate": 0.265625,
+        "total": 64
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 0.8468468468468469,
+        "fn": 17,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.734375,
+        "tn": 0,
+        "tp": 47
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 64,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 64
+      }
+    }
+  },
+  "by_language": {
+    "en": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 157,
+        "block_rate": 0.5902255639097744,
+        "null_count": 0,
+        "review_count": 109,
+        "review_rate": 0.40977443609022557,
+        "total": 266
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 266,
+        "f1": 0.7423167848699763,
+        "fn": 109,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.5902255639097744,
+        "tn": 0,
+        "tp": 157
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 266,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 266
+      }
+    },
+    "mixed": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 133,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 133
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 133,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 133
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 133,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 133
+      }
+    },
+    "ru": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 342,
+        "block_rate": 0.8528678304239401,
+        "null_count": 0,
+        "review_count": 59,
+        "review_rate": 0.14713216957605985,
+        "total": 401
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 401,
+        "f1": 0.9205921938088829,
+        "fn": 59,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8528678304239401,
+        "tn": 0,
+        "tp": 342
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 401,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 401
+      }
+    }
+  },
+  "by_semantic_family": {
+    "direct_model_control_or_exfiltration": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 562,
+        "block_rate": 1.0,
+        "null_count": 0,
+        "review_count": 0,
+        "review_rate": 0.0,
+        "total": 562
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 562,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 562
+      }
+    },
+    "security_compliance_redaction_wrapper": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 70,
+        "block_rate": 0.3125,
+        "null_count": 0,
+        "review_count": 154,
+        "review_rate": 0.6875,
+        "total": 224
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 0.47619047619047616,
+        "fn": 154,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.3125,
+        "tn": 0,
+        "tp": 70
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 224,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 224
+      }
+    },
+    "unknown": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 0,
+        "block_rate": 0.0,
+        "null_count": 0,
+        "review_count": 14,
+        "review_rate": 1.0,
+        "total": 14
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 0.0,
+        "fn": 14,
+        "fp": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tn": 0,
+        "tp": 0
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 14,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 14
+      }
+    }
+  },
+  "by_window_count_bucket": {
+    "1": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 360,
+        "block_rate": 0.7228915662650602,
+        "null_count": 0,
+        "review_count": 138,
+        "review_rate": 0.27710843373493976,
+        "total": 498
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 498,
+        "f1": 0.8391608391608391,
+        "fn": 138,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.7228915662650602,
+        "tn": 0,
+        "tp": 360
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 498,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 498
+      }
+    },
+    "2-4": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 170,
+        "block_rate": 0.8673469387755102,
+        "null_count": 0,
+        "review_count": 26,
+        "review_rate": 0.1326530612244898,
+        "total": 196
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 196,
+        "f1": 0.9289617486338798,
+        "fn": 26,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8673469387755102,
+        "tn": 0,
+        "tp": 170
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 196,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 196
+      }
+    },
+    "5-20": {
+      "actions": {
+        "allow_count": 0,
+        "allow_rate": 0.0,
+        "block_count": 102,
+        "block_rate": 0.9622641509433962,
+        "null_count": 0,
+        "review_count": 4,
+        "review_rate": 0.03773584905660377,
+        "total": 106
+      },
+      "relaxed_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 106,
+        "f1": 0.9807692307692307,
+        "fn": 4,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.9622641509433962,
+        "tn": 0,
+        "tp": 102
+      },
+      "strict_binary": {
+        "benign_fp_rate": 0.0,
+        "documents": 106,
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "tn": 0,
+        "tp": 106
+      }
+    }
+  },
+  "certified_auto_allow_count": 0,
+  "certified_slices_hash": "f7e1eb5e217590f7",
+  "direct_attack_anchor_block_count": 600,
+  "documents": 800,
+  "effective_action_metrics": {
+    "allow_count": 0,
+    "allow_rate": 0.0,
+    "block_count": 0,
+    "block_rate": 0.0,
+    "null_count": 800,
+    "review_count": 0,
+    "review_rate": 0.0,
+    "total": 800
+  },
+  "effective_attack_allow_accounting": {
+    "attack_allow_baseline_v16_miss": 0,
+    "attack_allow_by_family": {},
+    "attack_allow_by_language": {},
+    "attack_allow_by_router_rule": {},
+    "attack_allow_policy_added": 0,
+    "attack_allow_prevented_by_direct_anchor": 0,
+    "attack_allow_prevented_by_policy_router": 0,
+    "attack_allow_total": 0
+  },
+  "effective_attack_allow_baseline_v16_miss": 0,
+  "effective_attack_allow_policy_added": 0,
+  "effective_attack_allow_prevented_by_direct_anchor": 0,
+  "effective_attack_allow_prevented_by_policy_router": 0,
+  "effective_attack_allow_total": 0,
+  "human_review_view": {
+    "allow_count": 0,
+    "allow_rate": 0.0,
+    "block_count": 632,
+    "block_rate": 0.79,
+    "null_count": 0,
+    "review_count": 168,
+    "review_rate": 0.21,
+    "total": 800
+  },
+  "input_jsonl": "./v18-eval-suite/blind-acceptance-malicious-documents.jsonl",
+  "legacy_attack_allow_alias_source": "effective_action",
+  "mode": "diagnostic",
+  "no_review_production_view": {
+    "benign_fp_rate": 0.0,
+    "documents": 800,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tn": 0,
+    "tp": 800
+  },
+  "policy_config_hash": "7bf9c1ae5a03582f",
+  "policy_engine_version": "v16_policy_engine_v1",
+  "policy_security_mention_count": 776,
+  "proposed_action_metrics": {
+    "allow_count": 0,
+    "allow_rate": 0.0,
+    "block_count": 632,
+    "block_rate": 0.79,
+    "null_count": 0,
+    "review_count": 168,
+    "review_rate": 0.21,
+    "total": 800
+  },
+  "proposed_attack_allow_accounting": {
+    "attack_allow_baseline_v16_miss": 0,
+    "attack_allow_by_family": {},
+    "attack_allow_by_language": {},
+    "attack_allow_by_router_rule": {},
+    "attack_allow_policy_added": 0,
+    "attack_allow_prevented_by_direct_anchor": 0,
+    "attack_allow_prevented_by_policy_router": 0,
+    "attack_allow_total": 0
+  },
+  "proposed_attack_allow_baseline_v16_miss": 0,
+  "proposed_attack_allow_policy_added": 0,
+  "proposed_attack_allow_total": 0,
+  "protected_policy_hash": "ab51efc12f44afbc",
+  "pure_v16_safety_reference_metrics": {
+    "benign_fp_rate": 0.0,
+    "documents": 800,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tn": 0,
+    "tp": 800
+  },
+  "relaxed_binary_metrics_review_is_allow": {
+    "benign_fp_rate": 0.0,
+    "documents": 800,
+    "f1": 0.8826815642458101,
+    "fn": 168,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.79,
+    "tn": 0,
+    "tp": 632
+  },
+  "reviewer_auto_allow_count": 0,
+  "reviewer_calibration_id": null,
+  "reviewer_considered_count": 114,
+  "reviewer_effective_auto_allow_count": 0,
+  "reviewer_eligible_window_count": 219,
+  "reviewer_model_id": "./mdeberta-v16-positive-reviewer-oracle",
+  "reviewer_potential_allow_attack_count": 0,
+  "reviewer_potential_allow_benign_count": 0,
+  "reviewer_potential_allow_by_slice": {},
+  "reviewer_potential_allow_count": 0,
+  "reviewer_review_count": 168,
+  "reviewer_scored_window_count": 219,
+  "reviewer_threshold_allow": 0.1,
+  "reviewer_threshold_block": 0.3,
+  "reviewer_used_for_decision_window_count": 219,
+  "router_config_hash": "3961ba5e97b8c6b0",
+  "router_version": "router_v1",
+  "stage1_model_id": "gbv/mdeberta-ru-prompt-injection",
+  "strict_binary_metrics_review_is_block": {
+    "benign_fp_rate": 0.0,
+    "documents": 800,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tn": 0,
+    "tp": 800
+  },
+  "v16_threshold_low": 0.82,
+  "v16_threshold_protect": 0.999,
+  "window_level": {
+    "effective_attack_allow_accounting": {
+      "attack_allow_baseline_v16_miss": 0,
+      "attack_allow_by_family": {},
+      "attack_allow_by_language": {},
+      "attack_allow_by_router_rule": {},
+      "attack_allow_policy_added": 0,
+      "attack_allow_prevented_by_direct_anchor": 0,
+      "attack_allow_prevented_by_policy_router": 0,
+      "attack_allow_total": 0
+    },
+    "proposed_attack_allow_accounting": {
+      "attack_allow_baseline_v16_miss": 519,
+      "attack_allow_by_family": {
+        "security_compliance_redaction_wrapper": 519
+      },
+      "attack_allow_by_language": {
+        "en": 129,
+        "mixed": 185,
+        "ru": 205
+      },
+      "attack_allow_by_router_rule": {
+        "policy_or_meta_security_mention_v1": 519,
+        "security_signal_v1": 519,
+        "wrapper_structure_v1": 519
+      },
+      "attack_allow_policy_added": 0,
+      "attack_allow_prevented_by_direct_anchor": 0,
+      "attack_allow_prevented_by_policy_router": 0,
+      "attack_allow_total": 519
+    },
+    "rows": 1891
+  },
+  "windows": 1891
+}
