@@ -1,0 +1,18 @@
+[project]
+name = "v16-training-reproduction"
+version = "1.0.0"
+description = "Self-contained V16 training reproduction package"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "accelerate>=1.0,<2",
+    "datasets>=3.0,<5",
+    "huggingface-hub>=0.26,<2",
+    "numpy>=1.26,<3",
+    "protobuf>=5,<7",
+    "scikit-learn>=1.5,<2",
+    "sentencepiece>=0.2,<1",
+    "torch>=2.2,<3",
+    "tqdm>=4.66,<5",
+    "transformers>=4.45,<6",
+    "zstandard>=0.23,<1",
+]
