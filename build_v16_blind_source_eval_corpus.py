@@ -1049,7 +1049,8 @@ def main() -> None:
         "output_jsonl": str(output_jsonl),
         "report_json": str(report_json),
         "input_jsonl": args.input_jsonl,
-        "non_generated_required": True,
+        "non_generated_benign_required": True,
+        "non_generated_attack_required": False if args.target_attack_documents > 0 else True,
         "attack_rows_note": (
             "Benign side is non-generated. Attack side, when requested, is selected from the trusted "
             "controlled template-generated attack bank because no local natural 150K attack document pool exists."
@@ -1067,7 +1068,21 @@ def main() -> None:
     report_md.parent.mkdir(parents=True, exist_ok=True)
     report_md.write_text(report_markdown(report), encoding="utf-8")
     write_distribution_csvs(report, category_csv, source_csv, source_category_csv)
-    print(json.dumps({"status": report["status"], "failures": failures, "written_rows": write_report["written_rows"], "output_jsonl": str(output_jsonl)}, ensure_ascii=False, indent=2), flush=True)
+    print(
+        json.dumps(
+            {
+                "status": report["status"],
+                "failures": failures,
+                "benign_written_rows": write_report["written_rows"],
+                "attack_written_rows": attack_write_report.get("written_rows", 0),
+                "total_written_rows": write_report["written_rows"] + attack_write_report.get("written_rows", 0),
+                "output_jsonl": str(output_jsonl),
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
