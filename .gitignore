@@ -48,3 +48,6 @@ malicious-document-*.jsonl
 v*-document-splits.jsonl
 logs/*.log
 arc/logs/*.log
+datasets/*
+models/*
+reports/*
