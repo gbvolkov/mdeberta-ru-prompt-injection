@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+.uv-cache/
 
 # Virtual environments
 .venv
@@ -12,42 +13,42 @@ wheels/
 
 #data
 v??*/
-fresh_sources*/
+#fresh_sources*/
 
 hf-dataset-cache
-mdeberta-ru-prompt-injection-option-b
-mdeberta-ru-prompt-injection-option-b-remove
-mdeberta-ru-prompt-injection-35-65
+#mdeberta-ru-prompt-injection-option-b
+#mdeberta-ru-prompt-injection-option-b-remove
+#mdeberta-ru-prompt-injection-35-65
 hf-upload*/
-training-dataset*/
-training-dataset-validation*/
-*.json*
+#training-dataset*/
+#training-dataset-validation*/
+#*.json*
 !*summary.json*
 !*report.json*
 !policy/
 !policy/*.json
-benign-stress-validation/
-mdeberta-ru-prompt-injection*/
-mdeberta-v16-positive-reviewer-oracle*/
-validation-comparison*/
+#benign-stress-validation/
+#mdeberta-ru-prompt-injection*/
+#mdeberta-v16-positive-reviewer-oracle*/
+#validation-comparison*/
 tmp*/
-arc/*
+#arc/*
 
 #secrets
 .env
 
-arc/
-arc/*.tgz
+#arc/
+#arc/*.tgz
 *.zip
 arc/*.exe
-*.tgz
-false-positive-review-*.jsonl
-false-positive-corpus-documents.jsonl
-benign-prod-*.jsonl
-malicious-document-*.jsonl
-v*-document-splits.jsonl
-logs/*.log
-arc/logs/*.log
-datasets/*
-models/*
-reports/*
+#*.tgz
+#false-positive-review-*.jsonl
+#false-positive-corpus-documents.jsonl
+#benign-prod-*.jsonl
+#malicious-document-*.jsonl
+#v*-document-splits.jsonl
+#logs/*.log
+#arc/logs/*.log
+#datasets/*
+#models/*
+#reports/*

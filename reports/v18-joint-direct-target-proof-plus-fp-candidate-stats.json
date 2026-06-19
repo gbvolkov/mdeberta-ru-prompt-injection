@@ -1,0 +1,197 @@
+{
+  "per_corpus": {
+    "direct_target": {
+      "docs": 732,
+      "windows": 150809,
+      "avg_windows_per_doc": 206.02,
+      "unique_normalized_hashes": 732,
+      "dup_norm_hash_rows": 0,
+      "mojibake_or_replacement_count": 0,
+      "missing_required": {},
+      "categories_docs": {
+        "support_documentation": 435,
+        "safety_policies": 108,
+        "corporate_procedures": 107,
+        "hr_policies": 82
+      },
+      "categories_windows": {
+        "safety_policies": 40315,
+        "corporate_procedures": 40307,
+        "support_documentation": 40013,
+        "hr_policies": 30174
+      },
+      "sources_docs": {
+        "microsoft_learn_ru": 434,
+        "russian_legislative_corpus_ruslawod": 297,
+        "bitrix24_helpdesk": 1
+      },
+      "sources_windows": {
+        "russian_legislative_corpus_ruslawod": 110796,
+        "microsoft_learn_ru": 39959,
+        "bitrix24_helpdesk": 54
+      },
+      "languages_docs": {
+        "mixed": 732
+      },
+      "length_docs": {
+        "very_long": 732
+      },
+      "length_windows": {
+        "very_long": 150809
+      }
+    },
+    "fp_candidate": {
+      "docs": 300000,
+      "windows": 5123025,
+      "avg_windows_per_doc": 17.08,
+      "unique_normalized_hashes": 300000,
+      "dup_norm_hash_rows": 0,
+      "mojibake_or_replacement_count": 329,
+      "missing_required": {},
+      "categories_docs": {
+        "job_descriptions": 71316,
+        "technical_documentation": 68515,
+        "legal_templates": 49448,
+        "admin_instructions": 37337,
+        "support_documentation": 21361,
+        "knowledge_base": 15000,
+        "meeting_minutes": 15000,
+        "corporate_procedures": 11770,
+        "safety_policies": 7553,
+        "hr_policies": 2700
+      },
+      "categories_windows": {
+        "job_descriptions": 1398311,
+        "legal_templates": 924492,
+        "admin_instructions": 874728,
+        "technical_documentation": 803939,
+        "support_documentation": 381678,
+        "corporate_procedures": 232360,
+        "meeting_minutes": 166918,
+        "safety_policies": 155222,
+        "knowledge_base": 136324,
+        "hr_policies": 49053
+      },
+      "sources_docs": {
+        "fineweb2_ru": 68774,
+        "wikipedia_ru": 65703,
+        "c4_ru": 53878,
+        "stackexchange": 48819,
+        "fineweb_en": 28510,
+        "c4_en": 25359,
+        "wikipedia_en": 8692,
+        "legal_case_summaries": 265
+      },
+      "sources_windows": {
+        "fineweb2_ru": 1752625,
+        "wikipedia_ru": 1279097,
+        "c4_ru": 931933,
+        "stackexchange": 391013,
+        "fineweb_en": 331662,
+        "c4_en": 264120,
+        "wikipedia_en": 168058,
+        "legal_case_summaries": 4517
+      },
+      "languages_docs": {
+        "ru": 188355,
+        "en": 111559,
+        "mixed": 86
+      },
+      "length_docs": {
+        "long": 133675,
+        "very_long": 70227,
+        "medium": 62110,
+        "short": 33988
+      },
+      "length_windows": {
+        "very_long": 3512423,
+        "long": 1390463,
+        "medium": 186151,
+        "short": 33988
+      }
+    }
+  },
+  "overlap": {
+    "normalized_text_hash_overlap": 0,
+    "text_hash_overlap": 0,
+    "raw_docs_sum": 300732,
+    "deduped_docs_by_normalized_text_hash": 300732,
+    "dedup_removed_rows": 0
+  },
+  "combined_deduped": {
+    "docs": 300732,
+    "windows": 5273834,
+    "categories_docs": {
+      "job_descriptions": 71316,
+      "technical_documentation": 68515,
+      "legal_templates": 49448,
+      "admin_instructions": 37337,
+      "support_documentation": 21796,
+      "knowledge_base": 15000,
+      "meeting_minutes": 15000,
+      "corporate_procedures": 11877,
+      "safety_policies": 7661,
+      "hr_policies": 2782
+    },
+    "categories_windows": {
+      "job_descriptions": 1398311,
+      "legal_templates": 924492,
+      "admin_instructions": 874728,
+      "technical_documentation": 803939,
+      "support_documentation": 421691,
+      "corporate_procedures": 272667,
+      "safety_policies": 195537,
+      "meeting_minutes": 166918,
+      "knowledge_base": 136324,
+      "hr_policies": 79227
+    },
+    "sources_docs": {
+      "fineweb2_ru": 68774,
+      "wikipedia_ru": 65703,
+      "c4_ru": 53878,
+      "stackexchange": 48819,
+      "fineweb_en": 28510,
+      "c4_en": 25359,
+      "wikipedia_en": 8692,
+      "microsoft_learn_ru": 434,
+      "russian_legislative_corpus_ruslawod": 297,
+      "legal_case_summaries": 265,
+      "bitrix24_helpdesk": 1
+    },
+    "sources_windows": {
+      "fineweb2_ru": 1752625,
+      "wikipedia_ru": 1279097,
+      "c4_ru": 931933,
+      "stackexchange": 391013,
+      "fineweb_en": 331662,
+      "c4_en": 264120,
+      "wikipedia_en": 168058,
+      "russian_legislative_corpus_ruslawod": 110796,
+      "microsoft_learn_ru": 39959,
+      "legal_case_summaries": 4517,
+      "bitrix24_helpdesk": 54
+    },
+    "languages_docs": {
+      "ru": 188355,
+      "en": 111559,
+      "mixed": 818
+    },
+    "languages_windows": {
+      "ru": 3963655,
+      "en": 1157782,
+      "mixed": 152397
+    },
+    "length_docs": {
+      "long": 133675,
+      "very_long": 70959,
+      "medium": 62110,
+      "short": 33988
+    },
+    "length_windows": {
+      "very_long": 3663232,
+      "long": 1390463,
+      "medium": 186151,
+      "short": 33988
+    }
+  }
+}

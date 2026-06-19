@@ -1,0 +1,156 @@
+{
+  "actual_total_rows": 98932,
+  "audit_jsonl": ".\\v16-parent-fp-correction-build\\audit-rows.jsonl",
+  "component_counts": {
+    "attack_v18_1_classifier_or_routing": 995,
+    "attack_v18_1_hard_critical_rehearsal": 995,
+    "attack_v18_1_recall_analog": 3980,
+    "attack_v18_critical_multilingual": 7960,
+    "attack_v18_direct_standalone": 7960,
+    "attack_v18_embedded_visible": 10945,
+    "attack_v18_semantic_paraphrase": 3980,
+    "attack_v18_wrapper_boundary": 4975,
+    "benign_v18_1_corporate_high_score": 9453,
+    "benign_v18_1_corporate_mid_score": 7463,
+    "benign_v18_1_policy_security_audit": 3980,
+    "benign_v18_broad_production": 4478,
+    "benign_v18_carrier_contrast": 5473,
+    "benign_v18_external_process_instruction": 7463,
+    "benign_v18_long_wrapper": 3482,
+    "benign_v18_mined_high_score": 9950,
+    "benign_v18_reviewed_attack_lexicon_context": 5400
+  },
+  "diagnostic_source": {
+    "shared_v18_v18_1_false_negatives_detected_by_v16": 752,
+    "shared_v18_v18_1_false_negatives_missed_by_all": 26,
+    "v18_1_false_negatives": 835
+  },
+  "duplicate_conflict_count": 0,
+  "duplicate_conflicts": [],
+  "failures": [],
+  "labels": {
+    "0": 57142,
+    "1": 41790
+  },
+  "missing_validation_components": [],
+  "output_dir": ".\\training-dataset-v16-parent-fp-correction",
+  "pattern_overlap_report": {
+    "attack_generation_recipe_id": {
+      "count": 0,
+      "samples": []
+    },
+    "benign_generation_recipe_id": {
+      "count": 0,
+      "samples": []
+    },
+    "source_document_id": {
+      "count": 1896,
+      "samples": [
+        "v18_direct_bitrix24_helpdesk_70dd3e0f9d12d773:chunk:4:52ea42a166b88b85",
+        "v18_direct_microsoft_learn_ru_012e8615705d9d5a:chunk:7:1a88968945341988",
+        "v18_direct_microsoft_learn_ru_012e8615705d9d5a:chunk:9:19c611c79aa7bb8c",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:15:852c4bbdc791dff2",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:16:a6111bd1d0a2cc70",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:19:c66e9f74a3c5fe8b",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:3:f994360ca2a8123f",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:5:c693a2af354fda9b",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:6:d26d89a6cde74c11",
+        "v18_direct_microsoft_learn_ru_014805314088808d:chunk:8:ecf246c644c8ce77",
+        "v18_direct_microsoft_learn_ru_021f7daf509f6764:chunk:1:db9aa6f82da2c6d8",
+        "v18_direct_microsoft_learn_ru_021f7daf509f6764:chunk:2:820abbd14040c1df",
+        "v18_direct_microsoft_learn_ru_021f7daf509f6764:chunk:4:e8123f62f3525dd2",
+        "v18_direct_microsoft_learn_ru_04087f9e25d395ad:chunk:4:4b68cc4baf52c5f2",
+        "v18_direct_microsoft_learn_ru_0437a046a43e65a2:chunk:1:ed1355df8ad33205",
+        "v18_direct_microsoft_learn_ru_0437a046a43e65a2:chunk:2:a34525e441202834",
+        "v18_direct_microsoft_learn_ru_0445933e0a99161c:chunk:0:6d3d2fdcd44ece60",
+        "v18_direct_microsoft_learn_ru_0445933e0a99161c:chunk:3:3d2046a01e09a383",
+        "v18_direct_microsoft_learn_ru_04660ceecf633f4d:chunk:1:c1236df9da2721e5",
+        "v18_direct_microsoft_learn_ru_05f2cc8143afff40:chunk:12:8ce57945677d9a67",
+        "v18_direct_microsoft_learn_ru_05f2cc8143afff40:chunk:5:4eb4672ed0dfb246",
+        "v18_direct_microsoft_learn_ru_05f2cc8143afff40:chunk:6:4a3ff21118dc8672",
+        "v18_direct_microsoft_learn_ru_05f2cc8143afff40:chunk:8:31947b53dce347dc",
+        "v18_direct_microsoft_learn_ru_05f2cc8143afff40:chunk:9:7b4c5472e03fa48f",
+        "v18_direct_microsoft_learn_ru_0710467107ecea31:chunk:2:c95d6d405396e64e"
+      ]
+    },
+    "source_pattern_id": {
+      "count": 0,
+      "samples": []
+    },
+    "split_group_id": {
+      "count": 0,
+      "samples": []
+    },
+    "template_family_id": {
+      "count": 0,
+      "samples": []
+    }
+  },
+  "source_reports": {
+    "v18": {
+      "candidate_counts": {
+        "attack_v18_critical_multilingual": 23220,
+        "attack_v18_direct_standalone": 23880,
+        "attack_v18_embedded_visible": 32835,
+        "attack_v18_semantic_paraphrase": 8640,
+        "attack_v18_wrapper_boundary": 14040,
+        "benign_v18_broad_production": 13434,
+        "benign_v18_carrier_contrast": 16419,
+        "benign_v18_external_process_instruction": 20786,
+        "benign_v18_long_wrapper": 10446,
+        "benign_v18_mined_high_score": 16200,
+        "benign_v18_reviewed_attack_lexicon_context": 5400
+      },
+      "path": "v18-build-300k-final\\audit-rows\\train-metadata.jsonl",
+      "rejected": {},
+      "seen": {
+        "rows": 268523
+      },
+      "source_kind": "v18"
+    },
+    "v18_1": {
+      "candidate_counts": {
+        "attack_v18_1_classifier_or_routing": 999,
+        "attack_v18_1_hard_critical_rehearsal": 2985,
+        "attack_v18_1_recall_analog": 11940,
+        "benign_v18_1_corporate_high_score": 9963,
+        "benign_v18_1_corporate_mid_score": 7969,
+        "benign_v18_1_policy_security_audit": 3984
+      },
+      "path": "v18_1_build\\audit-rows.jsonl",
+      "rejected": {
+        "unmapped_component": 19073,
+        "v18_1_non_train_split": 9000
+      },
+      "seen": {
+        "rows": 89953
+      },
+      "source_kind": "v18_1"
+    }
+  },
+  "status": "pass",
+  "target_total_rows": 100000,
+  "targets": {
+    "attack_v18_1_classifier_or_routing": 995,
+    "attack_v18_1_hard_critical_rehearsal": 995,
+    "attack_v18_1_recall_analog": 3980,
+    "attack_v18_critical_multilingual": 7960,
+    "attack_v18_direct_standalone": 7960,
+    "attack_v18_embedded_visible": 10945,
+    "attack_v18_semantic_paraphrase": 3980,
+    "attack_v18_wrapper_boundary": 4975,
+    "benign_v18_1_corporate_high_score": 9453,
+    "benign_v18_1_corporate_mid_score": 7463,
+    "benign_v18_1_policy_security_audit": 3980,
+    "benign_v18_broad_production": 4478,
+    "benign_v18_carrier_contrast": 5473,
+    "benign_v18_external_process_instruction": 7463,
+    "benign_v18_long_wrapper": 3482,
+    "benign_v18_mined_high_score": 9950,
+    "benign_v18_reviewed_attack_lexicon_context": 6468
+  },
+  "train_rows": 88931,
+  "underfilled_components": {},
+  "validation_output_dir": ".\\training-dataset-v16-parent-fp-correction-validation",
+  "validation_rows": 10001
+}

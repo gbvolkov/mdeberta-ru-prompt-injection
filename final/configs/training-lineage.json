@@ -1,0 +1,76 @@
+{
+  "base_model": "microsoft/mdeberta-v3-base",
+  "teacher_model_v10": "protectai/deberta-v3-base-prompt-injection-v2",
+  "stages": [
+    {
+      "name": "v10",
+      "parent": "microsoft/mdeberta-v3-base",
+      "dataset": "datasets/prepared/training-dataset-v10-benign-coverage",
+      "output": "work/models/mdeberta-ru-prompt-injection-v10-benign-scratch",
+      "epochs": 3.0,
+      "learning_rate": 0.00001,
+      "distill_weight": 0.02,
+      "last_n_layers": 12,
+      "train_batch_size": 16,
+      "eval_batch_size": 64,
+      "gradient_accumulation_steps": 2,
+      "checkpoint_steps": 500
+    },
+    {
+      "name": "v11",
+      "parent": "work/models/mdeberta-ru-prompt-injection-v10-benign-scratch",
+      "dataset": "datasets/prepared/training-dataset-v11-fp-correction-windowed-200k",
+      "output": "work/models/mdeberta-ru-prompt-injection-v11-fp-correction-ft",
+      "epochs": 1.0,
+      "learning_rate": 0.000003,
+      "distill_weight": 0.0,
+      "last_n_layers": 4,
+      "train_batch_size": 32,
+      "eval_batch_size": 128,
+      "gradient_accumulation_steps": 1,
+      "checkpoint_steps": 500
+    },
+    {
+      "name": "v12",
+      "parent": "work/models/mdeberta-ru-prompt-injection-v11-fp-correction-ft",
+      "dataset": "work/datasets/training-dataset-v12-russian-critical-correction-windowed",
+      "output": "work/models/mdeberta-ru-prompt-injection-v12-critical-correction-ft",
+      "epochs": 1.0,
+      "learning_rate": 0.000002,
+      "distill_weight": 0.0,
+      "last_n_layers": 4,
+      "train_batch_size": 32,
+      "eval_batch_size": 128,
+      "gradient_accumulation_steps": 1,
+      "checkpoint_steps": 250
+    },
+    {
+      "name": "v13",
+      "parent": "work/models/mdeberta-ru-prompt-injection-v12-critical-correction-ft",
+      "dataset": "datasets/prepared/training-dataset-v13-critical-russian-correction-windowed",
+      "output": "work/models/mdeberta-ru-prompt-injection-v13-critical-correction-ft",
+      "epochs": 1.0,
+      "learning_rate": 0.000001,
+      "distill_weight": 0.0,
+      "last_n_layers": 4,
+      "train_batch_size": 32,
+      "eval_batch_size": 128,
+      "gradient_accumulation_steps": 1,
+      "checkpoint_steps": 250
+    },
+    {
+      "name": "v16",
+      "parent": "work/models/mdeberta-ru-prompt-injection-v13-critical-correction-ft",
+      "dataset": "datasets/prepared/training-dataset-v16-critical-recall-restoration-windowed",
+      "output": "work/models/mdeberta-ru-prompt-injection-v16-critical-recall-restoration-ft",
+      "epochs": 1.0,
+      "learning_rate": 0.0000008,
+      "distill_weight": 0.0,
+      "last_n_layers": 4,
+      "train_batch_size": 32,
+      "eval_batch_size": 128,
+      "gradient_accumulation_steps": 1,
+      "checkpoint_steps": 250
+    }
+  ]
+}

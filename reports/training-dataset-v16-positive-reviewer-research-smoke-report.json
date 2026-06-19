@@ -1,0 +1,110 @@
+{
+  "audit_jsonl": ".\\v16-positive-reviewer-research-smoke\\audit-rows.jsonl",
+  "categories_all": {
+    "admin_instructions": 154,
+    "benign_biographical_note": 16,
+    "corporate_procedures": 268,
+    "critical_ru_override_hidden_prompt_exfiltration": 126,
+    "embedded_admin_instructions": 14,
+    "embedded_corporate_procedures": 29,
+    "embedded_hr_policies": 18,
+    "embedded_job_descriptions": 30,
+    "embedded_legal_templates": 15,
+    "embedded_security_compliance_redaction_wrappers": 14,
+    "embedded_support_documentation": 34,
+    "embedded_technical_documentation": 19,
+    "hr_policies": 93,
+    "job_descriptions": 351,
+    "knowledge_base": 28,
+    "legal_templates": 132,
+    "meeting_minutes": 72,
+    "safety_policies": 23,
+    "security_compliance_redaction_wrappers": 219,
+    "standalone_attack": 12,
+    "support_documentation": 170,
+    "technical_documentation": 146,
+    "unsafe_non_injection": 17
+  },
+  "components_all": {
+    "benign_false_positive_v16_positive_benign_stress_windows": 16,
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 787,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 128,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 62,
+    "benign_false_positive_v16_positive_proper_benign_windows": 7,
+    "real_attack_v16_positive_blind_acceptance_critical_ru_windows": 54,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 185,
+    "real_attack_v16_positive_proper_critical_attack_windows": 497,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 264
+  },
+  "components_train": {
+    "benign_false_positive_v16_positive_benign_stress_windows": 16,
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 602,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 54,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 56,
+    "benign_false_positive_v16_positive_proper_benign_windows": 6,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 168,
+    "real_attack_v16_positive_proper_critical_attack_windows": 310,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 188
+  },
+  "components_validation": {
+    "benign_false_positive_v16_positive_blind_acceptance_benign_documents": 185,
+    "benign_false_positive_v16_positive_blind_acceptance_corporate_benign_windows": 74,
+    "benign_false_positive_v16_positive_proper_benign_prod_dev_documents": 6,
+    "benign_false_positive_v16_positive_proper_benign_windows": 1,
+    "real_attack_v16_positive_blind_acceptance_critical_ru_windows": 54,
+    "real_attack_v16_positive_blind_acceptance_malicious_documents": 17,
+    "real_attack_v16_positive_proper_critical_attack_windows": 187,
+    "real_attack_v16_positive_proper_malicious_dev_documents": 76
+  },
+  "dropped_by_reason": {
+    "duplicate_same_label_lower_score": 17,
+    "not_v16_positive": 73252,
+    "positive_without_visible_attack_or_trusted_provenance": 4768
+  },
+  "dropped_jsonl": ".\\v16-positive-reviewer-research-smoke\\dropped.jsonl",
+  "dropped_rows": 78037,
+  "extra_window_jsonl": [],
+  "failures": [],
+  "final_conflicting_duplicate_labels": 0,
+  "input_rows_after_v16_positive_and_visibility_gates": 6363,
+  "label_counts_all": {
+    "benign_false_positive": 1000,
+    "real_attack": 1000
+  },
+  "label_counts_train": {
+    "benign_false_positive": 734,
+    "real_attack": 666
+  },
+  "label_counts_validation": {
+    "benign_false_positive": 266,
+    "real_attack": 334
+  },
+  "languages_all": {
+    "en": 292,
+    "mixed": 308,
+    "ru": 1400
+  },
+  "output_dir": ".\\training-dataset-v16-positive-reviewer-research-smoke",
+  "protected_overlap": {
+    "attack_generation_recipe_id": 0,
+    "benign_generation_recipe_id": 0,
+    "document_id": 0,
+    "eval_derived_cluster_id": 0,
+    "source_pattern_id": 0,
+    "template_family_id": 0
+  },
+  "quarantined_conflicting_duplicate_text_hashes": 0,
+  "research_only": true,
+  "selected_rows": 2000,
+  "stage1_score_bands_all": {
+    "0.82-0.95": 156,
+    "0.95-0.99": 195,
+    "0.99-0.999": 294,
+    ">=0.999": 1355
+  },
+  "stage1_threshold": 0.82,
+  "status": "pass",
+  "train_rows": 1400,
+  "validation_output_dir": ".\\training-dataset-v16-positive-reviewer-research-smoke-validation",
+  "validation_rows": 600
+}

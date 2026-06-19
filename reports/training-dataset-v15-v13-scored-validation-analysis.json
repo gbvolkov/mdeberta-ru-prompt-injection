@@ -1,0 +1,569 @@
+{
+  "dataset_dir": ".\\training-dataset-v15-anchored-critical-correction-windowed",
+  "model_id": ".\\mdeberta-ru-prompt-injection-v13-critical-correction-ft",
+  "notes": [
+    "High positive recall by V13 means those positive rows may be relearned replay rather than new correction signal.",
+    "Benign rows scoring high under V13 are intended hard negatives; benign replay should mostly score low.",
+    "This is a pretraining diagnostic, not an acceptance evaluation."
+  ],
+  "scored_split": "validation",
+  "scoring_summary": {
+    "benign_score_distribution": {
+      "max": 0.9999734163284302,
+      "median": 0.0017116673989221454,
+      "min": 9.429888905287953e-07,
+      "p05": 2.084287643810967e-06,
+      "p25": 1.8355913198320195e-05,
+      "p75": 0.004894575569778681,
+      "p95": 0.9991409778594971
+    },
+    "device": "cpu",
+    "positive_score_distribution": {
+      "max": 0.9999910593032837,
+      "median": 0.9999706745147705,
+      "min": 1.8589364117360674e-05,
+      "p05": 0.5262385010719299,
+      "p25": 0.999900221824646,
+      "p75": 0.9999830722808838,
+      "p95": 0.9999880790710449
+    },
+    "rows_scored": 7000,
+    "threshold_metrics": {
+      "0.82": {
+        "benign_fp_rate": 0.1050275482093664,
+        "by_component": {
+          "attack_replay": {
+            "fn": 54,
+            "tp": 888
+          },
+          "benign_actual_fp_hard_negative": {
+            "fp": 297,
+            "tn": 220
+          },
+          "benign_keyword_hard_negative": {
+            "tn": 171
+          },
+          "benign_replay": {
+            "fp": 8,
+            "tn": 2208
+          },
+          "critical_ru_anchored_positive": {
+            "fn": 77,
+            "tp": 1324
+          },
+          "critical_ru_embedded_positive": {
+            "fn": 27,
+            "tp": 731
+          },
+          "critical_ru_exact_v13_miss": {
+            "fn": 5,
+            "tp": 3
+          },
+          "critical_ru_semantic_paraphrase_positive": {
+            "fn": 60,
+            "tp": 640
+          },
+          "critical_ru_wrapper_positive": {
+            "fn": 8,
+            "tp": 279
+          }
+        },
+        "fn": 231,
+        "fp": 305,
+        "precision": 0.9268585131894485,
+        "recall": 0.943603515625,
+        "tn": 2599,
+        "tp": 3865
+      },
+      "0.95": {
+        "benign_fp_rate": 0.09641873278236915,
+        "by_component": {
+          "attack_replay": {
+            "fn": 62,
+            "tp": 880
+          },
+          "benign_actual_fp_hard_negative": {
+            "fp": 273,
+            "tn": 244
+          },
+          "benign_keyword_hard_negative": {
+            "tn": 171
+          },
+          "benign_replay": {
+            "fp": 7,
+            "tn": 2209
+          },
+          "critical_ru_anchored_positive": {
+            "fn": 86,
+            "tp": 1315
+          },
+          "critical_ru_embedded_positive": {
+            "fn": 27,
+            "tp": 731
+          },
+          "critical_ru_exact_v13_miss": {
+            "fn": 5,
+            "tp": 3
+          },
+          "critical_ru_semantic_paraphrase_positive": {
+            "fn": 69,
+            "tp": 631
+          },
+          "critical_ru_wrapper_positive": {
+            "fn": 11,
+            "tp": 276
+          }
+        },
+        "fn": 260,
+        "fp": 280,
+        "precision": 0.9319727891156463,
+        "recall": 0.9365234375,
+        "tn": 2624,
+        "tp": 3836
+      },
+      "0.99": {
+        "benign_fp_rate": 0.08264462809917356,
+        "by_component": {
+          "attack_replay": {
+            "fn": 77,
+            "tp": 865
+          },
+          "benign_actual_fp_hard_negative": {
+            "fp": 235,
+            "tn": 282
+          },
+          "benign_keyword_hard_negative": {
+            "tn": 171
+          },
+          "benign_replay": {
+            "fp": 5,
+            "tn": 2211
+          },
+          "critical_ru_anchored_positive": {
+            "fn": 115,
+            "tp": 1286
+          },
+          "critical_ru_embedded_positive": {
+            "fn": 32,
+            "tp": 726
+          },
+          "critical_ru_exact_v13_miss": {
+            "fn": 6,
+            "tp": 2
+          },
+          "critical_ru_semantic_paraphrase_positive": {
+            "fn": 88,
+            "tp": 612
+          },
+          "critical_ru_wrapper_positive": {
+            "fn": 13,
+            "tp": 274
+          }
+        },
+        "fn": 331,
+        "fp": 240,
+        "precision": 0.9400749063670412,
+        "recall": 0.919189453125,
+        "tn": 2664,
+        "tp": 3765
+      },
+      "0.995": {
+        "benign_fp_rate": 0.07334710743801653,
+        "by_component": {
+          "attack_replay": {
+            "fn": 90,
+            "tp": 852
+          },
+          "benign_actual_fp_hard_negative": {
+            "fp": 208,
+            "tn": 309
+          },
+          "benign_keyword_hard_negative": {
+            "tn": 171
+          },
+          "benign_replay": {
+            "fp": 5,
+            "tn": 2211
+          },
+          "critical_ru_anchored_positive": {
+            "fn": 131,
+            "tp": 1270
+          },
+          "critical_ru_embedded_positive": {
+            "fn": 35,
+            "tp": 723
+          },
+          "critical_ru_exact_v13_miss": {
+            "fn": 8
+          },
+          "critical_ru_semantic_paraphrase_positive": {
+            "fn": 93,
+            "tp": 607
+          },
+          "critical_ru_wrapper_positive": {
+            "fn": 16,
+            "tp": 271
+          }
+        },
+        "fn": 373,
+        "fp": 213,
+        "precision": 0.9458841463414634,
+        "recall": 0.908935546875,
+        "tn": 2691,
+        "tp": 3723
+      },
+      "0.999": {
+        "benign_fp_rate": 0.05268595041322314,
+        "by_component": {
+          "attack_replay": {
+            "fn": 142,
+            "tp": 800
+          },
+          "benign_actual_fp_hard_negative": {
+            "fp": 150,
+            "tn": 367
+          },
+          "benign_keyword_hard_negative": {
+            "tn": 171
+          },
+          "benign_replay": {
+            "fp": 3,
+            "tn": 2213
+          },
+          "critical_ru_anchored_positive": {
+            "fn": 157,
+            "tp": 1244
+          },
+          "critical_ru_embedded_positive": {
+            "fn": 54,
+            "tp": 704
+          },
+          "critical_ru_exact_v13_miss": {
+            "fn": 8
+          },
+          "critical_ru_semantic_paraphrase_positive": {
+            "fn": 124,
+            "tp": 576
+          },
+          "critical_ru_wrapper_positive": {
+            "fn": 21,
+            "tp": 266
+          }
+        },
+        "fn": 506,
+        "fp": 153,
+        "precision": 0.9591236975687951,
+        "recall": 0.87646484375,
+        "tn": 2751,
+        "tp": 3590
+      }
+    }
+  },
+  "split_summaries": {
+    "train": {
+      "categories_top50": {
+        "admin_instructions": 2816,
+        "benign_business_instruction_policy": 207,
+        "benign_catalog_fragment": 92,
+        "benign_document": 1311,
+        "benign_general": 1140,
+        "benign_hard_negative": 625,
+        "benign_historical_address_fragment": 141,
+        "benign_instruction_policy_en": 540,
+        "benign_instruction_policy_ru": 196,
+        "benign_neighbor_in_malicious_document": 576,
+        "benign_role_prompt": 377,
+        "benign_tool_usage_policy": 662,
+        "corporate_procedures": 1811,
+        "critical_ru_override_hidden_prompt_exfiltration": 8051,
+        "deep_embedded_indirect_attack_long": 78,
+        "deep_embedded_indirect_attack_medium": 88,
+        "deep_embedded_indirect_attack_short": 127,
+        "direct_attack_ru": 150,
+        "embedded_indirect_attack": 266,
+        "hr_policies": 571,
+        "job_descriptions": 5797,
+        "knowledge_base": 427,
+        "legal_templates": 1342,
+        "long_document_embedded_attack": 5570,
+        "meeting_minutes": 757,
+        "prod_fp_hard_benign": 509,
+        "prod_fp_near_boundary_benign": 1155,
+        "prod_real_benign_window": 4147,
+        "safety_policies": 642,
+        "security_compliance_redaction_wrappers": 2176,
+        "short_embedded_exfiltration_attack": 494,
+        "short_exfiltration_discussion_hard_negative": 475,
+        "short_exfiltration_quoted_hard_negative": 142,
+        "support_documentation": 2298,
+        "technical_documentation": 2145,
+        "unsafe_non_injection": 122,
+        "v10_replay_benign_business_instruction_policy": 76,
+        "v10_replay_benign_document": 1206,
+        "v10_replay_benign_general": 380,
+        "v10_replay_benign_hard_negative": 290,
+        "v10_replay_benign_instruction_policy_en": 171,
+        "v10_replay_benign_role_prompt": 165,
+        "v10_replay_benign_tool_usage_policy": 249,
+        "v10_replay_embedded_indirect_attack": 88,
+        "v10_replay_long_document_embedded_attack": 104,
+        "v10_replay_prod_real_benign_window": 105,
+        "v10_replay_short_embedded_exfiltration_attack": 170,
+        "v10_replay_short_exfiltration_discussion_hard_negative": 196,
+        "v12_critical_ru_override_positive": 145,
+        "wrapper_artifact_benign": 690
+      },
+      "components": {
+        "attack_replay": 7130,
+        "benign_actual_fp_hard_negative": 3914,
+        "benign_keyword_hard_negative": 1297,
+        "benign_replay": 16780,
+        "critical_ru_anchored_positive": 10597,
+        "critical_ru_embedded_positive": 5742,
+        "critical_ru_exact_v13_miss": 64,
+        "critical_ru_semantic_paraphrase_positive": 5300,
+        "critical_ru_wrapper_positive": 2176
+      },
+      "duplicate_text_rows": 0,
+      "generation_types": {
+        "anchored_transformation": 10597,
+        "benign_fp_wrapper_augmentation": 3424,
+        "embedded_anchored_transformation": 5742,
+        "exact_v13_false_negative": 64,
+        "limited_keyword_window": 1297,
+        "replay": 23910,
+        "semantic_intent_paraphrase": 5300,
+        "v13_false_positive_window": 490,
+        "wrapper_anchored_transformation": 2176
+      },
+      "labels": {
+        "not_prompt_injection": 21991,
+        "prompt_injection": 31009
+      },
+      "rows": 53000,
+      "score_bands": {
+        "fp_at_0.95": 2046,
+        "fp_at_0.99": 1468,
+        "fp_at_0.999": 400,
+        "score_0.82_0.95": 2767,
+        "score_0.95_0.99": 1560,
+        "score_0.99_0.999": 7280,
+        "score_lt_0.82": 12272
+      },
+      "sources_top50": {
+        "v15_anchored_critical_score_0.82_0.95": 1283,
+        "v15_anchored_critical_score_0.95_0.99": 696,
+        "v15_anchored_critical_score_0.99_0.999": 2709,
+        "v15_anchored_critical_score_lt_0.82": 5909,
+        "v15_benign_fp_augmented_admin_instructions": 326,
+        "v15_benign_fp_augmented_corporate_procedures": 325,
+        "v15_benign_fp_augmented_job_descriptions": 1192,
+        "v15_benign_fp_augmented_support_documentation": 349,
+        "v15_benign_fp_augmented_technical_documentation": 473,
+        "v15_embedded_anchored_critical_admin_instructions": 713,
+        "v15_embedded_anchored_critical_corporate_procedures": 418,
+        "v15_embedded_anchored_critical_job_descriptions": 1979,
+        "v15_embedded_anchored_critical_knowledge_base": 269,
+        "v15_embedded_anchored_critical_legal_templates": 553,
+        "v15_embedded_anchored_critical_safety_policies": 280,
+        "v15_embedded_anchored_critical_support_documentation": 541,
+        "v15_embedded_anchored_critical_technical_documentation": 541,
+        "v15_limited_keyword_benign_admin_instructions": 742,
+        "v15_limited_keyword_benign_corporate_procedures": 555,
+        "v15_replay_training-dataset-v10-benign-coverage_Vikhrmodels/GrandMaster-PRO-MAX": 502,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_instruction_policy_pool": 1982,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_long_document_fragments": 346,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_medium_document_fragments": 364,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_mid_long_document_fragments": 509,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_deep_embedded_prompt_injection_pool": 293,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_embedded_prompt_injection_pool": 266,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_embedded_quoted_hard_negative_pool": 375,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_short_embedded_exfiltration_pool": 494,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_short_exfiltration_hard_negative_pool": 617,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_admin_instructions": 273,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_benign_neighbor": 380,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_fill_job_descriptions": 476,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_job_descriptions": 604,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_mined_prod_fp_near_boundary_benign_job_descriptions": 589,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_admin_instructions": 282,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_corporate_procedures": 437,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_job_descriptions": 2025,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_safety_policies": 265,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_support_documentation": 333,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_wrapper_artifact_benign": 690,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_instruction_policy_pool": 736,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_long_document_fragments": 659,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_mid_long_document_fragments": 391,
+        "v15_replay_training-dataset-v13-critical-russian-correction-windowed_v13_critical_ru_standalone_hard_positive": 427,
+        "v15_semantic_critical_score_0.82_0.95": 693,
+        "v15_semantic_critical_score_0.95_0.99": 313,
+        "v15_semantic_critical_score_0.99_0.999": 1042,
+        "v15_semantic_critical_score_lt_0.82": 3252,
+        "v15_wrapper_anchored_critical_score_0.99_0.999": 947,
+        "v15_wrapper_anchored_critical_score_lt_0.82": 862
+      },
+      "text_length_chars": {
+        "max": 4000,
+        "mean": 700.0131509433962,
+        "median": 819.0,
+        "min": 5
+      }
+    },
+    "validation": {
+      "categories_top50": {
+        "admin_instructions": 390,
+        "benign_business_instruction_policy": 33,
+        "benign_catalog_fragment": 12,
+        "benign_document": 181,
+        "benign_general": 140,
+        "benign_hard_negative": 98,
+        "benign_historical_address_fragment": 14,
+        "benign_instruction_policy_en": 75,
+        "benign_instruction_policy_ru": 29,
+        "benign_neighbor_in_malicious_document": 100,
+        "benign_role_prompt": 54,
+        "benign_tool_usage_policy": 76,
+        "corporate_procedures": 271,
+        "critical_ru_override_hidden_prompt_exfiltration": 1050,
+        "deep_embedded_indirect_attack_medium": 13,
+        "deep_embedded_indirect_attack_short": 12,
+        "direct_attack_ru": 23,
+        "embedded_indirect_attack": 29,
+        "hr_policies": 77,
+        "job_descriptions": 742,
+        "knowledge_base": 52,
+        "legal_templates": 156,
+        "long_document_embedded_attack": 724,
+        "meeting_minutes": 114,
+        "prod_fp_hard_benign": 71,
+        "prod_fp_near_boundary_benign": 138,
+        "prod_real_benign_window": 558,
+        "safety_policies": 82,
+        "security_compliance_redaction_wrappers": 287,
+        "short_embedded_exfiltration_attack": 64,
+        "short_exfiltration_discussion_hard_negative": 63,
+        "short_exfiltration_quoted_hard_negative": 14,
+        "support_documentation": 305,
+        "technical_documentation": 268,
+        "unsafe_non_injection": 20,
+        "v10_replay_benign_business_instruction_policy": 11,
+        "v10_replay_benign_document": 157,
+        "v10_replay_benign_general": 56,
+        "v10_replay_benign_hard_negative": 32,
+        "v10_replay_benign_instruction_policy_en": 30,
+        "v10_replay_benign_instruction_policy_ru": 12,
+        "v10_replay_benign_role_prompt": 18,
+        "v10_replay_benign_tool_usage_policy": 28,
+        "v10_replay_embedded_indirect_attack": 15,
+        "v10_replay_long_document_embedded_attack": 13,
+        "v10_replay_prod_real_benign_window": 14,
+        "v10_replay_short_embedded_exfiltration_attack": 24,
+        "v10_replay_short_exfiltration_discussion_hard_negative": 27,
+        "v12_critical_ru_override_positive": 19,
+        "wrapper_artifact_benign": 72
+      },
+      "components": {
+        "attack_replay": 942,
+        "benign_actual_fp_hard_negative": 517,
+        "benign_keyword_hard_negative": 171,
+        "benign_replay": 2216,
+        "critical_ru_anchored_positive": 1401,
+        "critical_ru_embedded_positive": 758,
+        "critical_ru_exact_v13_miss": 8,
+        "critical_ru_semantic_paraphrase_positive": 700,
+        "critical_ru_wrapper_positive": 287
+      },
+      "duplicate_text_rows": 0,
+      "generation_types": {
+        "anchored_transformation": 1401,
+        "benign_fp_wrapper_augmentation": 461,
+        "embedded_anchored_transformation": 758,
+        "exact_v13_false_negative": 8,
+        "limited_keyword_window": 171,
+        "replay": 3158,
+        "semantic_intent_paraphrase": 700,
+        "v13_false_positive_window": 56,
+        "wrapper_anchored_transformation": 287
+      },
+      "labels": {
+        "not_prompt_injection": 2904,
+        "prompt_injection": 4096
+      },
+      "rows": 7000,
+      "score_bands": {
+        "fp_at_0.95": 270,
+        "fp_at_0.99": 200,
+        "fp_at_0.999": 47,
+        "score_0.82_0.95": 356,
+        "score_0.95_0.99": 226,
+        "score_0.99_0.999": 960,
+        "score_lt_0.82": 1612
+      },
+      "sources_top50": {
+        "v15_anchored_critical_score_0.82_0.95": 174,
+        "v15_anchored_critical_score_0.95_0.99": 93,
+        "v15_anchored_critical_score_0.99_0.999": 355,
+        "v15_anchored_critical_score_lt_0.82": 779,
+        "v15_benign_fp_augmented_admin_instructions": 57,
+        "v15_benign_fp_augmented_corporate_procedures": 48,
+        "v15_benign_fp_augmented_job_descriptions": 143,
+        "v15_benign_fp_augmented_support_documentation": 49,
+        "v15_benign_fp_augmented_technical_documentation": 54,
+        "v15_embedded_anchored_critical_admin_instructions": 104,
+        "v15_embedded_anchored_critical_corporate_procedures": 60,
+        "v15_embedded_anchored_critical_job_descriptions": 274,
+        "v15_embedded_anchored_critical_knowledge_base": 35,
+        "v15_embedded_anchored_critical_legal_templates": 67,
+        "v15_embedded_anchored_critical_meeting_minutes": 37,
+        "v15_embedded_anchored_critical_safety_policies": 37,
+        "v15_embedded_anchored_critical_support_documentation": 55,
+        "v15_embedded_anchored_critical_technical_documentation": 73,
+        "v15_limited_keyword_benign_admin_instructions": 88,
+        "v15_limited_keyword_benign_corporate_procedures": 83,
+        "v15_replay_training-dataset-v10-benign-coverage_Vikhrmodels/GrandMaster-PRO-MAX": 61,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_instruction_policy_pool": 267,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_long_document_fragments": 37,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_medium_document_fragments": 54,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_benign_mid_long_document_fragments": 75,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_deep_embedded_prompt_injection_pool": 36,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_embedded_quoted_hard_negative_pool": 60,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_hard_negative_templates": 34,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_short_embedded_exfiltration_pool": 64,
+        "v15_replay_training-dataset-v10-benign-coverage_manual_short_exfiltration_hard_negative_pool": 77,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_benign_neighbor": 65,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_fill_job_descriptions": 56,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_embedded_pi_over_real_carrier_job_descriptions": 80,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_mined_prod_fp_near_boundary_benign_job_descriptions": 71,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_admin_instructions": 36,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_corporate_procedures": 54,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_job_descriptions": 269,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_real_benign_support_documentation": 62,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_prod_wrapper_artifact_benign": 72,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_instruction_policy_pool": 99,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_long_document_fragments": 89,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_benign_mid_long_document_fragments": 54,
+        "v15_replay_training-dataset-v11-fp-correction-windowed-200k_v10_benign_replay_manual_short_exfiltration_hard_negative_pool": 37,
+        "v15_replay_training-dataset-v13-critical-russian-correction-windowed_v13_critical_ru_standalone_hard_positive": 64,
+        "v15_semantic_critical_score_0.82_0.95": 94,
+        "v15_semantic_critical_score_0.95_0.99": 56,
+        "v15_semantic_critical_score_0.99_0.999": 138,
+        "v15_semantic_critical_score_lt_0.82": 412,
+        "v15_wrapper_anchored_critical_score_0.99_0.999": 137,
+        "v15_wrapper_anchored_critical_score_lt_0.82": 102
+      },
+      "text_length_chars": {
+        "max": 4000,
+        "mean": 697.896,
+        "median": 817.0,
+        "min": 12
+      }
+    }
+  },
+  "thresholds": [
+    0.82,
+    0.95,
+    0.99,
+    0.995,
+    0.999
+  ]
+}

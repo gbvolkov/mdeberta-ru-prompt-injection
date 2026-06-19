@@ -1,0 +1,58 @@
+{
+  "attack_bank_jsonl": "tmp-v18-trusted-attack-bank-smoke.jsonl",
+  "failures": [],
+  "good_anchor_rows": 1000,
+  "good_anchor_share": 1.0,
+  "language_shares": {
+    "en": 0.2,
+    "mixed": 0.12,
+    "ru": 0.68
+  },
+  "languages": {
+    "en": 200,
+    "mixed": 120,
+    "ru": 680
+  },
+  "rejected": {},
+  "rows": 1000,
+  "samples": {},
+  "semantic_families": {
+    "developer_prompt_exfiltration": 125,
+    "hidden_instruction_exfiltration": 125,
+    "hidden_routing_exfiltration": 125,
+    "instruction_override": 125,
+    "internal_policy_exfiltration": 125,
+    "internal_tool_exfiltration": 125,
+    "priority_override": 125,
+    "system_prompt_exfiltration": 125
+  },
+  "status": "pass",
+  "top_family_share": 0.125,
+  "top_source_name_share": 0.001,
+  "top_source_names": {
+    "v18_trusted_attack_bank_admin_process_ru_internal_policy_exfiltration_074": 1,
+    "v18_trusted_attack_bank_corporate_workflow_ru_developer_prompt_exfiltration_021": 1,
+    "v18_trusted_attack_bank_corporate_workflow_ru_priority_override_048": 1,
+    "v18_trusted_attack_bank_hr_review_mixed_hidden_instruction_exfiltration_008": 1,
+    "v18_trusted_attack_bank_hr_review_ru_instruction_override_082": 1,
+    "v18_trusted_attack_bank_incident_response_en_system_prompt_exfiltration_019": 1,
+    "v18_trusted_attack_bank_incident_response_ru_hidden_instruction_exfiltration_004": 1,
+    "v18_trusted_attack_bank_multilingual_review_en_hidden_instruction_exfiltration_004": 1,
+    "v18_trusted_attack_bank_multilingual_review_en_system_prompt_exfiltration_011": 1,
+    "v18_trusted_attack_bank_policy_edge_case_ru_instruction_override_059": 1,
+    "v18_trusted_attack_bank_red_team_review_mixed_internal_tool_exfiltration_013": 1,
+    "v18_trusted_attack_bank_red_team_review_ru_developer_prompt_exfiltration_013": 1,
+    "v18_trusted_attack_bank_red_team_review_ru_internal_tool_exfiltration_036": 1,
+    "v18_trusted_attack_bank_security_review_en_priority_override_022": 1,
+    "v18_trusted_attack_bank_security_review_ru_developer_prompt_exfiltration_059": 1,
+    "v18_trusted_attack_bank_security_review_ru_internal_policy_exfiltration_033": 1,
+    "v18_trusted_attack_bank_security_review_ru_internal_policy_exfiltration_069": 1,
+    "v18_trusted_attack_bank_security_review_ru_priority_override_074": 1,
+    "v18_trusted_attack_bank_support_ticket_mixed_hidden_instruction_exfiltration_001": 1,
+    "v18_trusted_attack_bank_technical_audit_ru_priority_override_077": 1
+  },
+  "trusted_or_reviewed_rows": 1000,
+  "trusted_or_reviewed_share": 1.0,
+  "unique_attack_template_ids": 1000,
+  "unique_attack_text_hashes": 1000
+}

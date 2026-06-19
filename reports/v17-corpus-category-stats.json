@@ -1,0 +1,811 @@
+{
+  "combined": {
+    "rows": 250000,
+    "labels": {
+      "attack": 132726,
+      "benign": 117274
+    },
+    "category_label": {
+      "prompt_injection": {
+        "attack": 101462
+      },
+      "knowledge_base": {
+        "attack": 18221,
+        "benign": 61378
+      },
+      "support_documentation": {
+        "benign": 11177,
+        "attack": 2504
+      },
+      "corporate_procedures": {
+        "attack": 889,
+        "benign": 3892
+      },
+      "technical_documentation": {
+        "benign": 9705,
+        "attack": 2541
+      },
+      "legal_templates": {
+        "benign": 9952,
+        "attack": 2499
+      },
+      "security_compliance_redaction_wrappers": {
+        "benign": 4236,
+        "attack": 1099
+      },
+      "job_descriptions": {
+        "benign": 4607,
+        "attack": 674
+      },
+      "admin_instructions": {
+        "benign": 6127,
+        "attack": 1532
+      },
+      "meeting_minutes": {
+        "benign": 2581,
+        "attack": 640
+      },
+      "hr_policies": {
+        "benign": 3619,
+        "attack": 665
+      }
+    },
+    "category_language": {
+      "prompt_injection": {
+        "ru": 78198,
+        "en": 15904,
+        "mixed": 7360
+      },
+      "knowledge_base": {
+        "mixed": 5765,
+        "en": 13729,
+        "ru": 60105
+      },
+      "support_documentation": {
+        "en": 8953,
+        "mixed": 3430,
+        "ru": 1298
+      },
+      "corporate_procedures": {
+        "ru": 4605,
+        "mixed": 156,
+        "en": 20
+      },
+      "technical_documentation": {
+        "mixed": 5514,
+        "en": 3894,
+        "ru": 2838
+      },
+      "legal_templates": {
+        "ru": 6016,
+        "en": 5465,
+        "mixed": 970
+      },
+      "security_compliance_redaction_wrappers": {
+        "en": 3097,
+        "ru": 1803,
+        "mixed": 435
+      },
+      "job_descriptions": {
+        "ru": 4621,
+        "en": 368,
+        "mixed": 292
+      },
+      "admin_instructions": {
+        "mixed": 608,
+        "en": 2583,
+        "ru": 4468
+      },
+      "meeting_minutes": {
+        "ru": 2589,
+        "mixed": 280,
+        "en": 352
+      },
+      "hr_policies": {
+        "ru": 3459,
+        "mixed": 190,
+        "en": 635
+      }
+    },
+    "category_window_bucket": {
+      "prompt_injection": {
+        "1": 101462
+      },
+      "knowledge_base": {
+        "2-4": 21815,
+        "5-20": 42810,
+        "1": 3244,
+        "51-100": 1261,
+        "21-50": 10469
+      },
+      "support_documentation": {
+        "5-20": 8592,
+        "21-50": 2852,
+        "2-4": 1500,
+        "51-100": 602,
+        "1": 135
+      },
+      "corporate_procedures": {
+        "2-4": 449,
+        "5-20": 2166,
+        "21-50": 1831,
+        "51-100": 320,
+        "1": 15
+      },
+      "technical_documentation": {
+        "2-4": 2502,
+        "5-20": 7623,
+        "51-100": 311,
+        "21-50": 1682,
+        "1": 128
+      },
+      "legal_templates": {
+        "21-50": 2796,
+        "5-20": 7010,
+        "2-4": 1948,
+        "51-100": 627,
+        "1": 70
+      },
+      "security_compliance_redaction_wrappers": {
+        "5-20": 3768,
+        "2-4": 1018,
+        "21-50": 486,
+        "51-100": 48,
+        "1": 15
+      },
+      "job_descriptions": {
+        "21-50": 1465,
+        "5-20": 3251,
+        "2-4": 320,
+        "51-100": 214,
+        "1": 31
+      },
+      "admin_instructions": {
+        "2-4": 669,
+        "21-50": 2664,
+        "5-20": 3502,
+        "51-100": 781,
+        "1": 43
+      },
+      "meeting_minutes": {
+        "21-50": 1021,
+        "2-4": 258,
+        "5-20": 1818,
+        "51-100": 111,
+        "1": 13
+      },
+      "hr_policies": {
+        "21-50": 1471,
+        "5-20": 2281,
+        "51-100": 264,
+        "2-4": 256,
+        "1": 12
+      }
+    }
+  },
+  "splits": {
+    "train": {
+      "rows": 224964,
+      "labels": {
+        "attack": 119418,
+        "benign": 105546
+      },
+      "category_label": {
+        "prompt_injection": {
+          "attack": 91299
+        },
+        "knowledge_base": {
+          "attack": 16365,
+          "benign": 55069
+        },
+        "support_documentation": {
+          "benign": 10154,
+          "attack": 2305
+        },
+        "corporate_procedures": {
+          "attack": 785,
+          "benign": 3451
+        },
+        "technical_documentation": {
+          "benign": 8784,
+          "attack": 2321
+        },
+        "legal_templates": {
+          "benign": 9010,
+          "attack": 2257
+        },
+        "security_compliance_redaction_wrappers": {
+          "benign": 3739,
+          "attack": 955
+        },
+        "job_descriptions": {
+          "benign": 4210,
+          "attack": 615
+        },
+        "admin_instructions": {
+          "benign": 5505,
+          "attack": 1343
+        },
+        "meeting_minutes": {
+          "benign": 2384,
+          "attack": 582
+        },
+        "hr_policies": {
+          "benign": 3240,
+          "attack": 591
+        }
+      },
+      "category_language": {
+        "prompt_injection": {
+          "ru": 70353,
+          "en": 14303,
+          "mixed": 6643
+        },
+        "knowledge_base": {
+          "mixed": 5191,
+          "en": 12356,
+          "ru": 53887
+        },
+        "support_documentation": {
+          "en": 8095,
+          "mixed": 3157,
+          "ru": 1207
+        },
+        "corporate_procedures": {
+          "ru": 4079,
+          "mixed": 142,
+          "en": 15
+        },
+        "technical_documentation": {
+          "mixed": 5060,
+          "en": 3465,
+          "ru": 2580
+        },
+        "legal_templates": {
+          "ru": 5405,
+          "en": 4995,
+          "mixed": 867
+        },
+        "security_compliance_redaction_wrappers": {
+          "en": 2700,
+          "ru": 1615,
+          "mixed": 379
+        },
+        "job_descriptions": {
+          "ru": 4220,
+          "en": 338,
+          "mixed": 267
+        },
+        "admin_instructions": {
+          "mixed": 535,
+          "en": 2273,
+          "ru": 4040
+        },
+        "meeting_minutes": {
+          "ru": 2394,
+          "mixed": 248,
+          "en": 324
+        },
+        "hr_policies": {
+          "ru": 3070,
+          "mixed": 170,
+          "en": 591
+        }
+      },
+      "category_window_bucket": {
+        "prompt_injection": {
+          "1": 91299
+        },
+        "knowledge_base": {
+          "2-4": 19615,
+          "5-20": 38356,
+          "1": 2899,
+          "51-100": 1144,
+          "21-50": 9420
+        },
+        "support_documentation": {
+          "5-20": 7858,
+          "21-50": 2544,
+          "2-4": 1368,
+          "51-100": 572,
+          "1": 117
+        },
+        "corporate_procedures": {
+          "2-4": 413,
+          "5-20": 1914,
+          "21-50": 1636,
+          "51-100": 264,
+          "1": 9
+        },
+        "technical_documentation": {
+          "2-4": 2235,
+          "5-20": 6957,
+          "51-100": 280,
+          "21-50": 1522,
+          "1": 111
+        },
+        "legal_templates": {
+          "21-50": 2510,
+          "5-20": 6416,
+          "2-4": 1724,
+          "51-100": 554,
+          "1": 63
+        },
+        "security_compliance_redaction_wrappers": {
+          "5-20": 3319,
+          "2-4": 893,
+          "21-50": 421,
+          "51-100": 48,
+          "1": 13
+        },
+        "job_descriptions": {
+          "21-50": 1337,
+          "5-20": 2984,
+          "2-4": 298,
+          "51-100": 177,
+          "1": 29
+        },
+        "admin_instructions": {
+          "2-4": 602,
+          "21-50": 2387,
+          "5-20": 3118,
+          "51-100": 706,
+          "1": 35
+        },
+        "meeting_minutes": {
+          "21-50": 969,
+          "2-4": 238,
+          "5-20": 1652,
+          "51-100": 97,
+          "1": 10
+        },
+        "hr_policies": {
+          "21-50": 1320,
+          "5-20": 2040,
+          "51-100": 225,
+          "2-4": 235,
+          "1": 11
+        }
+      },
+      "component_category": {
+        "hard_fn_visible_windows": {
+          "prompt_injection": 5183
+        },
+        "critical_ru_visible_attack_windows": {
+          "prompt_injection": 33000
+        },
+        "embedded_visible_attack_windows": {
+          "knowledge_base": 16365,
+          "corporate_procedures": 785,
+          "support_documentation": 2305,
+          "security_compliance_redaction_wrappers": 955,
+          "legal_templates": 2257,
+          "technical_documentation": 2321,
+          "hr_policies": 591,
+          "meeting_minutes": 582,
+          "admin_instructions": 1343,
+          "job_descriptions": 615
+        },
+        "benign_carrier_contrast_windows": {
+          "knowledge_base": 13867,
+          "support_documentation": 2309,
+          "technical_documentation": 2126,
+          "legal_templates": 2215,
+          "security_compliance_redaction_wrappers": 951,
+          "admin_instructions": 1264,
+          "hr_policies": 635,
+          "job_descriptions": 652,
+          "corporate_procedures": 747,
+          "meeting_minutes": 561
+        },
+        "general_prompt_injection_en": {
+          "prompt_injection": 12587
+        },
+        "benign_general_ru_en_mixed": {
+          "knowledge_base": 6406,
+          "security_compliance_redaction_wrappers": 304,
+          "legal_templates": 1021,
+          "support_documentation": 1045,
+          "corporate_procedures": 384,
+          "admin_instructions": 751,
+          "technical_documentation": 806,
+          "meeting_minutes": 306,
+          "hr_policies": 297,
+          "job_descriptions": 277
+        },
+        "proper_benign_prod_windows": {
+          "technical_documentation": 2515,
+          "knowledge_base": 18557,
+          "legal_templates": 2555,
+          "admin_instructions": 1460,
+          "security_compliance_redaction_wrappers": 1120,
+          "corporate_procedures": 784,
+          "meeting_minutes": 652,
+          "support_documentation": 2568,
+          "job_descriptions": 656,
+          "hr_policies": 625
+        },
+        "general_prompt_injection_ru": {
+          "prompt_injection": 20604
+        },
+        "wrapper_redaction_url_attack_windows": {
+          "prompt_injection": 7417
+        },
+        "benign_wrapper_redaction_url_windows": {
+          "knowledge_base": 4974,
+          "admin_instructions": 340,
+          "support_documentation": 599,
+          "legal_templates": 633,
+          "corporate_procedures": 165,
+          "job_descriptions": 167,
+          "security_compliance_redaction_wrappers": 267,
+          "technical_documentation": 657,
+          "hr_policies": 154,
+          "meeting_minutes": 129
+        },
+        "benign_long_doc_windows": {
+          "legal_templates": 1483,
+          "knowledge_base": 7559,
+          "job_descriptions": 460,
+          "meeting_minutes": 464,
+          "technical_documentation": 1172,
+          "support_documentation": 1606,
+          "admin_instructions": 1002,
+          "corporate_procedures": 546,
+          "hr_policies": 505,
+          "security_compliance_redaction_wrappers": 536
+        },
+        "short_standalone_attack_windows": {
+          "prompt_injection": 5865
+        },
+        "benign_actual_fp_hard_negative": {
+          "support_documentation": 718,
+          "job_descriptions": 1591,
+          "hr_policies": 718,
+          "corporate_procedures": 400,
+          "technical_documentation": 651,
+          "legal_templates": 229,
+          "admin_instructions": 79
+        },
+        "benign_fp_proxy_security_language": {
+          "job_descriptions": 124,
+          "knowledge_base": 1254,
+          "support_documentation": 414,
+          "legal_templates": 284,
+          "technical_documentation": 332,
+          "hr_policies": 86,
+          "admin_instructions": 166,
+          "meeting_minutes": 55,
+          "corporate_procedures": 120,
+          "security_compliance_redaction_wrappers": 214
+        },
+        "benign_security_policy_discussion": {
+          "knowledge_base": 2452,
+          "legal_templates": 590,
+          "technical_documentation": 525,
+          "support_documentation": 895,
+          "job_descriptions": 283,
+          "meeting_minutes": 217,
+          "admin_instructions": 443,
+          "hr_policies": 220,
+          "security_compliance_redaction_wrappers": 347,
+          "corporate_procedures": 305
+        },
+        "mixed_language_attack_windows": {
+          "prompt_injection": 6643
+        }
+      }
+    },
+    "validation": {
+      "rows": 25036,
+      "labels": {
+        "attack": 13308,
+        "benign": 11728
+      },
+      "category_label": {
+        "support_documentation": {
+          "attack": 199,
+          "benign": 1023
+        },
+        "knowledge_base": {
+          "attack": 1856,
+          "benign": 6309
+        },
+        "prompt_injection": {
+          "attack": 10163
+        },
+        "meeting_minutes": {
+          "benign": 197,
+          "attack": 58
+        },
+        "security_compliance_redaction_wrappers": {
+          "benign": 497,
+          "attack": 144
+        },
+        "corporate_procedures": {
+          "benign": 441,
+          "attack": 104
+        },
+        "hr_policies": {
+          "benign": 379,
+          "attack": 74
+        },
+        "technical_documentation": {
+          "benign": 921,
+          "attack": 220
+        },
+        "legal_templates": {
+          "attack": 242,
+          "benign": 942
+        },
+        "admin_instructions": {
+          "attack": 189,
+          "benign": 622
+        },
+        "job_descriptions": {
+          "benign": 397,
+          "attack": 59
+        }
+      },
+      "category_language": {
+        "support_documentation": {
+          "en": 858,
+          "mixed": 273,
+          "ru": 91
+        },
+        "knowledge_base": {
+          "mixed": 574,
+          "ru": 6218,
+          "en": 1373
+        },
+        "prompt_injection": {
+          "ru": 7845,
+          "en": 1601,
+          "mixed": 717
+        },
+        "meeting_minutes": {
+          "mixed": 32,
+          "ru": 195,
+          "en": 28
+        },
+        "security_compliance_redaction_wrappers": {
+          "en": 397,
+          "ru": 188,
+          "mixed": 56
+        },
+        "corporate_procedures": {
+          "ru": 526,
+          "mixed": 14,
+          "en": 5
+        },
+        "hr_policies": {
+          "ru": 389,
+          "en": 44,
+          "mixed": 20
+        },
+        "technical_documentation": {
+          "ru": 258,
+          "mixed": 454,
+          "en": 429
+        },
+        "legal_templates": {
+          "ru": 611,
+          "en": 470,
+          "mixed": 103
+        },
+        "admin_instructions": {
+          "ru": 428,
+          "mixed": 73,
+          "en": 310
+        },
+        "job_descriptions": {
+          "ru": 401,
+          "mixed": 25,
+          "en": 30
+        }
+      },
+      "category_window_bucket": {
+        "support_documentation": {
+          "2-4": 132,
+          "5-20": 734,
+          "21-50": 308,
+          "51-100": 30,
+          "1": 18
+        },
+        "knowledge_base": {
+          "2-4": 2200,
+          "5-20": 4454,
+          "21-50": 1049,
+          "1": 345,
+          "51-100": 117
+        },
+        "prompt_injection": {
+          "1": 10163
+        },
+        "meeting_minutes": {
+          "2-4": 20,
+          "5-20": 166,
+          "1": 3,
+          "21-50": 52,
+          "51-100": 14
+        },
+        "security_compliance_redaction_wrappers": {
+          "5-20": 449,
+          "2-4": 125,
+          "21-50": 65,
+          "1": 2
+        },
+        "corporate_procedures": {
+          "21-50": 195,
+          "5-20": 252,
+          "51-100": 56,
+          "2-4": 36,
+          "1": 6
+        },
+        "hr_policies": {
+          "21-50": 151,
+          "51-100": 39,
+          "5-20": 241,
+          "2-4": 21,
+          "1": 1
+        },
+        "technical_documentation": {
+          "5-20": 666,
+          "2-4": 267,
+          "21-50": 160,
+          "1": 17,
+          "51-100": 31
+        },
+        "legal_templates": {
+          "5-20": 594,
+          "2-4": 224,
+          "21-50": 286,
+          "51-100": 73,
+          "1": 7
+        },
+        "admin_instructions": {
+          "5-20": 384,
+          "21-50": 277,
+          "51-100": 75,
+          "2-4": 67,
+          "1": 8
+        },
+        "job_descriptions": {
+          "21-50": 128,
+          "51-100": 37,
+          "5-20": 267,
+          "1": 2,
+          "2-4": 22
+        }
+      },
+      "component_category": {
+        "embedded_visible_attack_windows": {
+          "support_documentation": 199,
+          "knowledge_base": 1856,
+          "security_compliance_redaction_wrappers": 144,
+          "legal_templates": 242,
+          "admin_instructions": 189,
+          "technical_documentation": 220,
+          "meeting_minutes": 58,
+          "corporate_procedures": 104,
+          "hr_policies": 74,
+          "job_descriptions": 59
+        },
+        "benign_long_doc_windows": {
+          "support_documentation": 153,
+          "knowledge_base": 833,
+          "hr_policies": 67,
+          "security_compliance_redaction_wrappers": 74,
+          "meeting_minutes": 27,
+          "legal_templates": 144,
+          "technical_documentation": 138,
+          "job_descriptions": 42,
+          "corporate_procedures": 73,
+          "admin_instructions": 112
+        },
+        "benign_fp_proxy_security_language": {
+          "knowledge_base": 165,
+          "admin_instructions": 13,
+          "legal_templates": 23,
+          "meeting_minutes": 9,
+          "support_documentation": 42,
+          "technical_documentation": 29,
+          "corporate_procedures": 15,
+          "security_compliance_redaction_wrappers": 29,
+          "job_descriptions": 9,
+          "hr_policies": 1
+        },
+        "hard_fn_visible_windows": {
+          "prompt_injection": 574
+        },
+        "proper_benign_prod_windows": {
+          "knowledge_base": 2072,
+          "security_compliance_redaction_wrappers": 151,
+          "legal_templates": 263,
+          "admin_instructions": 170,
+          "support_documentation": 263,
+          "job_descriptions": 61,
+          "technical_documentation": 272,
+          "corporate_procedures": 115,
+          "meeting_minutes": 49,
+          "hr_policies": 89
+        },
+        "general_prompt_injection_ru": {
+          "prompt_injection": 2270
+        },
+        "benign_general_ru_en_mixed": {
+          "meeting_minutes": 40,
+          "knowledge_base": 752,
+          "hr_policies": 41,
+          "corporate_procedures": 48,
+          "admin_instructions": 80,
+          "security_compliance_redaction_wrappers": 33,
+          "legal_templates": 118,
+          "job_descriptions": 17,
+          "support_documentation": 106,
+          "technical_documentation": 86
+        },
+        "general_prompt_injection_en": {
+          "prompt_injection": 1413
+        },
+        "wrapper_redaction_url_attack_windows": {
+          "prompt_injection": 831
+        },
+        "benign_security_policy_discussion": {
+          "knowledge_base": 323,
+          "hr_policies": 30,
+          "support_documentation": 98,
+          "security_compliance_redaction_wrappers": 30,
+          "legal_templates": 64,
+          "technical_documentation": 65,
+          "admin_instructions": 44,
+          "job_descriptions": 30,
+          "corporate_procedures": 29,
+          "meeting_minutes": 4
+        },
+        "critical_ru_visible_attack_windows": {
+          "prompt_injection": 3699
+        },
+        "benign_carrier_contrast_windows": {
+          "knowledge_base": 1576,
+          "legal_templates": 249,
+          "admin_instructions": 164,
+          "support_documentation": 211,
+          "meeting_minutes": 58,
+          "security_compliance_redaction_wrappers": 144,
+          "technical_documentation": 181,
+          "corporate_procedures": 87,
+          "job_descriptions": 65,
+          "hr_policies": 58
+        },
+        "mixed_language_attack_windows": {
+          "prompt_injection": 717
+        },
+        "benign_wrapper_redaction_url_windows": {
+          "corporate_procedures": 31,
+          "technical_documentation": 68,
+          "knowledge_base": 588,
+          "legal_templates": 55,
+          "support_documentation": 65,
+          "admin_instructions": 27,
+          "security_compliance_redaction_wrappers": 36,
+          "hr_policies": 20,
+          "job_descriptions": 15,
+          "meeting_minutes": 10
+        },
+        "short_standalone_attack_windows": {
+          "prompt_injection": 659
+        },
+        "benign_actual_fp_hard_negative": {
+          "job_descriptions": 158,
+          "hr_policies": 73,
+          "technical_documentation": 82,
+          "corporate_procedures": 43,
+          "support_documentation": 85,
+          "legal_templates": 26,
+          "admin_instructions": 12
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+﻿{
+    "recommended_threshold":  0.99,
+    "source":  "v16-v13-critical-ru-validation-summary.json",
+    "note":  "V16 diagnostic candidate threshold is 0.99. It improves V13 on the core diagnostic suite but still requires production calibration before deployment.",
+    "validation_at_recommended_threshold":  {
+                                                "corpus":  "v13_critical_ru",
+                                                "documents":  2459,
+                                                "threshold":  0.99,
+                                                "precision":  1.0,
+                                                "recall":  0.9869865799105327,
+                                                "f1":  0.9934506753990994,
+                                                "true_positives":  2427,
+                                                "false_positives":  0,
+                                                "false_negatives":  32,
+                                                "benign_false_positive_rate":  0.0
+                                            }
+}
